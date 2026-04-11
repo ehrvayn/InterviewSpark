@@ -69,7 +69,7 @@ export default function Landing() {
               Everything You Need to Ace It
             </h2>
             <p className="text-[#8a9ab8] text-sm sm:text-base max-w-xl mx-auto">
-              From preparation to performance — we've got every stage of your
+              From preparation to performance we've got every stage of your
               interview journey covered.
             </p>
           </div>

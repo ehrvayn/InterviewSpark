@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { query } from "../database/Connection";
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   userId?: number;
   userData?: {
     id: number;
@@ -16,10 +16,10 @@ export const authMiddleware = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
-
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
+    console.log("No token provided");
     res.status(401).json({
       success: false,
       message: "No token provided",

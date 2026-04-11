@@ -6,9 +6,18 @@ import api from "../lib/api";
 import { usePage } from "../context/PageContext";
 import { useRegister } from "../context/RegisterContext";
 import { useCurrentUser } from "../context/CurrentUserContext";
+import { useEffect } from "react";
 
 export default function LoginContainer() {
-  const { email, setEmail, password, setPassword, handleLogin, loading, loginError } = useLogin();
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    handleLogin,
+    loading,
+    loginError,
+  } = useLogin();
   const { setActivePage } = usePage();
   const { setShowRegister } = useRegister();
   const { loadUser } = useCurrentUser();
@@ -31,6 +40,32 @@ export default function LoginContainer() {
     onError: () => console.log("Login Failed"),
   });
 
+  const githubLogin = () => {
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${import.meta.env.VITE_GITHUB_CLIENT_ID}&scope=user`;
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    if (code) {
+      const handleGithubCallback = async () => {
+        try {
+          const response = await api.post("/auth/github/callback", { code });
+          if (response.data.success) {
+            localStorage.setItem("token", response.data.token);
+            loadUser();
+            window.history.replaceState({}, "", "/");
+            setActivePage("interview");
+          }
+        } catch (error) {
+          console.error("GitHub login failed:", error);
+        }
+      };
+      handleGithubCallback();
+    }
+  }, []);
+
   return (
     <div className="flex items-center justify-center w-full px-4 sm:px-6 py-8 lg:py-0 lg:min-h-screen">
       <div className="w-full max-w-md">
@@ -49,7 +84,10 @@ export default function LoginContainer() {
             >
               <FaGoogle /> <span className="font-medium">Google</span>
             </button>
-            <button className="flex items-center justify-center gap-2 py-2 sm:py-2.5 rounded-md border border-[#263548] text-[#8a9ab8] hover:border-blue-500 hover:text-blue-400 transition-all cursor-pointer text-sm">
+            <button
+              onClick={githubLogin}
+              className="flex items-center justify-center gap-2 py-2 sm:py-2.5 rounded-md border border-[#263548] text-[#8a9ab8] hover:border-blue-500 hover:text-blue-400 transition-all cursor-pointer text-sm"
+            >
               <FaGithub /> <span className="font-medium">GitHub</span>
             </button>
           </div>
@@ -117,7 +155,9 @@ export default function LoginContainer() {
             </div>
 
             {loginError && (
-              <p className="text-red-400 text-[11px] sm:text-xs px-1">{loginError}</p>
+              <p className="text-red-400 text-[11px] sm:text-xs px-1">
+                {loginError}
+              </p>
             )}
 
             <button

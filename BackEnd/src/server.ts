@@ -2,8 +2,9 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import pool from "./database/Connection";
-import UserRoute from "./routes/UserRoute"
-import googleAuthRoutes from "./routes/GoogleAuth"
+import UserRoute from "./routes/UserRoute";
+import googleAuthRoutes from "./routes/OAuth";
+import InterviewRoute from "./routes/InterviewRoute";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,7 +12,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use("/auth", googleAuthRoutes);
-app.use("/user", UserRoute)
+app.use("/user", UserRoute);
+app.use("/interview", InterviewRoute);
 
 pool.query("SELECT NOW()", (err) => {
   if (!err) {
