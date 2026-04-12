@@ -67,9 +67,9 @@ export default function LoginContainer() {
   }, []);
 
   return (
-    <div className="flex items-center justify-center w-full px-4 sm:px-6 py-8 lg:py-0 lg:min-h-screen">
-      <div className="w-full max-w-md">
-        <div className="bg-[#141c28] border border-[#1f2d42] rounded-xl p-6 sm:p-8 shadow-[0_0_40px_-5px_rgba(59,130,246,0.3)]">
+    <div className="flex items-center justify-center w-full py-8 lg:py-0 lg:min-h-screen">
+      <div className="w-full">
+        <div className="bg-[#141c28] border border-[#1f2d42] rounded-md p-6 sm:p-8 shadow-[0_0_15px_-5px_rgba(59,130,246,0.3)]">
           <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-1.5 text-white">
               Hello, Welcome!

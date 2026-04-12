@@ -7,6 +7,7 @@ import { PageProvider } from "./context/PageContext.tsx";
 import { LoginProvider } from "./context/LoginContext.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { RegisterProvider } from "./context/RegisterContext.tsx";
+import { InterviewProvider } from "./context/InterviewContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -15,7 +16,9 @@ createRoot(document.getElementById("root")!).render(
         <CurrentUserProvider>
           <LoginProvider>
             <RegisterProvider>
-              <App />
+              <InterviewProvider>
+                <App />
+              </InterviewProvider>
             </RegisterProvider>
           </LoginProvider>
         </CurrentUserProvider>

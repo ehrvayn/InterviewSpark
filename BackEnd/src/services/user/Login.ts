@@ -21,6 +21,7 @@ const Login = async (email: string, password: string) => {
           userId: user.id,
           email: user.email,
           name: user.name,
+          credit: user.credit
         },
         process.env.JWT_SECRET as string,
         { expiresIn: "7d" },

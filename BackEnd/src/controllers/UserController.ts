@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import RegisterUser from "../services/user/RegisterUser";
 import Login from "../services/user/Login";
+import { retrieveUser } from "../services/user/RetriveUser";
+import { AuthRequest } from "../middlewares/AuthMiddleware";
 
 export const registerUserCon = async (
   req: Request,
@@ -50,4 +52,19 @@ export const loginController = async (
   }
 
   res.status(200).json(result);
+};
+
+export const retrieveUserCon = async (req: AuthRequest, res: Response) => {
+  const userId = req.userId;
+
+  if (!userId) {
+    res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  const result = await retrieveUser(userId);
+  res.status(result.success ? 200 : 400).json(result);
 };

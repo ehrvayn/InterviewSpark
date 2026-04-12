@@ -52,6 +52,7 @@ export const scoreAnswer = async (
   confidence: number;
   relevance: number;
   score: number;
+  question_text: string;
 }> => {
   try {
     const message = await groq.chat.completions.create({

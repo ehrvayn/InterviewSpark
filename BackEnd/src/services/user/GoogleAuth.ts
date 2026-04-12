@@ -1,8 +1,5 @@
-import { OAuth2Client } from "google-auth-library";
 import { query } from "../../database/Connection";
 import userQuery from "../../models/UsersQuery";
-
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const verifyGoogleToken = async (token: string) => {
   try {
@@ -30,7 +27,7 @@ export const verifyGoogleToken = async (token: string) => {
 export const findOrCreateGoogleUser = async (googleData: any) => {
   try {
     const result = await query(
-      "SELECT id, email, name FROM users WHERE email = $1",
+      "SELECT id, email, name, credit FROM users WHERE email = $1",
       [googleData.email],
     );
 

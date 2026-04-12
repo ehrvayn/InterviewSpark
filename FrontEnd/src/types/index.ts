@@ -3,6 +3,7 @@ export type User = {
   name: string;
   email: string;
   password: string;
+  credit: number;
 };
 
 export type Page =
@@ -10,7 +11,7 @@ export type Page =
   | "dashboard"
   | "interview"
   | "progress"
-  | "questions" 
+  | "questions"
   | "logout";
 
 export type Role =
@@ -23,7 +24,7 @@ export type Role =
 
 export type InterviewType = "behavioral" | "technical" | "case-study";
 
-export type DifficultyLevel = "entry" | "mid" | "senior" | "staff";
+export type DifficultyLevel = "junior" | "intermediate" | "senior" | "expert";
 
 export interface NavItem {
   id: Page;

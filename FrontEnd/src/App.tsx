@@ -1,7 +1,7 @@
-import SideBar from "./components/SideBar";
+import Sidebar from "./components/SideBar";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
-import Interview from "./pages/Interview";
+import Interview from "./pages/interview/Interview";
 import Progress from "./pages/Progress";
 import Questions from "./pages/Questions";
 import { usePage } from "./context/PageContext";
@@ -15,7 +15,7 @@ export default function App() {
   const renderPage = () => {
     switch (activePage) {
       case "landing":
-        return <Landing/>;
+        return <Landing />;
       case "dashboard":
         return <Dashboard onNavigate={setActivePage} />;
       case "interview":
@@ -29,21 +29,24 @@ export default function App() {
     }
   };
 
+  const isLanding = activePage === "landing";
+
   return (
-    <div className="h-screen overflow-hidden bg-[#080c12] text-[#e8edf5] font-sans flex">
-      {activePage !== "landing" && (
-        <SideBar currentPage={activePage} onNavigate={setActivePage} />
+    <div
+      className={`w-full min-h-screen bg-[#080c12] text-[#e8edf5] font-sans ${
+        !isLanding ? "lg:grid lg:grid-cols-[256px_1fr]" : ""
+      }`}
+    >
+      {!isLanding && (
+        <Sidebar currentPage={activePage} onNavigate={setActivePage} />
       )}
 
       <main
         className={
-          activePage === "landing"
-            ? "flex-1 w-full overflow-y-auto"
-            : "flex-1 overflow-y-auto ml-64 max-w-6xl mx-auto px-10 py-8 w-full"
+          isLanding ? "w-full" : "min-h-screen flex flex-col pt-14 px-1 lg:pt-0"
         }
       >
         {renderPage()}
-
         {showLogout && <LogoutModal />}
       </main>
     </div>

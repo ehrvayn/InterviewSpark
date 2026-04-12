@@ -45,7 +45,13 @@ export const answerQuestion = async (
     return {
       success: true,
       message: "Answer recorded!",
-      score,
+      score: {
+        clarity: score.clarity,
+        confidence: score.confidence,
+        relevance: score.relevance,
+        score: score.score,
+      },
+      currentQuestion: questionText,
       nextQuestion: nextQuestionResult.rows[0],
     };
   } catch (error) {

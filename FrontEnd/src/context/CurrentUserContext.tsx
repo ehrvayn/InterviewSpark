@@ -6,6 +6,7 @@ interface JWTPayload {
   userId: number;
   email: string;
   name: string;
+  credit: number
 }
 
 interface CurrentUserContextType {
@@ -32,6 +33,7 @@ export const CurrentUserProvider: React.FC<{ children: React.ReactNode }> = ({
           id: decoded.userId,
           email: decoded.email,
           name: decoded.name,
+          credit: decoded.credit,
         } as unknown as User);
       } catch (error) {
         console.error("Token decode failed:", error);

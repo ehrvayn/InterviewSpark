@@ -33,7 +33,7 @@ export const authMiddleware = async (
     };
     req.userId = decoded.userId;
     const user = await query(
-      "SELECT id, email, name FROM users WHERE id = $1",
+      "SELECT id, email, name, credit FROM users WHERE id = $1",
       [decoded.userId],
     );
     req.userData = user.rows[0];
