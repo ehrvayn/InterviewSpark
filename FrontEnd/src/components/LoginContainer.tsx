@@ -49,6 +49,7 @@ export default function LoginContainer() {
     const code = params.get("code");
 
     if (code) {
+      window.history.replaceState({}, "", "/");
       const handleGithubCallback = async () => {
         try {
           const response = await api.post("/auth/github/callback", { code });

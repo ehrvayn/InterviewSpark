@@ -9,11 +9,28 @@ export const registerUserCon = async (
   res: Response,
 ): Promise<void> => {
   const { name, email, password } = req.body;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!email || !password || !name) {
     res.status(400).json({
       success: false,
-      message: "Credentials missing!",
+      message: "All fields (email, password, name) are required.",
+    });
+    return;
+  }
+
+  if (!emailRegex.test(email)) {
+    res.status(400).json({
+      success: false,
+      message: "Please provide a valid email address.",
+    });
+    return;
+  }
+
+  if (password.length < 8) {
+    res.status(400).json({
+      success: false,
+      message: "Password must be at least 8 characters long.",
     });
     return;
   }

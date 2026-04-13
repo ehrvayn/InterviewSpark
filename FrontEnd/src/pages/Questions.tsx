@@ -97,10 +97,10 @@ const types: (InterviewType | "All")[] = [
 ];
 const difficulties: (DifficultyLevel | "All")[] = [
   "All",
-  "entry",
-  "mid",
+  "junior",
+  "intermediate",
   "senior",
-  "staff",
+  "expert",
 ];
 
 export default function Questions({

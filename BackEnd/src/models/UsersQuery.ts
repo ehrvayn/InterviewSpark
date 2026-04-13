@@ -8,7 +8,7 @@ const userQuery = {
     values: [userData.name, userData.email, userData.password],
   }),
   login: (email: string) => ({
-    query: `SELECT * FROM users WHERE email = $1`,
+    query: `SELECT id, email, name, credit, password FROM users WHERE email = $1`,
     values: [email],
   }),
   retrieve: (userId: number) => ({

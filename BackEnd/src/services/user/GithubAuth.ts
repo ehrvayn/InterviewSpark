@@ -54,7 +54,7 @@ export const verifyGithubToken = async (code: string) => {
 export const findOrCreateGithubUser = async (githubData: any) => {
   try {
     const result = await query(
-      "SELECT id, email, name FROM users WHERE email = $1",
+      "SELECT id, email, name, credit FROM users WHERE email = $1",
       [githubData.email],
     );
 

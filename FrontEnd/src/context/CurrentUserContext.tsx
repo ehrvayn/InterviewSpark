@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import api from "../lib/api";
 import { User } from "../types";
 
 interface JWTPayload {
   userId: number;
   email: string;
   name: string;
-  credit: number
+  credit: number;
 }
 
 interface CurrentUserContextType {
@@ -14,6 +15,8 @@ interface CurrentUserContextType {
   setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>;
   isLoading: boolean;
   loadUser: () => void;
+  updateCredit: (newCredit: number) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const CurrentUserContext = createContext<CurrentUserContextType | null>(null);
@@ -24,19 +27,19 @@ export const CurrentUserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadUser = () => {
+  const loadUser = async () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const decoded = jwtDecode<JWTPayload>(token);
-        setCurrentUser({
-          id: decoded.userId,
-          email: decoded.email,
-          name: decoded.name,
-          credit: decoded.credit,
-        } as unknown as User);
+        jwtDecode<JWTPayload>(token);
+        const response = await api.get("/user/retrieve");
+        if (response.data.user) {
+          setCurrentUser(response.data.user);
+        } else {
+          localStorage.removeItem("token");
+          setCurrentUser(null);
+        }
       } catch (error) {
-        console.error("Token decode failed:", error);
         localStorage.removeItem("token");
         setCurrentUser(null);
       }
@@ -46,12 +49,38 @@ export const CurrentUserProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoading(false);
   };
 
+  const updateCredit = (newCredit: number) => {
+    setCurrentUser((prev) => (prev ? { ...prev, credit: newCredit } : prev));
+  };
+
+  const refreshUser = async () => {
+    try {
+      const response = await api.get("/user/retrieve");
+      console.log("Retrieve response:", response.data);
+      if (response.data.user) {
+        console.log("Setting user to:", response.data.user);
+        setCurrentUser(response.data.user);
+      }
+    } catch (error) {
+      console.error("Refresh user failed:", error);
+    }
+  };
+
   useEffect(() => {
     loadUser();
   }, []);
 
   return (
-    <CurrentUserContext.Provider value={{ currentUser, setCurrentUser, isLoading, loadUser }}>
+    <CurrentUserContext.Provider
+      value={{
+        currentUser,
+        setCurrentUser,
+        isLoading,
+        loadUser,
+        updateCredit,
+        refreshUser,
+      }}
+    >
       {children}
     </CurrentUserContext.Provider>
   );

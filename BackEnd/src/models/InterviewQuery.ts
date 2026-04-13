@@ -1,4 +1,16 @@
 const InterviewQuery = {
+  checkCredit: (userId: number) => ({
+    query: `SELECT credit FROM users WHERE id = $1`,
+    values: [userId],
+  }),
+  deductCredit: (userId: number) => ({
+    query: `UPDATE users SET credit = credit - 1 WHERE id = $1 RETURNING credit`,
+    values: [userId],
+  }),
+  refundCredit: (userId: number) => ({
+    query: `UPDATE users SET credit = credit + 1 WHERE id = $1`,
+    values: [userId],
+  }),
   start: (interviewData: any) => ({
     query: `INSERT INTO interviews (user_id, interview_type, role, difficulty, company) VALUES ($1, $2, $3, $4, $5) RETURNING id, user_id, interview_type, role, difficulty, company, created_at`,
     values: [
@@ -9,7 +21,6 @@ const InterviewQuery = {
       interviewData.company,
     ],
   }),
-
   addQuestion: (
     interviewId: number,
     questionNumber: number,
@@ -42,13 +53,13 @@ const InterviewQuery = {
   }),
   endInterview: (interviewId: number) => ({
     query: `
-    SELECT q.id, q.question_text, q.user_answer, q.score, q.clarity, q.confidence, q.relevance,
-           i.role, i.company
-    FROM questions q
-    JOIN interviews i ON i.id = q.interview_id
-    WHERE q.interview_id = $1 AND q.user_answer IS NOT NULL 
-    ORDER BY q.question_number
-  `,
+      SELECT q.id, q.question_text, q.user_answer, q.score, q.clarity, q.confidence, q.relevance,
+             i.role, i.company
+      FROM questions q
+      JOIN interviews i ON i.id = q.interview_id
+      WHERE q.interview_id = $1 AND q.user_answer IS NOT NULL 
+      ORDER BY q.question_number
+    `,
     values: [interviewId],
   }),
 };

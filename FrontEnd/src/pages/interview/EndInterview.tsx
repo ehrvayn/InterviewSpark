@@ -58,7 +58,7 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
   const scoreLabel = getScoreLabel(overallScore);
 
   return (
-    <div className="pt-4 flex my-auto flex-col gap-6 max-w-3xl mx-auto pb-12">
+    <div className="pt-4 pl-3 mx-auto flex my-auto mt-15 lg:mt-0 flex-col gap-3 pr-1 max-w-5xl  pb-12">
       <div className="px-2">
         <h1 className="text-3xl font-black tracking-tight">
           Interview Complete
@@ -69,58 +69,60 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
         </p>
       </div>
 
-      <div className="bg-[#141c28] border border-[#1f2d42] rounded-md p-8 flex flex-col items-center gap-2">
-        <div className="flex items-baseline gap-1">
-          <span className="text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-blue-400 via-blue-300 to-cyan-300">
-            {overallScore}
-          </span>
-          <span className="text-sm text-[#536480] font-mono-custom font-bold">
-            / 10
+      <div className="flex sm:flex-row flex-col gap-3 w-full">
+        <div className="bg-[#141c28] border border-[#1f2d42] rounded-md p-8 flex flex-col items-center gap-2">
+          <div className="flex items-baseline gap-1">
+            <span className="text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-blue-400 via-blue-300 to-cyan-300">
+              {overallScore}
+            </span>
+            <span className="text-sm text-[#536480] font-mono-custom font-bold">
+              / 10
+            </span>
+          </div>
+          <span
+            className={`mt-2 px-4 py-1 rounded-full border text-xs font-bold ${scoreLabel.style}`}
+          >
+            {scoreLabel.label}
           </span>
         </div>
-        <span
-          className={`mt-2 px-4 py-1 rounded-full border text-xs font-bold ${scoreLabel.style}`}
-        >
-          {scoreLabel.label}
-        </span>
-      </div>
 
-      {averages && (
-        <div className="bg-[#141c28] border border-[#1f2d42] rounded-md p-6">
-          <div className="flex items-center gap-2 mb-5">
-            <GiProgression className="text-blue-400" />
-            <h2 className="text-xs font-bold uppercase tracking-widest text-[#8a9ab8]">
-              Score Breakdown
-            </h2>
-          </div>
-          <div className="flex flex-col gap-5">
-            {[
-              { label: "Clarity", value: averages.clarity },
-              { label: "Confidence", value: averages.confidence },
-              { label: "Relevance", value: averages.relevance },
-            ].map((metric) => (
-              <div key={metric.label} className="flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-[#8a9ab8] font-medium">
-                    {metric.label}
-                  </span>
-                  <span
-                    className={`text-sm font-bold ${getScoreColor(metric.value)}`}
-                  >
-                    {metric.value}/10
-                  </span>
+        {averages && (
+          <div className="bg-[#141c28] flex-1 border border-[#1f2d42] rounded-md p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <GiProgression className="text-blue-400" />
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#8a9ab8]">
+                Score Breakdown
+              </h2>
+            </div>
+            <div className="flex flex-col gap-5">
+              {[
+                { label: "Clarity", value: averages.clarity },
+                { label: "Confidence", value: averages.confidence },
+                { label: "Relevance", value: averages.relevance },
+              ].map((metric) => (
+                <div key={metric.label} className="flex flex-col gap-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-[#8a9ab8] font-medium">
+                      {metric.label}
+                    </span>
+                    <span
+                      className={`text-sm font-bold ${getScoreColor(metric.value)}`}
+                    >
+                      {metric.value}/10
+                    </span>
+                  </div>
+                  <div className="w-full bg-[#0d1219] rounded-full h-2 border border-[#1f2d42]">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-700 ${getBarColor(metric.value)}`}
+                      style={{ width: `${metric.value * 10}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="w-full bg-[#0d1219] rounded-full h-2 border border-[#1f2d42]">
-                  <div
-                    className={`h-2 rounded-full transition-all duration-700 ${getBarColor(metric.value)}`}
-                    style={{ width: `${metric.value * 10}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {feedback && (
         <div className="bg-[#141c28] border border-[#1f2d42] rounded-md p-6">

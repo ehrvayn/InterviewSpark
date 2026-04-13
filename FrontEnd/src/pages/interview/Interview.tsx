@@ -1,25 +1,36 @@
 import { useState } from "react";
 import type { Role, InterviewType, DifficultyLevel } from "../../types";
-import { FaGear } from "react-icons/fa6";
-import { FaBrain } from "react-icons/fa6";
-import { FaFileAlt } from "react-icons/fa";
+import { FaGear, FaBrain, FaFill } from "react-icons/fa6";
 import Questions from "./Questions";
 import { useInterview } from "../../context/InterviewContext";
 import EndInterview from "./EndInterview";
+import { useCurrentUser } from "../../context/CurrentUserContext";
+import { usePayment } from "../../context/PaymentContext";
+import { IoIosArrowForward } from "react-icons/io";
 
 type Stage = "setup" | "active" | "feedback";
 
 const roles: Role[] = [
   "Software Engineer",
-  "Product Manager",
+  "Frontend Developer",
+  "Backend Developer",
+  "Fullstack Developer",
+  "Mobile Developer",
   "Data Scientist",
-  "Sales",
+  "Data Engineer",
+  "DevOps Engineer",
+  "Product Manager",
+  "Product Designer",
   "UX Designer",
+  "QA Engineer",
+  "Cybersecurity",
   "Marketing",
+  "Sales",
 ];
 
 export default function Interview() {
   const [stage, setStage] = useState<Stage>("setup");
+  const { setShowPayment } = usePayment();
   const {
     startInterview,
     selectedDiff,
@@ -31,139 +42,204 @@ export default function Interview() {
     company,
     setCompany,
     isLoading,
+    startError,
+    setStartError,
   } = useInterview();
+  const { currentUser } = useCurrentUser();
 
   if (stage === "feedback") return <EndInterview setStage={setStage} />;
   if (stage === "active") return <Questions setStage={setStage} />;
 
+  const noCredits = (currentUser?.credit ?? 0) <= 0;
+
   return (
-    <div className="w-full flex flex-col items-center justify-center py-8 px-0 md:px-4">
-      <div className="w-full max-w-2xl px-4 sm:px-6 md:px-8 mb-6 sm:mb-8 md:mb-10">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">
-          New Interview Session
+    <div className="w-full min-h-screen mt-5 lg:mt-0 flex flex-col items-center justify-start py-12 select-none">
+      <div className="w-full max-w-3xl mb-10 text-center md:text-left px-4">
+        <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white">
+          Configure Session
         </h1>
-        <p className="text-[#8a9ab8] text-xs sm:text-sm md:text-base mt-2 sm:mt-3">
-          Configure your mock interview below.
+        <p className="text-slate-400 text-sm md:text-base mt-3 max-w-lg">
+          Tailor your experience. Our AI will adapt its persona and questions
+          based on your selections.
         </p>
       </div>
 
-      <div className="w-full max-w-2xl px-4 sm:px-6 md:px-8 bg-linear-to-br from-[#141c28]/80 to-[#0d1219]/80 backdrop-blur-xl border border-[#1f2d42] rounded-md p-6 sm:p-8 md:p-10 flex flex-col gap-6 sm:gap-7 md:gap-8">
-        <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
-          <div className="flex items-center gap-3">
-            <label className="text-xs font-bold tracking-widest uppercase text-[#8a9ab8] shrink-0">
-              Target Role
-            </label>
-            <div className="flex-1 h-px bg-[#1f2d42]" />
+      <div className="w-full max-w-3xl bg-[#0a0f18] border border-white/5 rounded-md py-6 md:py-10 px-4 md:px-8 shadow-2xl relative overflow-hidden group">
+        <div className="flex flex-col gap-10 relative z-10">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                Target Role
+              </label>
+              <span className="text-[10px] text-blue-500/50 font-medium italic">
+                Step 1 of 4
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+              {roles.map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setSelectedRole(r)}
+                  className={`px-4 py-3 rounded-md border text-xs font-bold transition-all duration-300 text-left sm:text-center ${
+                    selectedRole === r
+                      ? "border-blue-500 bg-blue-500/10 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
+                      : "border-white/5 bg-white/2 text-slate-400 hover:border-white/20 hover:text-slate-200"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-2.5 md:gap-3">
-            {roles.map((r) => (
-              <button
-                key={r}
-                onClick={() => setSelectedRole(r)}
-                className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-lg sm:rounded-md md:rounded-lg border text-xs sm:text-xs md:text-sm font-medium transition-all whitespace-nowrap ${selectedRole === r ? "border-blue-500 bg-blue-500/15 text-blue-400" : "border-[#1f2d42] bg-[#0d1219] text-[#8a9ab8] hover:border-blue-500 hover:text-white"}`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        </div>
 
-        <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
-          <div className="flex items-center gap-3">
-            <label className="text-xs font-bold tracking-widest uppercase text-[#8a9ab8] shrink-0">
-              Interview Type
-            </label>
-            <div className="flex-1 h-px bg-[#1f2d42]" />
-          </div>
-          <div className="grid sm:grid-cols-3 grid-cols-2 gap-2 sm:gap-2.5 md:gap-3">
-            {(["behavioral", "technical", "case-study"] as InterviewType[]).map(
-              (t) => (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                Interview Focus
+              </label>
+              <span className="text-[10px] text-blue-500/50 font-medium italic">
+                Step 2 of 4
+              </span>
+            </div>
+            <div className="grid sm:grid-cols-3 grid-cols-2 gap-3">
+              {(
+                ["behavioral", "technical", "case-study"] as InterviewType[]
+              ).map((t) => (
                 <button
                   key={t}
                   onClick={() => setSelectedType(t)}
-                  className={`flex flex-col cursor-pointer items-center gap-1.5 sm:gap-2 md:gap-2 py-3 sm:py-4 md:py-5 rounded-lg sm:rounded-md md:rounded-lg border text-xs sm:text-xs md:text-sm font-medium transition-all ${selectedType === t ? "border-blue-500 bg-blue-500/15 text-blue-400" : "border-[#1f2d42] bg-[#0d1219] text-[#8a9ab8] hover:border-blue-500 hover:text-white"}`}
+                  className={`flex flex-col cursor-pointer items-center justify-center gap-3 py-6 rounded-md border transition-all duration-300 ${
+                    selectedType === t
+                      ? "border-blue-500 bg-blue-500/10 text-blue-400"
+                      : "border-white/5 bg-white/2 text-slate-500 hover:border-white/20 hover:text-slate-200"
+                  }`}
                 >
-                  <span className="text-base sm:text-lg md:text-xl">
+                  <div
+                    className={`p-3 rounded-md ${selectedType === t ? "bg-blue-500/20" : "bg-white/5"}`}
+                  >
                     {t === "behavioral" ? (
-                      <FaBrain
-                        size={16}
-                        className="sm:w-5 sm:h-5 md:w-5 md:h-5"
-                      />
+                      <FaBrain size={20} />
                     ) : t === "technical" ? (
-                      <FaGear
-                        size={16}
-                        className="sm:w-5 sm:h-5 md:w-5 md:h-5"
-                      />
+                      <FaGear size={20} />
                     ) : (
-                      <FaFileAlt
-                        size={16}
-                        className="sm:w-5 sm:h-5 md:w-5 md:h-5"
-                      />
+                      <FaFill size={20} />
                     )}
-                  </span>
-                  <span className="capitalize text-xs sm:text-xs md:text-xs">
-                    {t === "case-study" ? "Case" : t}
+                  </div>
+                  <span className="capitalize text-[11px] font-bold tracking-wide">
+                    {t === "case-study" ? "Case Study" : t}
                   </span>
                 </button>
-              ),
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                Seniority Level
+              </label>
+              <span className="text-[10px] text-blue-500/50 font-medium italic">
+                Step 3 of 4
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  "junior",
+                  "intermediate",
+                  "senior",
+                  "expert",
+                ] as DifficultyLevel[]
+              ).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setSelectedDiff(d)}
+                  className={`flex-1 min-w-25 py-2.5 cursor-pointer rounded-md border text-[11px] font-black uppercase tracking-tighter transition-all ${
+                    selectedDiff === d
+                      ? "border-blue-500 bg-blue-500 text-white shadow-lg shadow-blue-600/20"
+                      : "border-white/5 bg-white/2 text-slate-500 hover:text-slate-300"
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex gap-1 items-center justify-between">
+                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                  Dream Company
+                </label>
+                <span className="text-[9px] font-medium text-white/40 px-2 py-0.5 rounded-full border border-blue-500/10 bg-blue-500/5">
+                  RECOMMENDED
+                </span>
+              </div>
+              <span className="text-[10px] text-blue-500/50 font-medium italic">
+                Step 4 of 4
+              </span>
+            </div>
+            <input
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              type="text"
+              placeholder="Ex: NVIDIA, OpenAI, Airbnb..."
+              className="w-full px-5 py-4 bg-white/2 border border-white/5 rounded-md text-sm text-white placeholder-slate-600 outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 transition-all"
+            />
+          </div>
+
+          <div className="pt-4 space-y-4">
+            {noCredits ? (
+              <div className="p-4 rounded-2xl bg-red-500/5 border border-red-500/20 flex items-center justify-between gap-4">
+                <div className="flex flex-col">
+                  <span className="text-red-400 text-xs font-bold uppercase tracking-tight">
+                    cREDIT LIMIT REACHED
+                  </span>
+                  <span className="text-red-400/60 text-[11px]">
+                    Insufficient credits to initiate AI session.
+                  </span>
+                </div>
+                <button
+                  onClick={() => setShowPayment(true)}
+                  className="px-4 py-2 flex items-center rounded-md bg-red-500 text-white text-[11px] font-black uppercase tracking-wide hover:bg-red-400 transition-colors active:scale-95"
+                >
+                  Get More Credits
+                  <IoIosArrowForward size={20}/>
+                </button>
+              </div>
+            ) : (
+              <>
+                {startError && (
+                  <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-bold text-center animate-shake">
+                    {startError}
+                  </div>
+                )}
+                <button
+                  onClick={async () => {
+                    setStartError(null);
+                    const success = await startInterview();
+                    if (success) setStage("active");
+                  }}
+                  disabled={isLoading}
+                  className={`w-full py-5 rounded-md text-white font-black uppercase tracking-[0.15em] text-sm transition-all relative overflow-hidden group/btn ${
+                    isLoading
+                      ? "bg-slate-800 text-slate-500 cursor-wait"
+                      : "bg-blue-600 hover:bg-blue-500 cursor-pointer hover:shadow-[0_0_30px_rgba(37,99,235,0.4)] active:scale-[0.98]"
+                  }`}
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {isLoading ? "Synchronizing AI..." : "Launch Interview"}
+                    {!isLoading && <IoIosArrowForward size={18} />}
+                  </span>
+                  {!isLoading && (
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
+                  )}
+                </button>
+              </>
             )}
           </div>
         </div>
-
-        <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
-          <div className="flex items-center gap-3">
-            <label className="text-xs font-bold tracking-widest uppercase text-[#8a9ab8] shrink-0">
-              Difficulty
-            </label>
-            <div className="flex-1 h-px bg-[#1f2d42]" />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 gap-2 sm:gap-2.5 md:gap-3">
-            {(
-              [
-                "junior",
-                "intermediate",
-                "senior",
-                "expert",
-              ] as DifficultyLevel[]
-            ).map((d) => (
-              <button
-                key={d}
-                onClick={() => setSelectedDiff(d)}
-                className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 cursor-pointer rounded-lg sm:rounded-md md:rounded-lg border text-xs sm:text-xs md:text-sm font-medium capitalize transition-all whitespace-nowrap ${selectedDiff === d ? "border-blue-500 bg-blue-500/15 text-blue-400" : "border-[#1f2d42] bg-[#0d1219] text-[#8a9ab8] hover:border-blue-500 hover:text-white"}`}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
-          <div className="flex items-center gap-3">
-            <label className="text-xs font-bold tracking-widest uppercase text-[#8a9ab8] shrink-0">
-              Target Company
-            </label>
-            <div className="flex-1 h-px bg-[#1f2d42]" />
-          </div>
-          <input
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-            type="text"
-            placeholder="e.g. Google, Meta, Stripe..."
-            className="w-full px-3 sm:px-4 md:px-4 py-2 sm:py-2.5 md:py-3 bg-[#0d1219] border border-[#1f2d42] rounded-lg sm:rounded-md md:rounded-lg text-xs sm:text-xs md:text-sm text-[#e8edf5] placeholder-[#536480] outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-colors"
-          />
-        </div>
-
-        {/* Begin Button */}
-        <button
-          onClick={async () => {
-            await startInterview();
-            setStage("active");
-          }}
-          disabled={isLoading}
-          className={`w-full px-6 sm:px-8 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-md md:rounded-lg text-white font-semibold text-sm sm:text-base md:text-base transition-all ${isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 cursor-pointer hover:-translate-y-0.5 shadow-lg shadow-blue-500/20"}`}
-        >
-          {isLoading ? "Preparing Interview..." : "Begin Interview →"}
-        </button>
       </div>
     </div>
   );

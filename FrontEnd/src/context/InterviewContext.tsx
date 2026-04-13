@@ -1,6 +1,7 @@
 import React, { createContext, useState } from "react";
 import { Role, InterviewType, DifficultyLevel } from "../types";
 import api from "../lib/api";
+import { useCurrentUser } from "./CurrentUserContext";
 
 interface InterviewContextType {
   selectedRole: string;
@@ -11,7 +12,7 @@ interface InterviewContextType {
   setSelectedDiff: React.Dispatch<React.SetStateAction<DifficultyLevel>>;
   answer: string;
   setAnswer: React.Dispatch<React.SetStateAction<string>>;
-  startInterview: () => Promise<void>;
+  startInterview: () => Promise<boolean>;
   submitAnswer: () => Promise<void>;
   endInterview: () => Promise<void>;
   company: string;
@@ -33,6 +34,8 @@ interface InterviewContextType {
   overallScore: number;
   setOverallScore: React.Dispatch<React.SetStateAction<number>>;
   isLoading: boolean;
+  startError: string | null;
+  setStartError: React.Dispatch<React.SetStateAction<string | null>>;
   score: {
     clarity: number;
     confidence: number;
@@ -66,6 +69,8 @@ const InterviewContext = createContext<InterviewContextType | null>(null);
 export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { updateCredit } = useCurrentUser();
+
   const [selectedRole, setSelectedRole] = useState<Role>("Software Engineer");
   const [selectedType, setSelectedType] = useState<InterviewType>("behavioral");
   const [selectedDiff, setSelectedDiff] = useState<DifficultyLevel>("junior");
@@ -80,6 +85,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   const [questionLimit, setQuestionLimit] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
   const [averages, setAverages] = useState<{
     clarity: number;
     confidence: number;
@@ -92,20 +98,20 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     score: number;
   } | null>(null);
 
-  const startInterview = async (): Promise<void> => {
+  const startInterview = async (): Promise<boolean> => {
     try {
       setIsLoading(true);
+      setStartError(null);
       const token = localStorage.getItem("token");
-      if (!token) return;
+      if (!token) return false;
 
-      const interviewData = {
+      const response = await api.post(`/interview/start`, {
         interviewType: selectedType,
         role: selectedRole,
         difficulty: selectedDiff,
-        company: company,
-      };
+        company,
+      });
 
-      const response = await api.post(`/interview/start`, interviewData);
       const data = response.data;
 
       if (data.success) {
@@ -118,11 +124,16 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
         setQuestion(data.question.question_text);
         setQuestionNum(data.question.question_number);
         setQuestionId(data.question.id);
+        updateCredit(data.remainingCredits);
+        return true;
       } else {
-        console.log(data.message || "Interview failed to start!");
+        setStartError(data.message);
+        return false;
       }
     } catch (error) {
       console.log(error);
+      setStartError("Something went wrong!");
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -134,15 +145,14 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const answerData = {
-        interviewId: interviewId,
-        questionId: questionId,
+      const response = await api.post(`/interview/answer`, {
+        interviewId,
+        questionId,
         userAnswer: answer,
         questionText: question,
         questionNumber: questionNum,
-      };
+      });
 
-      const response = await api.post(`/interview/answer`, answerData);
       const data = response.data;
 
       if (data.success) {
@@ -220,6 +230,8 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
         questionId,
         setQuestionId,
         isLoading,
+        startError,
+        setStartError,
       }}
     >
       {children}

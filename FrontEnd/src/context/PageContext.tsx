@@ -14,8 +14,23 @@ export const PageProvider: React.FC<{ children: React.ReactNode }> = ({
   const [activePage, setActivePage] = useState<Page>("landing");
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get("payment");
+
+    if (payment === "success") {
+      setActivePage("payment-success");
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+
+    if (payment === "failed") {
+      setActivePage("payment-failed");
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+
     const token = localStorage.getItem("token");
-    if (token && activePage === "landing") {
+    if (token) {
       setActivePage("interview");
     }
   }, []);

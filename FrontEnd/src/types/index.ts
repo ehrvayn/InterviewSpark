@@ -12,16 +12,25 @@ export type Page =
   | "interview"
   | "progress"
   | "questions"
-  | "logout";
+  | "payment-success"
+  | "payment-failed";
 
 export type Role =
   | "Software Engineer"
-  | "Product Manager"
+  | "Frontend Developer"
+  | "Backend Developer"
+  | "Fullstack Developer"
+  | "Mobile Developer"
   | "Data Scientist"
-  | "Sales"
+  | "Data Engineer"
+  | "DevOps Engineer"
+  | "Product Manager"
+  | "Product Designer"
   | "UX Designer"
-  | "Marketing";
-
+  | "QA Engineer"
+  | "Cybersecurity"
+  | "Marketing"
+  | "Sales";
 export type InterviewType = "behavioral" | "technical" | "case-study";
 
 export type DifficultyLevel = "junior" | "intermediate" | "senior" | "expert";

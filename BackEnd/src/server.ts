@@ -5,15 +5,29 @@ import pool from "./database/Connection";
 import UserRoute from "./routes/UserRoute";
 import googleAuthRoutes from "./routes/OAuth";
 import InterviewRoute from "./routes/InterviewRoute";
+import PaymentRoute from "./routes/PaymentRoute";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET is not set!");
+}
+if (!process.env.PAYMONGO_SECRET_KEY) {
+  throw new Error("PAYMONGO_SECRET_KEY is not set!");
+}
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use("/auth", googleAuthRoutes);
 app.use("/user", UserRoute);
 app.use("/interview", InterviewRoute);
+app.use("/payment", PaymentRoute);
 
 pool.query("SELECT NOW()", (err) => {
   if (!err) {

@@ -53,7 +53,12 @@ export const githubAuthCallback = async (
     const user = await findOrCreateGithubUser(githubData);
 
     const jwtToken = jwt.sign(
-      { userId: user.id, email: user.email, name: user.name },
+      {
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        credit: user.credit,
+      },
       process.env.JWT_SECRET as string,
       { expiresIn: "7d" },
     );

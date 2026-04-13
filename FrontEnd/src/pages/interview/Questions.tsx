@@ -20,66 +20,21 @@ function Questions({
     questionNum,
     question,
     answer,
-    setSelectedDiff,
-    setSelectedRole,
-    setSelectedType,
     setAnswer,
     submitAnswer,
     score,
     setScore,
     questionLimit,
     endInterview,
-    setCompany,
     currentQuestion,
     isLoading,
   } = useInterview();
 
   const [isFinished, setIsFinished] = useState(false);
   const [progressNum, setProgressNum] = useState(0);
-  const [showComplete] = useState(false);
-
-  if (showComplete) {
-    return (
-      <div className="w-full min-h-[60vh] flex items-center justify-center px-4 py-16">
-        <div className="w-full max-w-md bg-[#141c28]/90 border border-blue-500/50 rounded-xl p-8 sm:p-12 text-center">
-          <h2 className="text-xl sm:text-2xl font-black text-white mb-3">
-            Interview Complete!
-          </h2>
-          <p className="text-[#8a9ab8] text-sm mb-8">
-            You've completed all {questionLimit} questions. Review your
-            performance and detailed feedback.
-          </p>
-          <div className="space-y-3">
-            <button
-              onClick={async () => {
-                await endInterview();
-                setStage("feedback");
-              }}
-              className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all"
-            >
-              View Feedback
-            </button>
-            <button
-              onClick={() => {
-                setStage("setup");
-                setScore(null);
-                setSelectedDiff("junior");
-                setSelectedRole("Software Engineer");
-                setSelectedType("behavioral");
-                setCompany("");
-              }}
-              className="w-full px-6 py-3.5 border border-[#263548] rounded-xl text-sm font-semibold text-[#8a9ab8] hover:border-blue-500 hover:bg-blue-500/5 transition-all cursor-pointer"
-            >
-              Start New Interview
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden px-3 sm:px-4 md:px-6 pt-4 sm:pt-6 pb-8">
+    <div className="w-full mt-15 lg:mt-0 max-w-full overflow-x-hidden ml-0 lg:ml-4 sm:px-4 md:px-6 pt-4 sm:pt-6 pb-8">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5 sm:mb-8">
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
           <span
