@@ -52,6 +52,9 @@ export const scoreAnswer = async (
   confidence: number;
   relevance: number;
   score: number;
+  technical_depth: number;
+  communication: number;
+  conciseness: number;
   question_text: string;
 }> => {
   try {
@@ -74,9 +77,12 @@ Scoring criteria:
 - clarity: How clearly and concisely the candidate communicated their thoughts (1=incoherent, 10=exceptionally clear and structured)
 - confidence: How assured and decisive the candidate sounds — penalize heavy hedging, "I think maybe", "I don't know" (1=extremely uncertain, 10=highly confident and decisive)
 - relevance: How directly and completely the answer addresses the question asked (1=completely off-topic, 10=perfectly on-point with strong supporting detail)
+- communication: How effectively the candidate explains their thinking and engages with the question (1=poor communication, 10=excellent communication and articulation)
+- conciseness: How efficiently the candidate delivers their answer without unnecessary elaboration (1=overly verbose, 10=concise and focused)
+- technical_depth: How well the candidate demonstrates technical knowledge and understanding (1=superficial, 10=deep technical expertise)
 - score: Overall impression as a ${company} interviewer — would you move this ${role} candidate forward? (1=strong no, 10=strong yes)
 
-Respond in this exact JSON format only: {"clarity": X, "confidence": X, "relevance": X, "score": X}`,
+Respond in this exact JSON format only: {"clarity": X, "confidence": X, "relevance": X, "communication": X,"conciseness": X,"technical_depth": X, "score": X}`,
         },
       ],
     });

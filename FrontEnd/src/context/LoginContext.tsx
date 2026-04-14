@@ -32,6 +32,8 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("session");
+    localStorage.removeItem("");
     setActivePage("landing");
     setShowLogout(false);
   };

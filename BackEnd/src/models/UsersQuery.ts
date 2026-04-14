@@ -12,7 +12,7 @@ const userQuery = {
     values: [email],
   }),
   retrieve: (userId: number) => ({
-    query: `SELECT email, name, credit FROM users WHERE id = $1`,
+    query: `SELECT id, email, name, credit FROM users WHERE id = $1`,
     values: [userId],
   }),
 };

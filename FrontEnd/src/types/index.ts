@@ -10,7 +10,6 @@ export type Page =
   | "landing"
   | "dashboard"
   | "interview"
-  | "progress"
   | "questions"
   | "payment-success"
   | "payment-failed";
@@ -63,4 +62,13 @@ export interface SessionResult {
   score: number;
   duration: string;
   type: InterviewType;
+}
+
+export interface Interview {
+  interview_type: string;
+  role: string;
+  difficulty: string;
+  company: string;
+  overall_score: string;
+  created_at: string;
 }

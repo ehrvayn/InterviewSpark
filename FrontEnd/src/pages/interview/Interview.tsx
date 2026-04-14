@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Role, InterviewType, DifficultyLevel } from "../../types";
 import { FaGear, FaBrain, FaFill } from "react-icons/fa6";
 import Questions from "./Questions";
@@ -29,8 +29,6 @@ const roles: Role[] = [
 ];
 
 export default function Interview() {
-  const [stage, setStage] = useState<Stage>("setup");
-  const { setShowPayment } = usePayment();
   const {
     startInterview,
     selectedDiff,
@@ -44,7 +42,19 @@ export default function Interview() {
     isLoading,
     startError,
     setStartError,
+    setInterviewStart,
+    interviewStart,
   } = useInterview();
+  
+  const [stage, setStage] = useState<Stage>("setup");
+
+  useEffect(() => {
+    if (interviewStart) {
+      setStage("active");
+    }
+  }, [interviewStart]);
+
+  const { setShowPayment } = usePayment();
   const { currentUser } = useCurrentUser();
 
   if (stage === "feedback") return <EndInterview setStage={setStage} />;
@@ -53,18 +63,21 @@ export default function Interview() {
   const noCredits = (currentUser?.credit ?? 0) <= 0;
 
   return (
-    <div className="w-full min-h-screen mt-5 lg:mt-0 flex flex-col items-center justify-start py-12 select-none">
-      <div className="w-full max-w-3xl mb-10 text-center md:text-left px-4">
-        <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white">
+    <div className="w-full min-h-screen mt-15 lg:mt-0 flex flex-col items-center justify-start select-none">
+      <div className="w-full sm:gap-2 sm:items-center items-start flex sm:flex-row flex-col pb-6 sm:pt-2 pt-6 text-center md:text-left px-4">
+        <h1 className="text-2xl flex items-center flex-col md:text-3xl font-black tracking-tight text-white">
           Configure Session
         </h1>
-        <p className="text-slate-400 text-sm md:text-base mt-3 max-w-lg">
+        <span className="text-5xl sm:block hidden md:text-6xl font-black tracking-tight text-white">
+          |
+        </span>
+        <p className="text-slate-400 text-sm text-left md:text-base mt-3 max-w-lg">
           Tailor your experience. Our AI will adapt its persona and questions
           based on your selections.
         </p>
       </div>
 
-      <div className="w-full max-w-3xl bg-[#0a0f18] border border-white/5 rounded-md py-6 md:py-10 px-4 md:px-8 shadow-2xl relative overflow-hidden group">
+      <div className="w-full h-full bg-[#0a0f18] border border-white/5 rounded-0 py-6 md:py-10 px-4 md:px-8 shadow-2xl relative overflow-hidden group">
         <div className="flex flex-col gap-10 relative z-10">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -75,12 +88,12 @@ export default function Interview() {
                 Step 1 of 4
               </span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
               {roles.map((r) => (
                 <button
                   key={r}
                   onClick={() => setSelectedRole(r)}
-                  className={`px-4 py-3 rounded-md border text-xs font-bold transition-all duration-300 text-left sm:text-center ${
+                  className={`px-4 py-3 rounded-md cursor-pointer border text-xs font-bold transition-all duration-300 text-left sm:text-center ${
                     selectedRole === r
                       ? "border-blue-500 bg-blue-500/10 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.1)]"
                       : "border-white/5 bg-white/2 text-slate-400 hover:border-white/20 hover:text-slate-200"
@@ -184,7 +197,7 @@ export default function Interview() {
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               type="text"
-              placeholder="Ex: NVIDIA, OpenAI, Airbnb..."
+              placeholder="Ex: OpenAI, Google, NVIDIA"
               className="w-full px-5 py-4 bg-white/2 border border-white/5 rounded-md text-sm text-white placeholder-slate-600 outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5 transition-all"
             />
           </div>
@@ -194,7 +207,7 @@ export default function Interview() {
               <div className="p-4 rounded-2xl bg-red-500/5 border border-red-500/20 flex items-center justify-between gap-4">
                 <div className="flex flex-col">
                   <span className="text-red-400 text-xs font-bold uppercase tracking-tight">
-                    cREDIT LIMIT REACHED
+                    CREDIT LIMIT REACHED
                   </span>
                   <span className="text-red-400/60 text-[11px]">
                     Insufficient credits to initiate AI session.
@@ -205,7 +218,7 @@ export default function Interview() {
                   className="px-4 py-2 flex items-center rounded-md bg-red-500 text-white text-[11px] font-black uppercase tracking-wide hover:bg-red-400 transition-colors active:scale-95"
                 >
                   Get More Credits
-                  <IoIosArrowForward size={20}/>
+                  <IoIosArrowForward size={20} />
                 </button>
               </div>
             ) : (
@@ -218,6 +231,7 @@ export default function Interview() {
                 <button
                   onClick={async () => {
                     setStartError(null);
+                    setInterviewStart(true);
                     const success = await startInterview();
                     if (success) setStage("active");
                   }}

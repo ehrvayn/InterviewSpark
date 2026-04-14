@@ -1,8 +1,6 @@
 import { useState } from "react";
 import type { Page, NavItem } from "../types";
 import { MdDashboard, MdOutlineLogout, MdClose, MdMenu } from "react-icons/md";
-import { GiProgression } from "react-icons/gi";
-import { FaQuestion } from "react-icons/fa";
 import { FaMicrophoneLines } from "react-icons/fa6";
 import { useCurrentUser } from "../context/CurrentUserContext";
 import { useLogin } from "../context/LoginContext";
@@ -18,8 +16,6 @@ interface SidebarProps {
 const navItems: NavItem[] = [
   { id: "interview", label: "Interview", icon: <FaMicrophoneLines /> },
   { id: "dashboard", label: "Dashboard", icon: <MdDashboard /> },
-  { id: "progress", label: "Progress", icon: <GiProgression /> },
-  { id: "questions", label: "Questions", icon: <FaQuestion /> },
 ];
 
 export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
@@ -63,7 +59,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
       )}
 
       <aside
-        className={`fixed lg:sticky mr-10 lg:top-0 left-0 top-0 h-dvh w-72 bg-[#0a0f18] border-r border-white/5 flex flex-col z-50 transition-all duration-300 ease-out ${
+        className={`fixed lg:sticky mr-10 lg:top-0 left-0 top-0 h-dvh w-72 bg-[#121a29] border-r border-white/5 flex flex-col z-50 transition-all duration-300 ease-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >

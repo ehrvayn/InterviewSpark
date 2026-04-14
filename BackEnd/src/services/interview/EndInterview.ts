@@ -18,15 +18,31 @@ export const endInterview = async (interviewId: number) => {
         score: parseFloat(q.score),
       }));
 
-    const avgClarity =
-      allQuestions.reduce((sum, q) => sum + (q.clarity || 0), 0) /
-      allQuestions.length;
-    const avgConfidence =
-      allQuestions.reduce((sum, q) => sum + (q.confidence || 0), 0) /
-      allQuestions.length;
-    const avgRelevance =
-      allQuestions.reduce((sum, q) => sum + (q.relevance || 0), 0) /
-      allQuestions.length;
+    if (allQuestions.length === 0) {
+      return { success: false, message: "No answered questions found." };
+    }
+
+    const averages = {
+      clarity:
+        allQuestions.reduce((sum, q) => sum + (q.clarity || 0), 0) /
+        allQuestions.length,
+      confidence:
+        allQuestions.reduce((sum, q) => sum + (q.confidence || 0), 0) /
+        allQuestions.length,
+      relevance:
+        allQuestions.reduce((sum, q) => sum + (q.relevance || 0), 0) /
+        allQuestions.length,
+      communication:
+        allQuestions.reduce((sum, q) => sum + (q.communication || 0), 0) /
+        allQuestions.length,
+      conciseness:
+        allQuestions.reduce((sum, q) => sum + (q.conciseness || 0), 0) /
+        allQuestions.length,
+      technical_depth:
+        allQuestions.reduce((sum, q) => sum + (q.technical_depth || 0), 0) /
+        allQuestions.length,
+    };
+
     const avgScore =
       allQuestions.reduce((sum, q) => sum + (q.score || 0), 0) /
       allQuestions.length;
@@ -38,6 +54,12 @@ export const endInterview = async (interviewId: number) => {
       avgScore,
       interviewId,
     ]);
+
+    const { query: feedbackSql, values: feedbackValues } =
+      InterviewQuery.feedback(interviewId, averages, feedback);
+
+    await query(feedbackSql, feedbackValues);
+
     await query(
       `DELETE FROM questions WHERE interview_id = $1 AND user_answer IS NULL`,
       [interviewId],
@@ -47,11 +69,9 @@ export const endInterview = async (interviewId: number) => {
       success: true,
       message: "Interview completed!",
       overallScore: Math.round(avgScore * 10) / 10,
-      averages: {
-        clarity: Math.round(avgClarity * 10) / 10,
-        confidence: Math.round(avgConfidence * 10) / 10,
-        relevance: Math.round(avgRelevance * 10) / 10,
-      },
+      averages: Object.fromEntries(
+        Object.entries(averages).map(([k, v]) => [k, Math.round(v * 10) / 10]),
+      ),
       feedback,
     };
   } catch (error) {

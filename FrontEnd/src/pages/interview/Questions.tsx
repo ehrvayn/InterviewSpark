@@ -1,6 +1,9 @@
 import { FaMicrophone } from "react-icons/fa";
 import { useInterview } from "../../context/InterviewContext";
 import { useState } from "react";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 
 const typeStyle: Record<string, string> = {
   technical: "bg-purple-500/15 text-purple-400 border-purple-500/40",
@@ -31,10 +34,11 @@ function Questions({
   } = useInterview();
 
   const [isFinished, setIsFinished] = useState(false);
-  const [progressNum, setProgressNum] = useState(0);
+  const [progressNum, setProgressNum] = useState(questionNum - 1);
+  const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
   return (
-    <div className="w-full mt-15 lg:mt-0 max-w-full overflow-x-hidden ml-0 lg:ml-4 sm:px-4 md:px-6 pt-4 sm:pt-6 pb-8">
+    <div className="w-full mt-15 flex flex-col justify-center lg:mt-0 max-w-full overflow-x-hidden ml-0 lg:ml-4 sm:px-4 md:px-6 pt-4 sm:pt-6 pb-8">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5 sm:mb-8">
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
           <span
@@ -61,7 +65,7 @@ function Questions({
 
       <div className="flex flex-col gap-5">
         {!score && (
-          <div className="flex flex-col gap-4 sm:gap-5 min-w-0">
+          <div className="flex flex-col gap-4 items-center sm:gap-5 min-w-0">
             <div className="w-full bg-[#141c28]/80 border border-[#1f2d42] rounded-md p-4 sm:p-6 md:p-8">
               <div className="flex items-start gap-3 sm:gap-4 mb-5 sm:mb-6">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-600 flex items-center justify-center text-sm font-bold text-white shrink-0">
@@ -98,15 +102,50 @@ function Questions({
                 placeholder="Think deeply about your answer. Share specific examples, metrics, and insights..."
                 className="w-full min-h-40 sm:min-h-50 p-3 sm:p-4 bg-[#080c12]/60 border border-[#263548] rounded-xl text-sm leading-relaxed text-[#e8edf5] placeholder-[#536480]/60 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-y transition-all mb-4 font-light"
               />
+              {listening && (
+                <div className="mt-3 mb-7 flex items-center justify-center gap-1 h-16">
+                  {[...Array(48)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-0.75 bg-blue-400 rounded-full"
+                      style={{
+                        height: "100%",
+                        transform: "scaleY(0.2)",
+                        animation: `waveform 0.${(i % 5) + 3}s ease-in-out infinite alternate`,
+                        animationDelay: `${i * 0.04}s`,
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
               <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-between gap-3">
-                <button className="flex items-center justify-center gap-2 px-4 py-2.5 border border-[#263548] rounded-xl text-sm text-[#8a9ab8] hover:border-blue-500 hover:text-blue-400 hover:bg-blue-500/10 transition-all font-semibold">
-                  <FaMicrophone size={13} />
-                  <span>Record Audio</span>
+                <button
+                  className={`flex items-center cursor-pointer justify-center gap-2 px-4 py-2.5 border rounded-xl text-sm transition-all font-semibold
+                    ${
+                      listening
+                        ? "border-blue-500/50 text-blue-400 bg-blue-500/10"
+                        : "border-[#263548] text-[#8a9ab8] hover:border-blue-500 hover:text-blue-400 hover:bg-blue-500/10"
+                    }`}
+                  onClick={() => {
+                    if (listening) {
+                      SpeechRecognition.stopListening();
+                      setAnswer(transcript);
+                    } else {
+                      resetTranscript();
+                      SpeechRecognition.startListening();
+                    }
+                  }}
+                >
+                  <FaMicrophone
+                    size={13}
+                    className={listening ? "text-blue-400" : ""}
+                  />
+                  <span>{listening ? "Stop Recording" : "Record Audio"}</span>
                 </button>
                 <div className="flex gap-2 sm:gap-3">
                   <button
                     onClick={() => setStage("setup")}
-                    className="flex-1 xs:flex-none px-4 sm:px-6 py-2.5 border border-[#263548] rounded-xl text-sm font-semibold text-[#8a9ab8] hover:border-blue-500 hover:bg-blue-500/5 transition-all"
+                    className="flex-1 xs:flex-none px-4 cursor-pointer sm:px-6 py-2.5 border border-[#263548] rounded-xl text-sm font-semibold text-[#8a9ab8] hover:border-blue-500 hover:bg-blue-500/5 transition-all"
                   >
                     Back
                   </button>
@@ -160,7 +199,15 @@ function ScorePanel({
   onNext,
   onFinish,
 }: {
-  score: { score: number; clarity: number; confidence: number; relevance: number };
+  score: {
+    score: number;
+    clarity: number;
+    confidence: number;
+    relevance: number;
+    communication: number;
+    conciseness: number;
+    technical_depth: number;
+  };
   currentQuestion: string;
   questionNum: number;
   isFinished: boolean;
@@ -207,8 +254,31 @@ function ScorePanel({
         <div className="space-y-4 mb-6">
           {[
             { label: "Clarity", value: score.clarity, color: "bg-blue-500" },
-            { label: "Confidence", value: score.confidence, color: "bg-purple-500" },
-            { label: "Relevance", value: score.relevance, color: "bg-amber-500" },
+            {
+              label: "Confidence",
+              value: score.confidence,
+              color: "bg-purple-500",
+            },
+            {
+              label: "Relevance",
+              value: score.relevance,
+              color: "bg-amber-500",
+            },
+            {
+              label: "Communication",
+              value: score.communication,
+              color: "bg-cyan-500",
+            },
+            {
+              label: "Conciseness",
+              value: score.conciseness,
+              color: "bg-emerald-500",
+            },
+            {
+              label: "Technical Depth",
+              value: score.technical_depth,
+              color: "bg-rose-500",
+            },
           ].map((item) => (
             <div key={item.label}>
               <div className="flex items-center justify-between mb-1.5">

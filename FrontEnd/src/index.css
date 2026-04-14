@@ -39,3 +39,8 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #1e40af #0b1220;
 }
+
+@keyframes waveform {
+  from { transform: scaleY(0.15); }
+  to { transform: scaleY(1); }
+}

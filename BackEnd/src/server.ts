@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import pool from "./database/Connection";
 import UserRoute from "./routes/UserRoute";
-import googleAuthRoutes from "./routes/OAuth";
+import googleAuthRoutes from "./routes/OAuthRoute";
 import InterviewRoute from "./routes/InterviewRoute";
 import PaymentRoute from "./routes/PaymentRoute";
 

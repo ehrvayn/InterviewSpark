@@ -2,8 +2,6 @@ import Sidebar from "./components/SideBar";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import Interview from "./pages/interview/Interview";
-import Progress from "./pages/Progress";
-import Questions from "./pages/Questions";
 import PaymentSuccess from "./pages/payment/PaymentSuccess";
 import PaymentFailed from "./pages/payment/PaymentFailed";
 import { usePage } from "./context/PageContext";
@@ -25,10 +23,6 @@ export default function App() {
         return <Dashboard onNavigate={setActivePage} />;
       case "interview":
         return <Interview />;
-      case "progress":
-        return <Progress onNavigate={setActivePage} />;
-      case "questions":
-        return <Questions onNavigate={setActivePage} />;
       case "payment-success":
         return <PaymentSuccess />;
       case "payment-failed":
@@ -42,7 +36,7 @@ export default function App() {
 
   return (
     <div
-      className={`w-full min-h-screen bg-[#080c12] text-[#e8edf5] font-sans ${!isLanding ? "lg:grid lg:grid-cols-[280px_1fr]" : ""}`}
+      className={`w-full min-h-screen bg-[#080c12] text-[#e8edf5] font-sans ${!isLanding ? "lg:grid lg:grid-cols-[290px_1fr]" : ""}`}
     >
       {!isLanding && (
         <Sidebar currentPage={activePage} onNavigate={setActivePage} />

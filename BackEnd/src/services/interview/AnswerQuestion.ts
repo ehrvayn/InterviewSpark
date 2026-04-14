@@ -23,7 +23,14 @@ export const answerQuestion = async (
     const score = await scoreAnswer(questionText, userAnswer, role, company);
 
     const { query: scoreSql, values: scoreValues } = InterviewQuery.scoreAnswer(
-      score.score, score.clarity, score.confidence, score.relevance, questionId
+      score.score,
+      score.clarity,
+      score.confidence,
+      score.relevance,
+      score.communication,
+      score.conciseness,
+      score.technical_depth,
+      questionId
     );
     await query(scoreSql, scoreValues);
 
@@ -49,6 +56,9 @@ export const answerQuestion = async (
         clarity: score.clarity,
         confidence: score.confidence,
         relevance: score.relevance,
+        communication: score.communication,
+        conciseness: score.conciseness,
+        technical_depth: score.technical_depth,
         score: score.score,
       },
       currentQuestion: questionText,

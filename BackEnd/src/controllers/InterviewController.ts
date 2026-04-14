@@ -3,6 +3,7 @@ import { startInterview } from "../services/interview/StartInterview";
 import type { AuthRequest } from "../middlewares/AuthMiddleware";
 import { answerQuestion } from "../services/interview/AnswerQuestion";
 import { endInterview } from "../services/interview/EndInterview";
+import { retrieveInterviews } from "../services/interview/RetrieveInterviews";
 
 export const startInterviewCon = async (req: AuthRequest, res: Response) => {
   const { interviewType, role, difficulty, company } = req.body;
@@ -84,5 +85,21 @@ export const endInterviewCon = async (req: Request, res: Response) => {
   }
 
   const result = await endInterview(interviewId);
+  res.status(result.success ? 200 : 400).json(result);
+};
+
+
+export const retrieveInterviewsCon = async (req: AuthRequest, res: Response) => {
+  const userId = req.userId;
+
+  if (!userId) {
+    res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  const result = await retrieveInterviews(userId);
   res.status(result.success ? 200 : 400).json(result);
 };

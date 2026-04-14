@@ -24,6 +24,7 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
     company,
     selectedType,
     selectedDiff,
+    setInterviewStart,
   } = useInterview();
 
   const getScoreColor = (score: number) => {
@@ -58,7 +59,7 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
   const scoreLabel = getScoreLabel(overallScore);
 
   return (
-    <div className="pt-4 pl-3 mx-auto flex my-auto mt-15 lg:mt-0 flex-col gap-3 pr-1 max-w-5xl  pb-12">
+    <div className="pt-4 mx-auto flex my-auto mt-15 lg:mt-0 flex-col gap-3 max-w-5xl  pb-12">
       <div className="px-2">
         <h1 className="text-3xl font-black tracking-tight">
           Interview Complete
@@ -70,7 +71,7 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
       </div>
 
       <div className="flex sm:flex-row flex-col gap-3 w-full">
-        <div className="bg-[#141c28] border border-[#1f2d42] rounded-md p-8 flex flex-col items-center gap-2">
+        <div className="bg-[#141c28] border border-[#1f2d42] rounded-md p-8 flex flex-col justify-center items-center gap-2">
           <div className="flex items-baseline gap-1">
             <span className="text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-blue-400 via-blue-300 to-cyan-300">
               {overallScore}
@@ -94,11 +95,14 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
                 Score Breakdown
               </h2>
             </div>
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-4">
               {[
                 { label: "Clarity", value: averages.clarity },
                 { label: "Confidence", value: averages.confidence },
                 { label: "Relevance", value: averages.relevance },
+                { label: "Communication", value: averages.communication },
+                { label: "Conciseness", value: averages.conciseness },
+                { label: "Technical Depth", value: averages.technical_depth },
               ].map((metric) => (
                 <div key={metric.label} className="flex flex-col gap-2">
                   <div className="flex justify-between items-center">
@@ -146,6 +150,7 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
           setSelectedRole("Software Engineer");
           setSelectedType("behavioral");
           setCompany("");
+          setInterviewStart(false);
         }}
         className="w-full py-4 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-400 text-white font-bold text-base transition-all shadow-lg shadow-blue-500/20"
       >

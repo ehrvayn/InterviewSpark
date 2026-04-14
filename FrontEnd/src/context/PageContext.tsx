@@ -30,9 +30,19 @@ export const PageProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const token = localStorage.getItem("token");
+    const saved = localStorage.getItem("interviewState");
+
+    if (token && saved) {
+      setActivePage("interview");
+      return;
+    }
+
     if (token) {
       setActivePage("interview");
+      return;
     }
+
+    setActivePage("landing");
   }, []);
 
   return (
