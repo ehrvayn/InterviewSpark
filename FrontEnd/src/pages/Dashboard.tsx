@@ -1,7 +1,9 @@
 import type { Page } from "../types";
 import { useInterview } from "../context/InterviewContext";
-
-// const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+import { IoArrowUp, IoTrendingUp } from "react-icons/io5";
+import { MdShowChart } from "react-icons/md";
+import { useState } from "react";
+import { FaSort } from "react-icons/fa6";
 
 const typeStyle: Record<string, string> = {
   technical: "bg-purple-500/15 text-purple-400 border border-purple-500/20",
@@ -16,12 +18,28 @@ const scoreStyle = (s: number) =>
       ? "bg-amber-500/15 text-amber-400 border border-amber-500/20"
       : "bg-red-500/15 text-red-400 border border-red-500/20";
 
+const getScoreColor = (s: number) => {
+  if (s >= 8.5) return "text-green-400";
+  if (s >= 7.0) return "text-amber-400";
+  return "text-red-400";
+};
+
+const getBarColor = (s: number) => {
+  if (s >= 8.5) return "bg-green-500";
+  if (s >= 7.0) return "bg-amber-500";
+  return "bg-red-500";
+};
+
 export default function History({
   onNavigate,
 }: {
   onNavigate: (page: Page) => void;
 }) {
   const { allInterviews } = useInterview();
+  const [sortBy, setSortBy] = useState<
+    "Newest" | "Highest Score" | "Lowest Score" | "Role"
+  >("Newest");
+  const [openSort, setOpenSort] = useState(false);
 
   const calculateAverage = (key: string) => {
     if (allInterviews.length === 0) return 0;
@@ -35,12 +53,20 @@ export default function History({
   };
 
   const skills = [
-    { skill: "Clarity", score: calculateAverage("clarity") },
-    { skill: "Confidence", score: calculateAverage("confidence") },
-    { skill: "Relevance", score: calculateAverage("relevance") },
-    { skill: "Communication", score: calculateAverage("communication") },
-    { skill: "Conciseness", score: calculateAverage("conciseness") },
-    { skill: "Technical Depth", score: calculateAverage("technical_depth") },
+    { skill: "Clarity", score: calculateAverage("clarity"), icon: "C" },
+    { skill: "Confidence", score: calculateAverage("confidence"), icon: "F" },
+    { skill: "Relevance", score: calculateAverage("relevance"), icon: "R" },
+    {
+      skill: "Communication",
+      score: calculateAverage("communication"),
+      icon: "M",
+    },
+    { skill: "Conciseness", score: calculateAverage("conciseness"), icon: "S" },
+    {
+      skill: "Technical Depth",
+      score: calculateAverage("technical_depth"),
+      icon: "T",
+    },
   ];
 
   const bestScore =
@@ -51,8 +77,8 @@ export default function History({
   const weeklyData = allInterviews
     .slice(0, 7)
     .reverse()
-    .map((h: any) => Number(h.overall_score || 0) * 10);
-  const maxWeekly = Math.max(...weeklyData, 10);
+    .map((h: any) => Number(h.overall_score || 0));
+  const maxWeekly = Math.max(...weeklyData, 1);
 
   const formatProfessionalDate = (isoString: string) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -65,177 +91,368 @@ export default function History({
     }).format(new Date(isoString));
   };
 
+  const avgOverallScore =
+    allInterviews.length > 0
+      ? (
+          allInterviews.reduce(
+            (acc: number, h: any) => acc + Number(h.overall_score || 0),
+            0,
+          ) / allInterviews.length
+        ).toFixed(1)
+      : "0.0";
+
+  const getSortedInterviews = () => {
+    const sorted = [...allInterviews];
+    if (sortBy === "Newest") {
+      return sorted;
+    } else if (sortBy === "Highest Score") {
+      return sorted.sort(
+        (a, b) => Number(b.overall_score) - Number(a.overall_score),
+      );
+    } else if (sortBy === "Lowest Score") {
+      return sorted.sort(
+        (a, b) => Number(a.overall_score) - Number(b.overall_score),
+      );
+    } else if (sortBy === "Role") {
+      return sorted.sort((a, b) => a.role.localeCompare(b.role));
+    }
+    return sorted;
+  };
+
+  const sortedInterviews = getSortedInterviews();
+
   return (
-    <div className="pt-4 space-y-6 py-5 lg:mt-0 mt-15 max-w-full overflow-x-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="w-full sm:gap-2 sm:items-center items-start flex sm:flex-row flex-col pb-6 sm:pt-2 pt-6 text-center md:text-left px-4">
-          <h1 className="text-2xl flex items-center flex-col md:text-3xl font-black tracking-tight text-white">
-            Your Progress
-          </h1>
-          <span className="text-5xl sm:block hidden md:text-6xl font-black tracking-tight text-white">
-            |
-          </span>
-          <p className="text-slate-400 text-sm text-left md:text-base mt-3 max-w-lg">
-            Track your improvement across sessions.
-          </p>
+    <div className="pt-4 lg:mt-0 mt-15 max-w-full overflow-x-hidden">
+      <div className="px-0 md:px-6 lg:px-8 space-y-8 pb-12">
+        <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8 mb-12 border-b border-white/20 pb-10">
+          <div className="space-y-3">
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase">
+              Your Progress
+            </h1>
+            <p className="text-slate-500 text-sm max-w-2xl font-medium leading-relaxed uppercase tracking-tight">
+              Track your interview performance and skill development over time.
+            </p>
+          </div>
+
+          <div className="hover:ring-2 group hover:ring-inset hover:ring-blue-800 rounded-sm">
+            <button
+              onClick={() => onNavigate("interview")}
+              className="flex items-center gap-8 cursor-pointer group hover:text-blue-800 bg-white/2 border border-white/5 p-6 rounded-sm active:scale-95"
+            >
+              + Practice Now
+            </button>
+          </div>
         </div>
 
-        <button
-          onClick={() => onNavigate("interview")}
-          className="w-full sm:w-auto px-5 py-2.5 cursor-pointer rounded-md bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-colors shadow-lg shadow-blue-500/10"
-        >
-          + Practice Now
-        </button>
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {[
-          { label: "Total Sessions", value: allInterviews.length.toString() },
-          { label: "Best Score", value: `${bestScore.toFixed(1)}/10` },
-          { label: "Current Streak", value: "6 days 🔥" },
-          {
-            label: "Top Role",
-            value:
-              allInterviews[0]?.role
-                ?.split(" ")
-                .map((w: any) => w[0])
-                .join("")
-                .toUpperCase() || "N/A",
-          },
-        ].map((s) => (
-          <div
-            key={s.label}
-            className="bg-[#141c28] border border-[#1f2d42] rounded-md p-4 sm:p-5 flex flex-col gap-1"
-          >
-            <span className="text-2xl sm:text-3xl font-black text-white">
-              {s.value}
-            </span>
-            <span className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-[#536480]">
-              {s.label}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-5">
-        <div className="bg-[#141c28] border border-[#1f2d42] rounded-md p-5 sm:p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-bold text-white">Recent Performance</h2>
-            <span className="text-xs text-green-400 font-bold bg-green-400/10 px-2 py-0.5 rounded">
-              Last 7 Sessions
-            </span>
-          </div>
-          <div className="flex items-end gap-2 sm:gap-3 h-40 px-1">
-            {weeklyData.map((val, i) => (
-              <div
-                key={i}
-                className="flex-1 flex flex-col items-center gap-2 h-full"
-              >
-                <span className="font-mono text-[9px] sm:text-[10px] text-[#536480]">
-                  {(val / 10).toFixed(1)}
-                </span>
-                <div className="flex-1 w-full flex items-end">
-                  <div
-                    className="w-full rounded-t-sm bg-linear-to-t from-blue-600 to-blue-400 min-h-1 transition-all hover:brightness-110"
-                    style={{ height: `${(val / maxWeekly) * 100}%` }}
-                  />
+        {allInterviews.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-linear-to-br from-[#0f1419] to-[#141c28] border border-blue-500/20 rounded-sm p-6 flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Total Sessions
+                  </span>
+                  <div className="w-8 h-8 rounded-md bg-blue-500/20 flex items-center justify-center">
+                    <MdShowChart className="text-blue-400 text-lg" />
+                  </div>
                 </div>
-                <span className="font-mono text-[9px] sm:text-[10px] text-[#536480] font-bold">
-                  S{allInterviews.length - weeklyData.length + i + 1}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-[#141c28] border border-[#1f2d42] rounded-md p-5 sm:p-6">
-          <h2 className="font-bold text-white mb-5">Skill Breakdown</h2>
-          <div className="space-y-4">
-            {skills.map((item) => (
-              <div key={item.skill} className="space-y-1.5">
-                <div className="flex justify-between text-[11px] font-bold uppercase tracking-tight">
-                  <span className="text-[#8a9ab8]">{item.skill}</span>
-                  <span className="text-white font-mono">
-                    {item.score.toFixed(1)}
+                <div className="text-4xl font-bold text-white">
+                  {allInterviews.length}
+                </div>
+                <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center gap-2">
+                  <IoTrendingUp className="text-emerald-400 text-sm" />
+                  <span className="text-xs text-emerald-400 font-medium">
+                    {allInterviews.length > 1
+                      ? "+" + (allInterviews.length - 1)
+                      : "First session"}
                   </span>
                 </div>
-                <div className="h-1.5 bg-[#0d1219] rounded-full overflow-hidden border border-[#1f2d42]">
-                  <div
-                    className={`h-full rounded-full transition-all duration-500 ${item.score >= 8.0 ? "bg-green-500" : item.score >= 6.0 ? "bg-amber-500" : "bg-red-500"}`}
-                    style={{ width: `${item.score * 10}%` }}
-                  />
+              </div>
+
+              <div className="bg-linear-to-br from-[#0f1419] to-[#141c28] border border-emerald-500/20 rounded-sm p-6 flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Best Score
+                  </span>
+                  <div className="w-8 h-8 rounded-md bg-emerald-500/20 flex items-center justify-center">
+                    <IoArrowUp className="text-emerald-400 text-lg" />
+                  </div>
+                </div>
+                <div className="text-4xl font-bold text-emerald-400">
+                  {bestScore.toFixed(1)}
+                </div>
+                <div className="mt-3 pt-3 border-t border-slate-700/50">
+                  <span className="text-xs text-slate-400">out of 10</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      <div className="bg-[#141c28] border pb-3 border-[#1f2d42] rounded-md flex flex-col">
-        <div className="p-5 sm:p-6 border-b border-[#1f2d42] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h2 className="font-bold text-white">Session History</h2>
-        </div>
+              <div className="bg-linear-to-br from-[#0f1419] to-[#141c28] border border-amber-500/20 rounded-sm p-6 flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Average Score
+                  </span>
+                  <div className="w-8 h-8 rounded-md bg-amber-500/20 flex items-center justify-center">
+                    <span className="text-amber-400 text-lg font-bold">⌀</span>
+                  </div>
+                </div>
+                <div className="text-4xl font-bold text-amber-400">
+                  {avgOverallScore}
+                </div>
+                <div className="mt-3 pt-3 border-t border-slate-700/50">
+                  <span className="text-xs text-slate-400">
+                    across all sessions
+                  </span>
+                </div>
+              </div>
 
-        <div className="h-90 overflow-y-auto overflow-x-auto scrollbar-thin scrollbar-thumb-[#1f2d42] scrollbar-track-transparent">
-          <table className="w-full text-sm border-collapse min-w-175">
-            <thead className="sticky top-0 bg-[#141c28] z-10 shadow-sm">
-              <tr>
-                {["Date", "Role", "Type", "Company", "Score"].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-6 py-4 text-[10px] font-black tracking-widest uppercase text-[#536480] border-b border-[#1f2d42]"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#1f2d42]">
-              {allInterviews.map((h: any, i: number) => (
-                <tr
-                  key={i}
-                  className="hover:bg-[#0d1219]/50 cursor-pointer transition-colors group"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap font-mono text-[11px] text-[#536480]">
-                    {formatProfessionalDate(h.created_at)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap font-bold text-white group-hover:text-blue-400 transition-colors">
-                    {h.role}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2.5 py-1 rounded-sm text-[10px] font-black uppercase tracking-tighter ${typeStyle[h.interview_type.toLowerCase()] || typeStyle["behavioral"]}`}
-                    >
-                      {h.interview_type}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[#8a9ab8] font-medium">
-                    {h.company}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 rounded-md text-xs font-black font-mono inline-block min-w-13.75 text-center ${scoreStyle(Number(h.overall_score))}`}
-                    >
-                      {Number(h.overall_score).toFixed(1)}/10
-                    </span>
-                  </td>
-                </tr>
-              ))}
-              {allInterviews.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="py-20 text-center">
-                    <div className="flex flex-col items-center gap-2">
-                      <span className="text-2xl">📁</span>
-                      <span className="text-[#536480] text-xs font-bold uppercase tracking-[0.2em]">
-                        No sessions recorded yet
-                      </span>
+              <div className="bg-linear-to-br from-[#0f1419] to-[#141c28] border border-purple-500/20 rounded-sm p-6 flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Top Role
+                  </span>
+                  <div className="w-8 h-8 rounded-md bg-purple-500/20 flex items-center justify-center">
+                    <span className="text-purple-400 text-lg font-bold">◆</span>
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-purple-400 line-clamp-2">
+                  {allInterviews[0]?.role || "N/A"}
+                </div>
+                <div className="mt-3 pt-3 border-t border-slate-700/50">
+                  <span className="text-xs text-slate-400">most recent</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 items-center lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-[#0a0f18] border border-slate-700/50 rounded-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-lg font-semibold text-white">
+                    Recent Performance
+                  </h2>
+                  <span className="text-xs font-medium px-3 py-1 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                    Last 7 sessions
+                  </span>
+                </div>
+
+                {weeklyData.length > 0 ? (
+                  <div className="flex items-end justify-between gap-3 h-88 px-2">
+                    {weeklyData.map((val, i) => (
+                      <div
+                        key={i}
+                        className="flex flex-col items-center flex-1 h-full justify-between"
+                      >
+                        <span className="text-xs font-mono text-slate-500 transition-opacity">
+                          {val.toFixed(1)}
+                        </span>
+                        <div className="w-full h-full flex items-end justify-center">
+                          <div
+                            className={`w-full rounded-t-md transition-all duration-300 hover:brightness-110 ${getBarColor((val / 10) * 100)}`}
+                            style={{
+                              height: `${(val / maxWeekly) * 100}%`,
+                              minHeight: "4px",
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs font-mono font-bold text-slate-400 mt-2">
+                          S{allInterviews.length - weeklyData.length + i + 1}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="h-64 flex items-center justify-center text-slate-500">
+                    No data yet
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-[#0a0f18] border border-slate-700/50 rounded-sm p-6">
+                <h2 className="text-lg font-semibold text-white mb-6">
+                  Skill Breakdown
+                </h2>
+                <div className="space-y-5">
+                  {skills.map((item) => (
+                    <div key={item.skill} className="space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-6 h-6 rounded-md bg-blue-500/20 flex items-center justify-center text-xs font-bold text-blue-400">
+                            {item.icon}
+                          </div>
+                          <span className="text-xs font-semibold text-slate-300 uppercase tracking-tight">
+                            {item.skill}
+                          </span>
+                        </div>
+                        <span
+                          className={`text-sm font-bold font-mono ${getScoreColor(item.score)}`}
+                        >
+                          {item.score.toFixed(1)}
+                        </span>
+                      </div>
+                      <div className="h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/30">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${getBarColor(item.score)}`}
+                          style={{
+                            width: `${Math.min(item.score * 10, 100)}%`,
+                          }}
+                        />
+                      </div>
                     </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#0a0f18] border border-slate-700/50 rounded-sm overflow-hidden flex flex-col h-130">
+              <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-900/30 shrink-0">
+                <h2 className="text-lg font-semibold text-white">
+                  Session History
+                </h2>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-medium text-slate-400">
+                    {allInterviews.length} total
+                  </span>
+                  <div className="relative group">
+                    <button
+                      onClick={() => setOpenSort(!openSort)}
+                      className="flex items-center cursor-pointer gap-2 px-3 py-1.5 rounded-md bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-medium transition-colors border border-slate-700/50"
+                    >
+                      <FaSort size={12} />
+                      {sortBy}
+                    </button>
+                    {openSort && (
+                      <div className="absolute right-0 mt-2 w-40 bg-[#0a0f18] border border-slate-700/50 rounded-lg shadow-xl  transition-all duration-200 z-20">
+                        <button
+                          onClick={() => {
+                            setOpenSort(false);
+                            setSortBy("Newest");
+                          }}
+                          className={`w-full text-left px-4 cursor-pointer py-2.5 text-xs font-medium transition-colors ${
+                            sortBy === "Newest"
+                              ? "bg-blue-500/20 text-blue-400"
+                              : "text-slate-300 hover:bg-slate-800/50"
+                          }`}
+                        >
+                          Newest First
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSortBy("Highest Score");
+                            setOpenSort(false);
+                          }}
+                          className={`w-full text-left px-4 cursor-pointer py-2.5 text-xs font-medium transition-colors border-t border-slate-700/50 ${
+                            sortBy === "Highest Score"
+                              ? "bg-blue-500/20 text-blue-400"
+                              : "text-slate-300 hover:bg-slate-800/50"
+                          }`}
+                        >
+                          Highest Score
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSortBy("Lowest Score");
+                            setOpenSort(false);
+                          }}
+                          className={`w-full text-left px-4 cursor-pointer py-2.5 text-xs font-medium transition-colors border-t border-slate-700/50 ${
+                            sortBy === "Lowest Score"
+                              ? "bg-blue-500/20 text-blue-400"
+                              : "text-slate-300 hover:bg-slate-800/50"
+                          }`}
+                        >
+                          Lowest Score
+                        </button>
+                        <button
+                          onClick={() => {
+                            setOpenSort(false);
+                            setSortBy("Role");
+                          }}
+                          className={`w-full text-left cursor-pointer px-4 py-2.5 text-xs font-medium transition-colors border-t border-slate-700/50 ${
+                            sortBy === "Role"
+                              ? "bg-blue-500/20 text-blue-400"
+                              : "text-slate-300 hover:bg-slate-800/50"
+                          }`}
+                        >
+                          Role (A-Z)
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="overflow-y-auto flex-1">
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 bg-[#0a0f18] z-10">
+                    <tr className="border-b border-slate-700/50">
+                      <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        Date
+                      </th>
+                      <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        Role
+                      </th>
+                      <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        Type
+                      </th>
+                      <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        Company
+                      </th>
+                      <th className="text-right px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        Score
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-700/30">
+                    {sortedInterviews.map((h: any, i: number) => (
+                      <tr
+                        key={i}
+                        className="hover:bg-slate-900/40 transition-colors group"
+                      >
+                        <td className="px-6 py-4 text-xs font-mono text-slate-400">
+                          {formatProfessionalDate(h.created_at)}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-white group-hover:text-blue-400 transition-colors">
+                          {h.role}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-tight inline-block ${typeStyle[h.interview_type.toLowerCase()] || typeStyle["behavioral"]}`}
+                          >
+                            {h.interview_type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-400">
+                          {h.company || "—"}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <span
+                            className={`px-3 py-1.5 rounded-md text-sm font-bold font-mono inline-block min-w-fit ${scoreStyle(Number(h.overall_score))}`}
+                          >
+                            {Number(h.overall_score).toFixed(1)}/10
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16">
+            <div className="text-6xl mb-4">📋</div>
+            <h3 className="text-xl font-semibold text-white mb-2">
+              No Sessions Yet
+            </h3>
+            <p className="text-slate-400 text-sm mb-6">
+              Start your first interview to see your progress and analytics.
+            </p>
+            <button
+              onClick={() => onNavigate("interview")}
+              className="px-6 py-3 rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-blue-600/20 active:scale-95"
+            >
+              Launch First Interview
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

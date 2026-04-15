@@ -1,15 +1,24 @@
-import { FaMicrophone } from "react-icons/fa";
+import { FaMicrophone, FaRobot, FaUserTie, FaChartLine } from "react-icons/fa";
 import { useInterview } from "../../context/InterviewContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import AbortSessionModal from "../../components/modal/AbortSessionModal";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 
 const typeStyle: Record<string, string> = {
-  technical: "bg-purple-500/15 text-purple-400 border-purple-500/40",
-  behavioral: "bg-blue-500/15 text-blue-400 border-blue-500/40",
-  "case-study": "bg-amber-500/15 text-amber-400 border-amber-500/40",
+  technical: "bg-purple-500/10 text-purple-400 border-purple-500/30",
+  behavioral: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+  "case-study": "bg-amber-500/10 text-amber-400 border-amber-500/30",
 };
+
+const Skeleton = () => (
+  <div className="animate-pulse space-y-4">
+    <div className="h-4 bg-[#1f2d42] rounded-sm w-1/4" />
+    <div className="h-32 bg-[#1f2d42] rounded-sm w-full" />
+    <div className="h-10 bg-[#1f2d42] rounded-sm w-full" />
+  </div>
+);
 
 function Questions({
   setStage,
@@ -31,123 +40,162 @@ function Questions({
     endInterview,
     currentQuestion,
     isLoading,
+    showAbortModal,
+    setShowAbortModal,
   } = useInterview();
 
   const [isFinished, setIsFinished] = useState(false);
   const [progressNum, setProgressNum] = useState(questionNum - 1);
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
+  useEffect(() => {
+    if (listening) {
+      setAnswer(transcript);
+    }
+  }, [transcript, listening, setAnswer]);
+
   return (
-    <div className="w-full mt-15 flex flex-col justify-center lg:mt-0 max-w-full overflow-x-hidden ml-0 lg:ml-4 sm:px-4 md:px-6 pt-4 sm:pt-6 pb-8">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5 sm:mb-8">
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
-          <span
-            className={`shrink-0 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-[11px] font-bold uppercase tracking-wider border ${typeStyle[selectedType]}`}
-          >
-            {selectedType}
-          </span>
-          <span className="shrink-0 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-[#1a2436] text-[#8a9ab8] border border-[#263548]">
-            {selectedRole}
-          </span>
-          <span className="shrink-0 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-[#1a2436] text-[#8a9ab8] border border-[#263548]">
-            {selectedDiff}
-          </span>
+    <div className="w-full mt-12 lg:mt-0 max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-12 min-h-screen overflow-x-hidden">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 border-b border-[#1f2d42] pb-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <span
+              className={`px-3 py-1 rounded-sm text-[10px] font-black uppercase tracking-[0.15em] border ${typeStyle[selectedType]}`}
+            >
+              {selectedType}
+            </span>
+            <span className="px-3 py-1 rounded-sm text-[10px] font-black uppercase tracking-[0.15em] bg-[#141c28] text-[#536480] border border-[#1f2d42]">
+              {selectedRole}
+            </span>
+            <span className="px-3 py-1 rounded-sm text-[10px] font-black uppercase tracking-[0.15em] bg-[#141c28] text-[#536480] border border-[#1f2d42]">
+              {selectedDiff}
+            </span>
+          </div>
+          <div>
+            <h1 className="text-3xl font-black text-white tracking-tight">
+              Active Interview Session
+            </h1>
+            <p className="text-[#8a9ab8] text-sm mt-1">
+              Professional assessment in progress. Maintain clarity and
+              structure.
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[10px] sm:text-xs text-[#536480] uppercase tracking-wider">
-            Progress
-          </span>
-          <span className="text-lg sm:text-2xl font-black text-blue-400">
-            {progressNum}/{questionLimit}
-          </span>
+
+        <div className="flex flex-col items-end">
+          <div className="flex items-center gap-4 mb-2">
+            <span className="text-[10px] font-bold text-[#536480] uppercase tracking-widest">
+              Session Progress
+            </span>
+            <span className="text-2xl font-black text-white">
+              {questionNum ? progressNum : "0"}
+              <span className="text-[#1f2d42] mx-1">/</span>
+              {questionLimit}
+            </span>
+          </div>
+          <div className="w-48 h-1.5 bg-[#141c28] border border-[#1f2d42] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-blue-500 transition-all duration-500"
+              style={{ width: `${(progressNum / questionLimit) * 100}%` }}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-5">
-        {!score && (
-          <div className="flex flex-col gap-4 items-center sm:gap-5 min-w-0">
-            <div className="w-full bg-[#141c28]/80 border border-[#1f2d42] rounded-md p-4 sm:p-6 md:p-8">
-              <div className="flex items-start gap-3 sm:gap-4 mb-5 sm:mb-6">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-600 flex items-center justify-center text-sm font-bold text-white shrink-0">
-                  AI
+      <div className="grid grid-cols-1 gap-8">
+        {!score ? (
+          <div className="space-y-6">
+            {!question ? (
+              <Skeleton />
+            ) : (
+              <div className="bg-[#141c28] border border-[#1f2d42] rounded-sm p-6 sm:p-10 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                  <FaRobot size={80} />
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-white">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 rounded-sm bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
+                    <FaRobot size={14} />
+                  </div>
+                  <span className="text-[11px] font-black uppercase tracking-widest text-blue-400">
                     Question {questionNum}
-                  </p>
-                  <p className="text-xs text-[#536480] mt-0.5">
-                    Listen carefully and provide a thoughtful response
-                  </p>
+                  </span>
+                </div>
+                <h2 className="text-xl sm:text-2xl text-white font-medium text-justify leading-relaxed max-w-full">
+                  {question}
+                </h2>
+              </div>
+            )}
+
+            <div className="bg-[#0d1219] border border-[#1f2d42] rounded-sm p-6 sm:p-10">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-sm bg-[#141c28] border border-[#1f2d42] flex items-center justify-center text-[#8a9ab8]">
+                    <FaUserTie size={14} />
+                  </div>
+                  <span className="text-[11px] font-black uppercase tracking-widest text-[#8a9ab8]">
+                    Your Response
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] font-bold text-[#536480] uppercase tracking-tighter">
+                    {answer.split(/\s+/).filter(Boolean).length} Words
+                  </span>
                 </div>
               </div>
-              <div className="relative pl-4 border-l-2 border-blue-500/60">
-                <p className="text-sm sm:text-base leading-relaxed text-[#e8edf5] font-light">
-                  {question}
-                </p>
-              </div>
-            </div>
 
-            <div className="w-full bg-[#141c28]/80 border border-[#1f2d42] rounded-md p-4 sm:p-6 md:p-8 flex flex-col">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold tracking-widest uppercase text-white border border-blue-500/30 bg-blue-600/10 px-3 py-1.5 rounded-lg">
-                  Your Response
-                </span>
-                <span className="text-xs text-blue-300 font-bold bg-blue-500/15 border border-blue-500/40 px-3 py-1.5 rounded-lg">
-                  {answer.split(/\s+/).filter(Boolean).length} words
-                </span>
-              </div>
               <textarea
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
-                placeholder="Think deeply about your answer. Share specific examples, metrics, and insights..."
-                className="w-full min-h-40 sm:min-h-50 p-3 sm:p-4 bg-[#080c12]/60 border border-[#263548] rounded-xl text-sm leading-relaxed text-[#e8edf5] placeholder-[#536480]/60 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-y transition-all mb-4 font-light"
+                placeholder="Formulate your response here..."
+                className="w-full min-h-62.5 bg-transparent border-none text-lg leading-relaxed text-[#e8edf5] placeholder-[#1f2d42] outline-none resize-none font-light"
               />
+
               {listening && (
-                <div className="mt-3 mb-7 flex items-center justify-center gap-1 h-16">
-                  {[...Array(48)].map((_, i) => (
+                <div className="flex items-center gap-1 h-8 mb-6">
+                  {[...Array(32)].map((_, i) => (
                     <div
                       key={i}
-                      className="w-0.75 bg-blue-400 rounded-full"
+                      className="w-1 bg-blue-500/40 rounded-full"
                       style={{
                         height: "100%",
-                        transform: "scaleY(0.2)",
                         animation: `waveform 0.${(i % 5) + 3}s ease-in-out infinite alternate`,
-                        animationDelay: `${i * 0.04}s`,
+                        animationDelay: `${i * 0.02}s`,
                       }}
                     />
                   ))}
                 </div>
               )}
-              <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-between gap-3">
+
+              <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-[#1f2d42] gap-4">
                 <button
-                  className={`flex items-center cursor-pointer justify-center gap-2 px-4 py-2.5 border rounded-xl text-sm transition-all font-semibold
-                    ${
-                      listening
-                        ? "border-blue-500/50 text-blue-400 bg-blue-500/10"
-                        : "border-[#263548] text-[#8a9ab8] hover:border-blue-500 hover:text-blue-400 hover:bg-blue-500/10"
-                    }`}
                   onClick={() => {
                     if (listening) {
                       SpeechRecognition.stopListening();
-                      setAnswer(transcript);
                     } else {
                       resetTranscript();
-                      SpeechRecognition.startListening();
+                      SpeechRecognition.startListening({ continuous: true });
                     }
                   }}
+                  className={`flex items-center gap-3 px-6 cursor-pointer py-3 rounded-sm text-xs font-black uppercase tracking-widest transition-all w-full sm:w-auto border
+                    ${
+                      listening
+                        ? "bg-red-500/10 border-red-500/50 text-red-400 animate-pulse"
+                        : "bg-[#141c28] border-[#1f2d42] text-[#8a9ab8] hover:border-blue-500/50 hover:text-white"
+                    }`}
                 >
                   <FaMicrophone
-                    size={13}
-                    className={listening ? "text-blue-400" : ""}
+                    size={14}
+                    className={listening ? "animate-bounce" : ""}
                   />
-                  <span>{listening ? "Stop Recording" : "Record Audio"}</span>
+                  {listening ? "End Recording" : "Voice Input"}
                 </button>
-                <div className="flex gap-2 sm:gap-3">
+
+                <div className="flex gap-4 w-full sm:w-auto">
                   <button
-                    onClick={() => setStage("setup")}
-                    className="flex-1 xs:flex-none px-4 cursor-pointer sm:px-6 py-2.5 border border-[#263548] rounded-xl text-sm font-semibold text-[#8a9ab8] hover:border-blue-500 hover:bg-blue-500/5 transition-all"
+                    onClick={() => setShowAbortModal(true)}
+                    className="flex-1 sm:flex-none px-8 cursor-pointer py-3 rounded-sm text-xs font-black uppercase tracking-widest text-[#536480] hover:text-white transition-colors"
                   >
-                    Back
+                    Abort
                   </button>
                   <button
                     onClick={async () => {
@@ -157,21 +205,15 @@ function Questions({
                       if (currentNum === questionLimit) setIsFinished(true);
                     }}
                     disabled={answer.trim().length < 10 || isLoading}
-                    className={`flex-1 xs:flex-none px-5 sm:px-8 py-2.5 text-white text-sm font-bold rounded-xl transition-all ${
-                      isLoading
-                        ? "bg-[#536480]/60 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-500 cursor-pointer"
-                    } disabled:opacity-60`}
+                    className="flex-1 sm:flex-none px-10 py-3 cursor-pointer bg-blue-600 hover:bg-blue-500 disabled:bg-[#141c28] disabled:text-[#1f2d42] text-white text-xs font-black uppercase tracking-widest rounded-sm transition-all shadow-sm shadow-blue-600/50"
                   >
-                    {isLoading ? "Scoring..." : "Submit →"}
+                    {isLoading ? "Analyzing..." : "Submit Response"}
                   </button>
                 </div>
               </div>
             </div>
           </div>
-        )}
-
-        {score && (
+        ) : (
           <ScorePanel
             score={score}
             currentQuestion={currentQuestion}
@@ -185,6 +227,7 @@ function Questions({
             }}
           />
         )}
+        {showAbortModal && <AbortSessionModal setStage={setStage} />}
       </div>
     </div>
   );
@@ -198,62 +241,69 @@ function ScorePanel({
   isLoading,
   onNext,
   onFinish,
-}: {
-  score: {
-    score: number;
-    clarity: number;
-    confidence: number;
-    relevance: number;
-    communication: number;
-    conciseness: number;
-    technical_depth: number;
-  };
-  currentQuestion: string;
-  questionNum: number;
-  isFinished: boolean;
-  isLoading: boolean;
-  onNext: () => void;
-  onFinish: () => void;
-}) {
+}: any) {
   return (
-    <div className="flex flex-col gap-4 min-w-0">
-      <div className="w-full bg-[#141c28]/80 border border-[#1f2d42] rounded-md p-4 sm:p-6">
-        <p className="text-sm font-bold text-white mb-4">
-          Question {questionNum - 1}
-        </p>
-        <div className="relative pl-4 border-l-2 border-blue-500/60">
-          <p className="text-sm leading-relaxed text-[#e8edf5] font-light">
-            {currentQuestion}
-          </p>
-        </div>
-      </div>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-[#141c28] border border-[#1f2d42] rounded-sm p-8 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <FaChartLine className="text-blue-500" />
+              <span className="text-[11px] font-black uppercase tracking-widest text-blue-500">
+                Evaluation
+              </span>
+            </div>
+            <p className="text-[#536480] text-xs font-bold uppercase mb-2">
+              Reference Question {questionNum - 1}
+            </p>
+            <p className="text-lg text-white font-light leading-relaxed">
+              {currentQuestion}
+            </p>
+          </div>
 
-      <div className="w-full bg-[#141c28]/90 border border-blue-500/50 rounded-md p-4 sm:p-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">
-          Performance Score
-        </p>
-        <div className="bg-blue-600/20 border border-blue-500/40 rounded-md p-4 sm:p-5 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[11px] text-[#8a9ab8] font-semibold uppercase tracking-wider mb-1">
-                Overall Rating
-              </p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-5xl sm:text-6xl font-black text-blue-400">
-                  {score.score}
-                </span>
-                <span className="text-sm text-[#536480] font-bold">/ 10</span>
+          <div className="mt-12 pt-8 border-t border-[#1f2d42] flex flex-wrap gap-8">
+            {[
+              { label: "Clarity", val: score.clarity },
+              { label: "Technical", val: score.technical_depth },
+            ].map((m) => (
+              <div key={m.label}>
+                <p className="text-[10px] font-black text-[#536480] uppercase tracking-widest mb-1">
+                  {m.label}
+                </p>
+                <p className="text-xl font-black text-white">
+                  {m.val}
+                  <span className="text-[#1f2d42] text-sm ml-1">/10</span>
+                </p>
               </div>
-            </div>
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
-              <span className="text-2xl">✓</span>
-            </div>
+            ))}
           </div>
         </div>
 
-        <div className="space-y-4 mb-6">
+        <div className="bg-blue-600 rounded-sm p-8 text-white flex flex-col items-center justify-center text-center shadow-2xl shadow-blue-600/20">
+          <p className="text-[11px] font-black uppercase tracking-[0.2em] mb-4 opacity-80">
+            Score
+          </p>
+          <div className="text-8xl font-black mb-2 tracking-tighter">
+            {score.score}
+          </div>
+          <p className="text-sm font-bold opacity-70">PERFORMANCE RATING</p>
+          <div className="mt-8 w-full h-1 bg-white/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-white transition-all duration-1000"
+              style={{ width: `${score.score * 10}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-[#0d1219] border border-[#1f2d42] rounded-sm p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-10">
           {[
-            { label: "Clarity", value: score.clarity, color: "bg-blue-500" },
+            {
+              label: "Communication",
+              value: score.communication,
+              color: "bg-blue-500",
+            },
             {
               label: "Confidence",
               value: score.confidence,
@@ -265,33 +315,19 @@ function ScorePanel({
               color: "bg-amber-500",
             },
             {
-              label: "Communication",
-              value: score.communication,
-              color: "bg-cyan-500",
-            },
-            {
               label: "Conciseness",
               value: score.conciseness,
               color: "bg-emerald-500",
             },
-            {
-              label: "Technical Depth",
-              value: score.technical_depth,
-              color: "bg-rose-500",
-            },
           ].map((item) => (
-            <div key={item.label}>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs font-bold text-[#8a9ab8] uppercase tracking-wider">
-                  {item.label}
-                </span>
-                <span className="text-xs font-bold text-white bg-blue-600 px-2.5 py-1 rounded-lg">
-                  {item.value}/10
-                </span>
+            <div key={item.label} className="space-y-2">
+              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                <span className="text-[#8a9ab8]">{item.label}</span>
+                <span className="text-white">{item.value}/10</span>
               </div>
-              <div className="h-2 bg-[#0d1219] rounded-full overflow-hidden border border-[#1f2d42]">
+              <div className="h-1 bg-[#141c28] rounded-full overflow-hidden">
                 <div
-                  className={`h-full ${item.color} rounded-full transition-all duration-700`}
+                  className={`h-full ${item.color} transition-all duration-1000`}
                   style={{ width: `${item.value * 10}%` }}
                 />
               </div>
@@ -303,26 +339,20 @@ function ScorePanel({
           <button
             onClick={onFinish}
             disabled={isLoading}
-            className={`w-full py-3 text-white text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
-              isLoading
-                ? "bg-blue-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-500 cursor-pointer"
-            }`}
+            className="w-full py-4 bg-white cursor-pointer text-black text-xs font-black uppercase tracking-widest rounded-sm hover:bg-blue-50 shadow-xl transition-all duration-200 hover:ring-3 hover:ring-inset hover:ring-blue-800"
           >
-            {isLoading ? "Generating Feedback..." : "Finish Interview →"}
+            {isLoading
+              ? "Compiling Final Report..."
+              : "Finish session & View Feedback"}
           </button>
         ) : (
           <button
             onClick={onNext}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-4 bg-blue-600 cursor-pointer text-white text-xs font-black uppercase tracking-widest rounded-sm hover:bg-blue-500 transition-all"
           >
-            Next Question →
+            Next Question
           </button>
         )}
-
-        <p className="text-xs text-[#536480] text-center mt-3">
-          Great effort! Keep improving.
-        </p>
       </div>
     </div>
   );

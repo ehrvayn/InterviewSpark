@@ -18,7 +18,9 @@ export default function RegisterContainer() {
     loading,
     handleRegister,
     setShowRegister,
+    registerError,
   } = useRegister();
+
   const { setActivePage } = usePage();
   const { loadUser } = useCurrentUser();
   const [matchPassword, setMatchPassword] = useState("");
@@ -46,157 +48,159 @@ export default function RegisterContainer() {
   const handleSubmit = () => {
     setMatchError("");
     setPasswordError("");
+
     if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters.");
+      setPasswordError("Access key must be 8+ characters");
       return;
     }
     if (password !== matchPassword) {
-      setMatchError("Passwords do not match!");
+      setMatchError("Passwords do not match");
       return;
     }
+    if (!email.includes("@")) {
+      setMatchError("Invalid email");
+      return;
+    }
+
     handleRegister();
   };
 
   return (
-    <div className="flex items-center justify-center w-full px-4 sm:px-6 py-8 lg:py-0 lg:min-h-screen">
-      <div className="w-full max-w-md">
-        <div className="bg-[#141c28] border border-[#1f2d42] rounded-xl p-6 sm:p-8 shadow-[0_0_40px_-5px_rgba(59,130,246,0.3)]">
-          <div className="text-center mb-6 sm:mb-8">
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-1.5 text-white">
-              Sign up!
-            </h2>
-            <p className="text-[#8a9ab8] text-xs sm:text-sm">Or sign in with</p>
-          </div>
+    <div className="w-full bg-[#0d1219] border border-white/5 rounded-sm p-8 shadow-2xl relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl -mr-16 -mt-16 rounded-full" />
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
-            <button
-              onClick={() => googleLogin()}
-              className="flex items-center justify-center gap-2 py-2 sm:py-2.5 rounded-md border border-[#263548] text-[#8a9ab8] hover:border-blue-500 hover:text-blue-400 transition-all cursor-pointer text-sm"
-            >
-              <FaGoogle /> <span className="font-medium">Google</span>
-            </button>
-            <button className="flex items-center justify-center gap-2 py-2 sm:py-2.5 rounded-md border border-[#263548] text-[#8a9ab8] hover:border-blue-500 hover:text-blue-400 transition-all cursor-pointer text-sm">
-              <FaGithub /> <span className="font-medium">GitHub</span>
-            </button>
-          </div>
+      <div className="relative z-10">
+        <div className="mb-10">
+          <h2 className="text-3xl font-black tracking-tighter uppercase text-white mb-2">
+            Create Account
+          </h2>
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+            Provide your credentials below
+          </p>
+        </div>
 
-          <form
-            autoComplete="off"
-            className="space-y-4 sm:space-y-5"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit();
-            }}
+        <div className="grid grid-cols-2 gap-3 mb-8">
+          <button
+            onClick={() => googleLogin()}
+            className="flex items-center justify-center gap-3 py-4 rounded-sm border border-white/5 bg-white/2 text-slate-400 hover:border-white/20 hover:text-white transition-all cursor-pointer text-[10px] font-black uppercase tracking-widest"
           >
-            <div className="space-y-1.5">
-              <label className="text-[10px] sm:text-xs font-bold text-[#536480] uppercase px-1">
-                Full Name
-              </label>
-              <div className="relative">
-                <MdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-[#536480] text-base sm:text-lg" />
-                <input
-                  type="text"
-                  name="name"
-                  value={name}
-                  autoComplete="off"
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Juan dela Cruz"
-                  className="w-full bg-[#0d1219] border border-[#263548] rounded-md py-2.5 sm:py-3 pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-white placeholder-[#536480] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-                  required
-                />
-              </div>
-            </div>
+            <FaGoogle size={14} /> Google
+          </button>
+          <button className="flex items-center justify-center gap-3 py-4 rounded-sm border border-white/5 bg-white/2 text-slate-400 hover:border-white/20 hover:text-white transition-all cursor-pointer text-[10px] font-black uppercase tracking-widest">
+            <FaGithub size={14} /> GitHub
+          </button>
+        </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[10px] sm:text-xs font-bold text-[#536480] uppercase px-1">
-                Email Address
-              </label>
-              <div className="relative">
-                <MdEmail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#536480] text-base sm:text-lg" />
-                <input
-                  type="email"
-                  name="email"
-                  value={email}
-                  autoComplete="off"
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@gmail.com"
-                  className="w-full bg-[#0d1219] border border-[#263548] rounded-md py-2.5 sm:py-3 pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-white placeholder-[#536480] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-                  required
-                />
-              </div>
+        <form
+          autoComplete="off"
+          className="space-y-5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+              Full Name
+            </label>
+            <div className="relative">
+              <MdPerson className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="OPERATOR NAME"
+                className="w-full bg-white/2 border border-white/5 rounded-sm py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-800 outline-none focus:border-blue-500/50 transition-all"
+                required
+              />
             </div>
+          </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[10px] sm:text-xs font-bold text-[#536480] uppercase px-1">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+              Primary Email
+            </label>
+            <div className="relative">
+              <MdEmail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="example@email.com"
+                className="w-full bg-white/2 border border-white/5 rounded-sm py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-800 outline-none focus:border-blue-500/50 transition-all"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
                 Password
               </label>
               <div className="relative">
-                <MdLock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#536480] text-base sm:text-lg" />
+                <MdLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
                 <input
                   type="password"
-                  name="password"
                   value={password}
-                  autoComplete="new-password"
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setPasswordError("");
-                  }}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={`w-full bg-[#0d1219] border rounded-md py-2.5 sm:py-3 pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-white placeholder-[#536480] focus:outline-none focus:ring-1 transition-all ${
+                  className={`w-full bg-white/2 border rounded-sm py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-800 outline-none transition-all ${
                     passwordError
-                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                      : "border-[#263548] focus:border-blue-500 focus:ring-blue-500"
+                      ? "border-rose-500/50"
+                      : "border-white/5 focus:border-blue-500/50"
                   }`}
                   required
                 />
               </div>
-              {passwordError && (
-                <p className="text-red-400 text-[11px] sm:text-xs px-1">{passwordError}</p>
-              )}
             </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] sm:text-xs font-bold text-[#536480] uppercase px-1">
-                Confirm Password
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                Verify
               </label>
               <div className="relative">
-                <MdLock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#536480] text-base sm:text-lg" />
+                <MdLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
                 <input
                   type="password"
-                  name="confirm-password"
                   value={matchPassword}
-                  autoComplete="new-password"
-                  onChange={(e) => {
-                    setMatchPassword(e.target.value);
-                    setMatchError("");
-                  }}
+                  onChange={(e) => setMatchPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={`w-full bg-[#0d1219] border rounded-md py-2.5 sm:py-3 pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-white placeholder-[#536480] focus:outline-none focus:ring-1 transition-all ${
+                  className={`w-full bg-white/2 border rounded-sm py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-800 outline-none transition-all ${
                     matchError
-                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                      : "border-[#263548] focus:border-blue-500 focus:ring-blue-500"
+                      ? "border-rose-500/50"
+                      : "border-white/5 focus:border-blue-500/50"
                   }`}
                   required
                 />
               </div>
-              {matchError && (
-                <p className="text-red-400 text-[11px] sm:text-xs px-1">{matchError}</p>
-              )}
             </div>
+          </div>
 
-            <button
-              type="submit"
-              className={`${loading ? "cursor-not-allowed bg-blue-400" : "cursor-pointer bg-blue-500 hover:bg-blue-400 hover:-translate-y-0.5"} w-full text-white font-bold py-2.5 sm:py-3 rounded-md mt-2 transition-all shadow-lg shadow-blue-500/20 text-sm sm:text-base`}
-            >
-              {loading ? "Signing up..." : "Sign Up"}
-            </button>
-          </form>
+          {(passwordError || matchError || registerError) && (
+            <div className="p-3 bg-rose-500/5 border border-rose-500/10 text-rose-500 text-[10px] font-black uppercase tracking-widest text-center">
+              {passwordError || matchError || registerError}
+            </div>
+          )}
 
-          <p className="mt-6 sm:mt-8 text-center text-xs sm:text-sm text-[#8a9ab8]">
-            Already have an account?{" "}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-5 rounded-sm font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-xl mt-4 ${
+              loading
+                ? "bg-slate-800 text-slate-600 cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-500 cursor-pointer shadow-blue-600/10"
+            }`}
+          >
+            {loading ? "Creating account..." : "Register"}
+          </button>
+        </form>
+
+        <div className="mt-10 text-center">
+          <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+            Already have account?{" "}
             <button
               onClick={() => setShowRegister(false)}
-              className="text-blue-400 font-bold hover:underline cursor-pointer"
+              className="text-white hover:text-blue-500 transition-colors"
             >
               Sign In
             </button>

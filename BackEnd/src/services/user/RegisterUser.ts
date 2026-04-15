@@ -1,6 +1,6 @@
 import { query } from "../../database/Connection";
 import userQuery from "../../models/UsersQuery";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 
 const RegisterUser = async (userData: any) => {
   try {

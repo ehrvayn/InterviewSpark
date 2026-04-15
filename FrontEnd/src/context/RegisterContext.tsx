@@ -28,7 +28,7 @@ export const RegisterProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
-  const handleRegister = async () => {
+const handleRegister = async () => {
     setRegisterError("");
     setLoading(true);
     try {
@@ -37,16 +37,17 @@ export const RegisterProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (data.success) {
         localStorage.setItem("token", data.token);
-        setName("")
+        setName("");
         setEmail("");
         setPassword("");
-        setShowRegister(false)
+        setShowRegister(false);
       } else {
-        setRegisterError(data.message || "Login failed!");
+        setRegisterError(data.message || "Registration failed!");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setRegisterError("Something went wrong!");
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      const errorMessage = error.response?.data?.message || "Something went wrong!";
+      setRegisterError(errorMessage);
     } finally {
       setLoading(false);
     }

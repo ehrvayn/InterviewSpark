@@ -41,6 +41,8 @@ interface InterviewContextType {
   isLoading: boolean;
   interviewStart: boolean;
   setInterviewStart: React.Dispatch<React.SetStateAction<boolean>>;
+  showAbortModal: boolean;
+  setShowAbortModal: React.Dispatch<React.SetStateAction<boolean>>;
   startError: string | null;
   setStartError: React.Dispatch<React.SetStateAction<string | null>>;
   score: {
@@ -106,6 +108,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [interviewStart, setInterviewStart] = useState(false);
+  const [showAbortModal, setShowAbortModal] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
   const [allInterviews, setAllInterviews] = useState<Interview[]>([]);
   const [averages, setAverages] = useState<{
@@ -311,6 +314,8 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <InterviewContext.Provider
       value={{
+        showAbortModal,
+        setShowAbortModal,
         allInterviews,
         setAllInterviews,
         retrieveInterviews,

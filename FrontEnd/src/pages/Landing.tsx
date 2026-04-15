@@ -1,113 +1,131 @@
 import { FaUserTie } from "react-icons/fa";
 import { GiProgression } from "react-icons/gi";
-import { MdFeedback } from "react-icons/md";
-import { FaRobot } from "react-icons/fa6";
+import { MdFeedback, MdSecurity } from "react-icons/md";
+import { FaRobot, FaMicrochip } from "react-icons/fa6";
 import LoginContainer from "../components/LoginContainer";
 import { useRegister } from "../context/RegisterContext";
 import RegisterContainer from "../components/registerContainer";
 
 export default function Landing() {
   const { showRegister } = useRegister();
-  return (
-    <div className="overflow-x-hidden">
-      <section className="relative flex flex-col lg:grid lg:grid-cols-2 items-center gap-8 lg:gap-16 px-5 sm:px-10 lg:px-20 min-h-screen py-16 lg:py-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.04)_1px,transparent_1px)] bg-size-[48px_48px]" />
-        <div className="absolute -top-48 -left-48 w-125 h-125 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.12)_0%,transparent_65%)]" />
 
-        <div className="relative z-10 w-full">
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-[10px] sm:text-xs font-medium tracking-wider mb-5 sm:mb-7">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shrink-0" />
-            AI-Powered Interview Coach
+  return (
+    <div className="overflow-x-hidden bg-[#0a0f18] text-white font-sans selection:bg-blue-500/30">
+      <section className="relative flex flex-col lg:grid lg:grid-cols-12 items-center min-h-screen px-4 md:px-10 xl:px-20 py-12 lg:py-0 overflow-hidden border-b border-white/5">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-size-[64px_64px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
+        <div className="relative z-10 w-full lg:col-span-7 xl:col-span-8 pr-0 lg:pr-12 py-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm border border-blue-500/20 bg-blue-500/5 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            InterviewSpark
           </div>
 
-          <h1 className="text-[32px] sm:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight mb-4 sm:mb-5">
-            Land Your <span className="text-blue-400">Dream Role</span>
+          <h1 className="text-5xl sm:text-7xl xl:text-9xl font-black leading-[0.85] tracking-tighter mb-8 uppercase">
+            Master the <span className="text-blue-500">Technical</span>
             <br />
-            With Confidence
+            Interview <span className="outline-text">Stack.</span>
           </h1>
 
-          <p className="text-[#8a9ab8] text-sm sm:text-base lg:text-lg leading-relaxed max-w-lg mb-7 sm:mb-10">
-            Train smarter, not harder. Our AI coach puts you through real
-            interview scenarios, breaks down every answer, and helps you show up
-            ready for anything.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-3 mb-8 sm:mb-12">
-            <button className="flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-400 text-white font-semibold text-sm sm:text-base transition-all hover:-translate-y-0.5">
-              Start Free Interview <span>→</span>
-            </button>
-            <button className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-md border cursor-pointer border-[#263548] text-[#8a9ab8] hover:border-blue-500 hover:text-blue-400 font-medium text-sm sm:text-base transition-all">
-              View Dashboard
-            </button>
-          </div>
-
-          <div className="flex items-center gap-6 sm:gap-10 pt-6 sm:pt-8 border-t border-[#1f2d42]">
-            {[
-              { val: "50K+", label: "Interviews Practiced" },
-              { val: "94%", label: "Confidence Boost" },
-              { val: "300+", label: "Companies Covered" },
-            ].map((s) => (
-              <div key={s.label} className="flex flex-col">
-                <span className="text-lg sm:text-2xl font-black">{s.val}</span>
-                <span className="text-[10px] sm:text-xs text-[#536480] mt-0.5">
-                  {s.label}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mb-12">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-blue-500">
+                <FaMicrochip size={14} />
+                <span className="text-[10px] font-black uppercase tracking-widest">
+                  Logic Synthesis
                 </span>
               </div>
-            ))}
+              <p className="text-slate-500 text-xs font-bold uppercase leading-relaxed">
+                Fine-tuned models trained on real-world hiring data to simulate
+                actual engineering and systems roles.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-blue-500">
+                <MdSecurity size={14} />
+                <span className="text-[10px] font-black uppercase tracking-widest">
+                  Feedback Loop
+                </span>
+              </div>
+              <p className="text-slate-500 text-xs font-bold uppercase leading-relaxed">
+                Objective assessment of your technical accuracy, behavioral
+                alignment, and communication clarity.
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="relative z-10 w-full">
-          {showRegister ? <RegisterContainer /> : <LoginContainer />}
+        <div className="relative z-10 w-full lg:col-span-5 xl:col-span-4 flex justify-center lg:justify-end">
+          <div className="w-full max-w-110">
+            {showRegister ? <RegisterContainer /> : <LoginContainer />}
+          </div>
         </div>
       </section>
 
-      <section className="px-5 sm:px-10 lg:px-20 py-16 sm:py-24 bg-[#0d1219]">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10 sm:mb-14">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight mb-3">
-              Everything You Need to Ace It
-            </h2>
-            <p className="text-[#8a9ab8] text-sm sm:text-base max-w-xl mx-auto">
-              From preparation to performance we've got every stage of your
-              interview journey covered.
+      <section className="px-4 md:px-10 xl:px-20 py-20 lg:py-32 bg-[#0a0f18]">
+        <div className="w-full">
+          <div className="mb-16 lg:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="max-w-xl">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-0.5 w-8 bg-blue-500" />
+                <span className="text-blue-500 font-black text-[10px] uppercase tracking-[0.4em]">
+                  Engine Architecture
+                </span>
+              </div>
+              <h2 className="text-4xl sm:text-6xl font-black tracking-tighter uppercase leading-none">
+                Predictive <br /> Assessment
+              </h2>
+            </div>
+            <p className="text-slate-600 text-xs sm:text-sm max-w-xs font-black uppercase tracking-tight leading-relaxed border-l-2 border-white/5 pl-6">
+              Skip the generic practice. Our platform benchmarks your responses
+              against industry-standard requirements.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5">
             {[
               {
-                icon: <FaRobot size={26} />,
-                title: "Realistic AI Interviewer",
-                desc: "Our AI adapts its tone, difficulty, and follow-ups based on your responses just like a real interviewer.",
+                icon: <FaRobot size={20} />,
+                title: "Adaptive Logic",
+                desc: "AI that adjusts its follow-up questions based on the technical depth of your previous answer.",
               },
               {
-                icon: <MdFeedback size={26} />,
-                title: "Instant Score & Feedback",
-                desc: "Get rated on clarity, structure, relevance, and confidence immediately after each answer.",
+                icon: <MdFeedback size={20} />,
+                title: "Semantic Analysis",
+                desc: "Direct evaluation of your reasoning structure and how effectively you solve complex problems.",
               },
               {
-                icon: <FaUserTie size={26} />,
-                title: "Role-Specific Questions",
-                desc: "Curated question banks for Engineers, PMs, Designers, Sales reps, and more filtered by company.",
+                icon: <FaUserTie size={20} />,
+                title: "Industry Alignment",
+                desc: "Scenario-based modules built for Developers, IT Auditors, and Systems Architects.",
               },
               {
-                icon: <GiProgression size={26} />,
-                title: "Progress Tracking",
-                desc: "See your improvement over time with detailed charts and session history across all interview types.",
+                icon: <GiProgression size={20} />,
+                title: "Delta Reporting",
+                desc: "Automated tracking of your response quality improvement over multiple mock sessions.",
               },
             ].map((f) => (
               <div
                 key={f.title}
-                className="bg-[#141c28] border border-[#1f2d42] rounded-md p-5 sm:p-7 hover:border-blue-500 hover:-translate-y-1 transition-all group"
+                className="bg-[#0a0f18] p-10 hover:bg-blue-600/3 transition-all group relative overflow-hidden"
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-4 group-hover:bg-blue-500/20 transition-all">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <span className="text-4xl font-black italic">
+                    0
+                    {[
+                      "Adaptive Logic",
+                      "Semantic Analysis",
+                      "Industry Alignment",
+                      "Delta Reporting",
+                    ].indexOf(f.title) + 1}
+                  </span>
+                </div>
+                <div className="w-10 h-10 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 mb-8 group-hover:border-blue-500/50 group-hover:text-blue-500 transition-all">
                   {f.icon}
                 </div>
-                <h3 className="font-bold text-sm sm:text-base mb-2">
+                <h3 className="font-black text-[11px] uppercase tracking-[0.2em] mb-4 text-white">
                   {f.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-[#8a9ab8] leading-relaxed">
+                <p className="text-[10px] text-slate-500 leading-relaxed font-bold uppercase tracking-wide">
                   {f.desc}
                 </p>
               </div>
@@ -116,9 +134,29 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="text-center text-[11px] sm:text-xs text-[#536480] py-6 sm:py-8 border-t border-[#1f2d42]">
-        © All rights reserved | InterviewSpark 2026
+      <footer className="px-4 md:px-10 xl:px-20 py-12 border-t border-white/5 bg-[#080c14]">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex flex-col gap-2">
+            <div className="text-[11px] font-black text-white uppercase tracking-[0.5em]">
+              InterviewSpark
+            </div>
+            <div className="text-[9px] font-black text-slate-700 uppercase tracking-[0.2em]">
+              Engineering & Systems Interview Simulation
+            </div>
+          </div>
+
+          <div className="text-[9px] font-black text-slate-800 uppercase tracking-widest">
+            &copy; 2026 | ALL RIGHTS RESERVED.
+          </div>
+        </div>
       </footer>
+
+      <style>{`
+        .outline-text {
+          color: transparent;
+          -webkit-text-stroke: 1px rgba(255,255,255,0.2);
+        }
+      `}</style>
     </div>
   );
 }

@@ -15,6 +15,7 @@ export default function App() {
   const { showLogout } = useLogin();
   const { showPayment } = usePayment();
 
+
   const renderPage = () => {
     switch (activePage) {
       case "landing":
