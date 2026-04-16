@@ -53,7 +53,7 @@ export default function Dashboard({
   onNavigate: (page: Page) => void;
 }) {
   const { allInterviews, isLoading } = useInterview();
-  const [sortBy] = useState<
+  const [sortBy, setSortBy] = useState<
     "Newest" | "Highest Score" | "Lowest Score" | "Role"
   >("Newest");
   const [openSort, setOpenSort] = useState(false);
@@ -145,7 +145,10 @@ export default function Dashboard({
       );
     if (sortBy === "Role")
       return sorted.sort((a, b) => (a.role || "").localeCompare(b.role || ""));
-    return sorted;
+    return sorted.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
   };
 
   const sortedInterviews = getSortedInterviews();
@@ -305,15 +308,49 @@ export default function Dashboard({
 
             <div className="bg-[#0a0f18] border border-slate-700/50 rounded-sm overflow-hidden flex flex-col h-130">
               <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-900/30">
-                <h2 className="text-lg font-semibold text-white">
-                  Session History
-                </h2>
-                <button
-                  onClick={() => setOpenSort(!openSort)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800 text-slate-300 text-xs border border-slate-700/50"
-                >
-                  <FaSort size={12} /> {sortBy}
-                </button>
+                <div className="flex items-center gap-3">
+                  <h2 className="text-lg font-semibold text-white">
+                    Session History
+                  </h2>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/5 text-slate-400 border border-white/10 uppercase tracking-tighter">
+                    {allInterviews.length} Sessions
+                  </span>
+                </div>
+                <div className="relative">
+                  <button
+                    onClick={() => setOpenSort(!openSort)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800 text-slate-300 text-xs border border-slate-700/50 hover:bg-slate-700 transition-colors cursor-pointer"
+                  >
+                    <FaSort size={12} /> {sortBy}
+                  </button>
+                  {openSort && (
+                    <div className="absolute right-0 mt-2 w-40 bg-[#0f172a] border border-slate-700 rounded-md shadow-xl z-50 overflow-hidden">
+                      {(
+                        [
+                          "Newest",
+                          "Highest Score",
+                          "Lowest Score",
+                          "Role",
+                        ] as const
+                      ).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => {
+                            setSortBy(option);
+                            setOpenSort(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-xs hover:bg-blue-500/10 hover:text-blue-400 transition-colors cursor-pointer ${
+                            sortBy === option
+                              ? "text-blue-400 bg-blue-500/5"
+                              : "text-slate-300"
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="overflow-y-auto flex-1">
                 <table className="w-full text-sm text-left">
