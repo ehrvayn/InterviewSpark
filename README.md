@@ -28,7 +28,3 @@ InterviewSpark is an AI-powered interview preparation platform designed to help 
 
 ## 📦 Installation & Setup
 
-### 1. Clone the repository
-```bash
-git clone [https://github.com/rayvenpogi/InterviewSpark.git](https://github.com/rayvenpogi/InterviewSpark.git)
-cd InterviewSpark
