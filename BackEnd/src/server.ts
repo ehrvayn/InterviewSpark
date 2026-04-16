@@ -24,6 +24,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.set('trust proxy', 1);
 app.use("/auth", googleAuthRoutes);
 app.use("/user", UserRoute);
 app.use("/interview", InterviewRoute);

@@ -326,6 +326,9 @@ export default function Dashboard({
                         Role
                       </th>
                       <th className="px-6 py-3 text-xs uppercase text-slate-400">
+                        Company
+                      </th>
+                      <th className="px-6 py-3 text-xs uppercase text-slate-400">
                         Type
                       </th>
                       <th className="px-6 py-3 text-xs uppercase text-slate-400 text-right">
@@ -344,6 +347,9 @@ export default function Dashboard({
                         </td>
                         <td className="px-6 py-4 font-medium text-white group-hover:text-blue-400">
                           {h.role}
+                        </td>
+                        <td className="px-6 py-4 text-slate-300">
+                          {h.company || "N/A"}
                         </td>
                         <td className="px-6 py-4">
                           <span
