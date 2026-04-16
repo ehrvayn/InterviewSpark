@@ -375,12 +375,6 @@ export default function Dashboard({
             <p className="text-slate-400 text-sm mb-6">
               Start your first interview to see your progress and analytics.
             </p>
-            <button
-              onClick={() => onNavigate("interview")}
-              className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold active:scale-95 transition-all"
-            >
-              Launch First Interview
-            </button>
           </div>
         )}
       </div>
