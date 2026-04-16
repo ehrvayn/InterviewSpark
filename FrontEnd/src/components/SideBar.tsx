@@ -48,7 +48,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
             <span className="text-white text-lg font-black">S</span>
           </div>
-          <span className="font-black tracking-tighter text-sm uppercase text-white">
+          <span className="font-black tracking-tighter text-sm text-white">
             InterviewSpark
           </span>
         </div>
@@ -75,7 +75,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
             <div className="w-8 h-8 rounded-sm bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform">
               <span className="text-white text-base font-black italic">S</span>
             </div>
-            <span className="font-black tracking-tighter text-lg uppercase text-white group-hover:text-blue-500 transition-colors">
+            <span className="font-black tracking-tighter text-lg text-white group-hover:text-blue-500 transition-colors">
               InterviewSpark
             </span>
           </div>
@@ -143,15 +143,12 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
         <div className="px-4 pb-8 space-y-2">
           <div className="flex items-center gap-3 p-3 rounded-sm border border-white/5 bg-white/1">
-            <div className="w-10 h-10 rounded-sm bg-slate-800 flex items-center justify-center text-xs font-black text-white border border-white/5">
+            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-xs font-black text-white border border-white/5">
               {currentUser?.name?.[0]?.toUpperCase()}
             </div>
             <div className="flex flex-col truncate">
               <span className="text-[11px] font-black text-white uppercase tracking-tight truncate">
                 {currentUser?.name}
-              </span>
-              <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tighter">
-                Verified Operator
               </span>
             </div>
           </div>

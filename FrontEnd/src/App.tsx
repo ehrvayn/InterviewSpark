@@ -15,8 +15,17 @@ export default function App() {
   const { showLogout } = useLogin();
   const { showPayment } = usePayment();
 
-
   const renderPage = () => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get("payment");
+
+    if (paymentStatus === "success") {
+      return <PaymentSuccess />;
+    }
+    if (paymentStatus === "failed") {
+      return <PaymentFailed />;
+    }
+
     switch (activePage) {
       case "landing":
         return <Landing />;
@@ -24,10 +33,6 @@ export default function App() {
         return <Dashboard onNavigate={setActivePage} />;
       case "interview":
         return <Interview />;
-      case "payment-success":
-        return <PaymentSuccess />;
-      case "payment-failed":
-        return <PaymentFailed />;
       default:
         return <Landing />;
     }

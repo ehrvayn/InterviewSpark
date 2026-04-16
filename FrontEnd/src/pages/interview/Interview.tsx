@@ -89,7 +89,7 @@ export default function Interview() {
           </p>
         </div>
 
-        <div className="flex items-center gap-8 bg-white/2 border border-white/5 p-6 rounded-sm">
+        <div className="flex items-center gap-8 bg-white/2 border border-white/50 p-6 rounded-sm">
           <div className="text-right">
             <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">
               Available Credits

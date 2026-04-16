@@ -47,10 +47,8 @@ export const handleWebhook = async (
 
   try {
     const eventType = payload.data?.attributes?.type;
-    console.log("Event type:", eventType);
 
     if (eventType !== "checkout_session.payment.paid") {
-      console.log("Ignoring event type:", eventType);
       return { success: true };
     }
 
@@ -61,7 +59,6 @@ export const handleWebhook = async (
     if (!referenceId) return { success: false, message: "No reference ID" };
 
     const result = await processTransaction(referenceId, "paid");
-    console.log("Transaction result:", result);
 
     return result;
   } catch (error) {

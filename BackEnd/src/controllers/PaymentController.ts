@@ -23,12 +23,17 @@ export const paymentWebhook = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  console.log("=== WEBHOOK RECEIVED ===");
+
   try {
     const rawBody = JSON.stringify(req.body);
     const signature = req.headers["paymongo-signature"] as string;
+
     const result = await handleWebhook(req.body, rawBody, signature);
+
     res.status(200).json(result);
   } catch (error) {
+    console.error("Webhook error:", error);
     res.status(500).json({ success: false, message: "Webhook failed" });
   }
 };
@@ -40,11 +45,15 @@ export const paymentSuccess = async (
   try {
     const { ref } = req.query;
     if (!ref) {
-      return res.redirect(`${process.env.FRONTEND_URL}?payment=failed`);
+      return res.redirect(`${process.env.FRONTEND_URL}/payment-failed`);
     }
-    return res.redirect(`${process.env.FRONTEND_URL}?payment=success`);
+
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/payment-success?ref=${ref}`,
+    );
   } catch (error) {
-    return res.redirect(`${process.env.FRONTEND_URL}?payment=failed`);
+    console.error("Payment success error:", error);
+    return res.redirect(`${process.env.FRONTEND_URL}/payment-failed`);
   }
 };
 

@@ -137,9 +137,9 @@ export default function History({
           <div className="hover:ring-2 group hover:ring-inset hover:ring-blue-800 rounded-sm">
             <button
               onClick={() => onNavigate("interview")}
-              className="flex items-center gap-8 cursor-pointer group hover:text-blue-800 bg-white/2 border border-white/5 p-6 rounded-sm active:scale-95"
+              className="flex items-center gap-8 cursor-pointer group hover:text-blue-800 bg-white/2 border border-white/50 p-6 rounded-sm active:scale-95"
             >
-              + Practice Now
+              Practice Now
             </button>
           </div>
         </div>
@@ -218,7 +218,7 @@ export default function History({
                   {allInterviews[0]?.role || "N/A"}
                 </div>
                 <div className="mt-3 pt-3 border-t border-slate-700/50">
-                  <span className="text-xs text-slate-400">most recent</span>
+                  <span className="text-xs text-slate-400">across all sessions</span>
                 </div>
               </div>
             </div>

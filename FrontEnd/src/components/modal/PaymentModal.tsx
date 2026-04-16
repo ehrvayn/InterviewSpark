@@ -1,7 +1,7 @@
-import { MdClose } from "react-icons/md";
+import { useEffect } from "react";
+import { MdClose, MdCheckCircle, MdSecurity } from "react-icons/md";
 import { FaMicrophone, FaRocket, FaStar } from "react-icons/fa";
 import { usePayment } from "../../context/PaymentContext";
-import { useEffect } from "react";
 import { IoArrowForward } from "react-icons/io5";
 
 const packs = [
@@ -12,9 +12,13 @@ const packs = [
     price: 149,
     tag: null,
     description: "Perfect for trying it out",
-    icon: <FaMicrophone className="sm:text-[30px] text-[20px]" />,
-    perks: ["5 full interviews", "Any difficulty level", "AI scoring & feedback"],
-    color: "blue",
+    icon: <FaMicrophone />,
+    perks: [
+      "5 full interviews",
+      "Any difficulty level",
+      "AI scoring & feedback",
+    ],
+    color: "standard",
   },
   {
     id: "popular",
@@ -23,8 +27,12 @@ const packs = [
     price: 449,
     tag: "Best Value",
     description: "Most chosen by job seekers",
-    icon: <FaStar className="sm:text-[30px] text-[20px]" />,
-    perks: ["15 full interviews", "Any difficulty level", "AI scoring & feedback"],
+    icon: <FaStar />,
+    perks: [
+      "15 full interviews",
+      "Any difficulty level",
+      "AI scoring & feedback",
+    ],
     color: "featured",
   },
   {
@@ -32,11 +40,15 @@ const packs = [
     label: "Pro",
     credits: 35,
     price: 999,
-    tag: null,
+    tag: "Power User",
     description: "For serious interview prep",
-    icon: <FaRocket className="sm:text-[30px] text-[20px]" />,
-    perks: ["35 full interviews", "Any difficulty level", "AI scoring & feedback"],
-    color: "blue",
+    icon: <FaRocket />,
+    perks: [
+      "35 full interviews",
+      "Any difficulty level",
+      "AI scoring & feedback",
+    ],
+    color: "standard",
   },
 ];
 
@@ -52,130 +64,157 @@ export default function PaymentModal() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-100 flex items-center justify-center p-0 sm:p-4 bg-[#05080f]/90 backdrop-blur-md animate-in fade-in duration-300"
       onClick={() => setShowPayment(false)}
     >
       <div
-        className="sm:max-w-3xl sm:h-[70vh] flex flex-col w-screen h-screen overflow-y-auto bg-[#080c12] border border-[#1f2d42] rounded-0 sm:rounded-md py-5 px-2 sm:p-8 relative"
+        className="relative w-full max-w-5xl h-full sm:h-auto max-h-[95vh] bg-[#0a0f18] sm:border border-white/5 sm:rounded-xl shadow-2xl overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-blue-500/50 to-transparent" />
+
         <button
           onClick={() => setShowPayment(false)}
-          className="absolute top-4 right-4 text-[#536480] hover:text-white transition-all cursor-pointer z-10"
+          className="absolute top-6 right-6 p-2 rounded-full bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all z-20"
         >
           <MdClose size={20} />
         </button>
 
-        <div className="text-center mb-6 sm:mb-8 pr-6">
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-            Get more Credit
-          </h2>
-          <p className="text-[#8a9ab8] text-xs sm:text-sm mt-2">
-            1 credit = 1 full interview session, any difficulty. Credits never expire.
-          </p>
-        </div>
+        <div className="px-6 py-12 sm:px-12">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tighter uppercase italic mb-4">
+              Get more <span className="text-blue-500">Credit</span>
+            </h2>
+            <div className="inline-block px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20">
+              <p className="text-blue-400 text-[10px] sm:text-xs font-black uppercase tracking-widest">
+                1 credit = 1 full interview session • Credits never expire
+              </p>
+            </div>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          {packs.map((pack) => {
-            const isFeatured = pack.color === "featured";
-            return (
-              <div
-                key={pack.id}
-                className={`relative flex gap-3 flex-col rounded-md border p-4 sm:p-5 transition-all ${
-                  isFeatured
-                    ? "border-blue-500 bg-blue-600 text-white sm:scale-[1.03]"
-                    : "border-[#1f2d42] bg-[#0d1219] text-[#e8edf5]"
-                }`}
-              >
-                {pack.tag && (
-                  <div className="absolute -top-3 left-4 sm:left-1/2 sm:-translate-x-1/2">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white text-blue-600 whitespace-nowrap">
-                      {pack.tag}
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex sm:flex-col flex-1 sm:items-center items-start gap-3 sm:gap-0">
-                  <div className={`sm:mb-3 sm:mt-0 mt-1 shrink-0 ${isFeatured ? "text-white" : "text-blue-400"}`}>
-                    {pack.icon}
-                  </div>
-
-                  <div className="flex-1 sm:text-center text-left">
-                    <h3 className="text-sm sm:text-base font-black sm:mb-1">{pack.label}</h3>
-                    <p className={`text-[11px] md:text-[15px] sm:mb-4 ${isFeatured ? "text-blue-100" : "text-[#536480]"}`}>
-                      {pack.description}
-                    </p>
-
-                    <div className="sm:hidden mt-1">
-                      <span className="text-xl font-black">₱{pack.price}</span>
-                      <span className={`text-xs ml-1 ${isFeatured ? "text-blue-100" : "text-[#536480]"}`}>
-                        / {pack.credits} credits
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {packs.map((pack) => {
+              const isFeatured = pack.color === "featured";
+              return (
+                <div
+                  key={pack.id}
+                  className={`group relative flex flex-col rounded-sm border transition-all duration-300 ${
+                    isFeatured
+                      ? "bg-blue-600 border-blue-400 shadow-[0_20px_50px_rgba(59,130,246,0.15)] lg:scale-105 z-10"
+                      : "bg-white/2 border-white/5 hover:border-white/10"
+                  }`}
+                >
+                  {pack.tag && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+                      <span
+                        className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] shadow-xl ${
+                          isFeatured
+                            ? "bg-white text-blue-600"
+                            : "bg-slate-800 text-white border border-white/10"
+                        }`}
+                      >
+                        {pack.tag}
                       </span>
                     </div>
+                  )}
 
-                    <ul className="flex flex-col gap-1.5 mt-2 sm:hidden">
+                  <div className="p-8 flex-1 flex flex-col">
+                    <div className="flex items-start justify-between mb-8">
+                      <div
+                        className={`p-3 rounded-lg text-2xl ${
+                          isFeatured
+                            ? "bg-white/10 text-white"
+                            : "bg-blue-500/10 text-blue-500"
+                        }`}
+                      >
+                        {pack.icon}
+                      </div>
+                      <div className="text-right">
+                        <p
+                          className={`text-[10px] font-black uppercase tracking-widest mb-1 ${
+                            isFeatured ? "text-blue-100" : "text-slate-500"
+                          }`}
+                        >
+                          {pack.label}
+                        </p>
+                        <h3
+                          className={`text-3xl font-black ${isFeatured ? "text-white" : "text-white"}`}
+                        >
+                          ₱{pack.price}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="mb-8">
+                      <p
+                        className={`text-xs font-bold leading-relaxed ${
+                          isFeatured ? "text-blue-50" : "text-slate-400"
+                        }`}
+                      >
+                        {pack.description}
+                      </p>
+                    </div>
+
+                    <div
+                      className={`h-px w-full mb-8 ${isFeatured ? "bg-white/10" : "bg-white/5"}`}
+                    />
+
+                    <ul className="space-y-4 mb-10">
                       {pack.perks.map((perk) => (
-                        <li key={perk} className="flex items-center gap-2 text-xs">
-                          <span className={`shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${isFeatured ? "bg-white/20 text-white" : "bg-blue-500/20 text-blue-400"}`}>
-                            ✓
+                        <li key={perk} className="flex items-center gap-3">
+                          <MdCheckCircle
+                            className={`text-lg shrink-0 ${
+                              isFeatured ? "text-white" : "text-blue-500"
+                            }`}
+                          />
+                          <span
+                            className={`text-[11px] font-bold uppercase tracking-tight ${
+                              isFeatured ? "text-blue-50" : "text-slate-300"
+                            }`}
+                          >
+                            {perk}
                           </span>
-                          <span className={isFeatured ? "text-blue-50" : "text-[#8a9ab8]"}>{perk}</span>
                         </li>
                       ))}
                     </ul>
+
+                    <button
+                      onClick={() => handleBuy(pack.id)}
+                      className={`mt-auto w-full py-4 rounded-sm flex justify-center items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] transition-all active:scale-[0.98] cursor-pointer ${
+                        isFeatured
+                          ? "bg-white text-blue-600 hover:bg-blue-50 shadow-xl"
+                          : "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-600/10"
+                      }`}
+                    >
+                      Buy
+                      <IoArrowForward size={16} />
+                    </button>
                   </div>
                 </div>
+              );
+            })}
+          </div>
 
-                <div className="sm:hidden flex flex-col justify-between ml-4 shrink-0">
-                  <button
-                    onClick={() => handleBuy(pack.id)}
-                    className={`mt-auto px-4 py-2 rounded-sm flex justify-center items-center text-xs font-bold transition-all cursor-pointer ${
-                      isFeatured ? "bg-white text-blue-600" : "bg-blue-600 text-white"
-                    }`}
-                  >
-                    Buy <IoArrowForward size={15} className="ml-1" />
-                  </button>
-                </div>
-
-                <div className="hidden sm:block text-center mb-5">
-                  <span className="text-3xl font-black">₱{pack.price}</span>
-                  <span className={`text-xs ml-1 ${isFeatured ? "text-blue-100" : "text-[#536480]"}`}>
-                    / {pack.credits} credits
-                  </span>
-                </div>
-
-                <ul className="hidden sm:flex flex-col gap-2 mb-6 flex-1">
-                  {pack.perks.map((perk) => (
-                    <li key={perk} className="flex items-center gap-2 text-xs">
-                      <span className={`shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${isFeatured ? "bg-white/20 text-white" : "bg-blue-500/20 text-blue-400"}`}>
-                        ✓
-                      </span>
-                      <span className={isFeatured ? "text-blue-50" : "text-[#8a9ab8]"}>{perk}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  onClick={() => handleBuy(pack.id)}
-                  className={`hidden w-full py-2.5 sm:flex justify-center items-center rounded-lg text-sm font-bold transition-all cursor-pointer ${
-                    isFeatured ? "bg-white text-blue-600 hover:bg-blue-50" : "bg-blue-600 text-white hover:bg-blue-500"
-                  }`}
-                >
-                  Buy <IoArrowForward size={15} className="ml-1" />
-                </button>
+          <div className="mt-16 flex flex-col items-center border-t border-white/5 pt-8">
+            <div className="flex items-center gap-6 mb-4">
+              <div className="flex items-center gap-2 text-slate-600">
+                <MdSecurity size={16} />
+                <span className="text-[9px] font-black uppercase tracking-widest">
+                  PayMongo Secured
+                </span>
               </div>
-            );
-          })}
+              <div className="w-px h-4 bg-white/5" />
+              <div className="flex items-center gap-2 text-slate-600">
+                <span className="text-[9px] font-black uppercase tracking-widest">
+                  Instant Delivery
+                </span>
+              </div>
+            </div>
+            <p className="text-[9px] font-black text-slate-800 uppercase tracking-[0.4em]">
+               &copy; All rights reserved • 2026 InterviewSpark
+            </p>
+          </div>
         </div>
-
-        <footer className="mt-auto pt-4 flex flex-col items-center gap-1">
-          <p className="text-[10px] text-[#536480]">
-            Secure payment via PayMongo · No hidden fees · Credits never expire
-          </p>
-          <p className="text-[10px] font-bold text-[#536480] uppercase tracking-widest">
-            InterviewSpark | 2026
-          </p>
-        </footer>
       </div>
     </div>
   );

@@ -45,7 +45,9 @@ function Questions({
   } = useInterview();
 
   const [isFinished, setIsFinished] = useState(false);
-  const [progressNum, setProgressNum] = useState(questionNum - 1);
+  const [progressNum, setProgressNum] = useState(
+    questionNum && questionNum - 1,
+  );
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
   useEffect(() => {
