@@ -1,6 +1,6 @@
 import type { Page } from "../types";
 import { useInterview } from "../context/InterviewContext";
-import { IoArrowUp, IoTrendingUp } from "react-icons/io5";
+import { IoArrowUp } from "react-icons/io5";
 import { MdShowChart } from "react-icons/md";
 import { useState } from "react";
 import { FaSort } from "react-icons/fa6";
@@ -30,19 +30,36 @@ const getBarColor = (s: number) => {
   return "bg-red-500";
 };
 
-export default function History({
+const Skeleton = () => (
+  <div className="animate-pulse space-y-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {[...Array(4)].map((_, i) => (
+        <div
+          key={i}
+          className="h-32 bg-white/5 border border-white/10 rounded-sm"
+        ></div>
+      ))}
+    </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 h-80 bg-white/5 border border-white/10 rounded-sm"></div>
+      <div className="h-80 bg-white/5 border border-white/10 rounded-sm"></div>
+    </div>
+  </div>
+);
+
+export default function Dashboard({
   onNavigate,
 }: {
   onNavigate: (page: Page) => void;
 }) {
-  const { allInterviews } = useInterview();
-  const [sortBy, setSortBy] = useState<
+  const { allInterviews, isLoading } = useInterview();
+  const [sortBy] = useState<
     "Newest" | "Highest Score" | "Lowest Score" | "Role"
   >("Newest");
   const [openSort, setOpenSort] = useState(false);
 
   const calculateAverage = (key: string) => {
-    if (allInterviews.length === 0) return 0;
+    if (!allInterviews || allInterviews.length === 0) return 0;
     const valid = allInterviews.filter((h: any) => h[key] !== null);
     if (valid.length === 0) return 0;
     const sum = valid.reduce(
@@ -69,17 +86,16 @@ export default function History({
     },
   ];
 
-  const topRole = allInterviews.reduce(
+  const topRole = (allInterviews || []).reduce(
     (acc, { role }) => {
-      acc[role] = (acc[role] || 0) + 1;
+      if (role) acc[role] = (acc[role] || 0) + 1;
       return acc;
     },
     {} as Record<string, number>,
   );
 
-  const mostCommonRole = Object.entries(topRole).sort(
-    (a, b) => b[1] - a[1],
-  )[0][0];
+  const roleEntries = Object.entries(topRole).sort((a, b) => b[1] - a[1]);
+  const mostCommonRole = roleEntries.length > 0 ? roleEntries[0][0] : "None";
 
   const bestScore =
     allInterviews.length > 0
@@ -93,14 +109,18 @@ export default function History({
   const maxWeekly = Math.max(...weeklyData, 1);
 
   const formatProfessionalDate = (isoString: string) => {
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }).format(new Date(isoString));
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }).format(new Date(isoString));
+    } catch {
+      return "Invalid Date";
+    }
   };
 
   const avgOverallScore =
@@ -115,19 +135,16 @@ export default function History({
 
   const getSortedInterviews = () => {
     const sorted = [...allInterviews];
-    if (sortBy === "Newest") {
-      return sorted;
-    } else if (sortBy === "Highest Score") {
+    if (sortBy === "Highest Score")
       return sorted.sort(
         (a, b) => Number(b.overall_score) - Number(a.overall_score),
       );
-    } else if (sortBy === "Lowest Score") {
+    if (sortBy === "Lowest Score")
       return sorted.sort(
         (a, b) => Number(a.overall_score) - Number(b.overall_score),
       );
-    } else if (sortBy === "Role") {
-      return sorted.sort((a, b) => a.role.localeCompare(b.role));
-    }
+    if (sortBy === "Role")
+      return sorted.sort((a, b) => (a.role || "").localeCompare(b.role || ""));
     return sorted;
   };
 
@@ -145,21 +162,19 @@ export default function History({
               Track your interview performance and skill development over time.
             </p>
           </div>
-
-          <div className="relative group">
-            <div className="absolute opacity-0 group-hover:opacity-40 transition duration-500 blur-md rounded-sm"></div>
-            <button
-              onClick={() => onNavigate("interview")}
-              className="relative flex items-center justify-center gap-8 w-full cursor-pointer bg-white/5 border border-white/20 hover:border-blue-500/50 hover:bg-blue-500/10 p-6 rounded-sm active:scale-[0.98] transition-all duration-300"
-            >
-              <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white group-hover:text-blue-400 transition-colors">
-                Practice Now
-              </span>
-            </button>
-          </div>
+          <button
+            onClick={() => onNavigate("interview")}
+            className="flex items-center justify-center gap-8 bg-white/5 border border-white/20 hover:border-blue-500/50 hover:bg-blue-500/10 p-6 rounded-sm active:scale-[0.98] transition-all duration-300 group"
+          >
+            <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white group-hover:text-blue-400">
+              Practice Now
+            </span>
+          </button>
         </div>
 
-        {allInterviews.length > 0 ? (
+        {isLoading ? (
+          <Skeleton />
+        ) : allInterviews.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-linear-to-br from-[#0f1419] to-[#141c28] border border-blue-500/20 rounded-sm p-6 flex flex-col">
@@ -173,14 +188,6 @@ export default function History({
                 </div>
                 <div className="text-4xl font-bold text-white">
                   {allInterviews.length}
-                </div>
-                <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center gap-2">
-                  <IoTrendingUp className="text-emerald-400 text-sm" />
-                  <span className="text-xs text-emerald-400 font-medium">
-                    {allInterviews.length > 1
-                      ? "+" + (allInterviews.length - 1)
-                      : "First session"}
-                  </span>
                 </div>
               </div>
 
@@ -196,9 +203,6 @@ export default function History({
                 <div className="text-4xl font-bold text-emerald-400">
                   {bestScore.toFixed(1)}
                 </div>
-                <div className="mt-3 pt-3 border-t border-slate-700/50">
-                  <span className="text-xs text-slate-400">out of 10</span>
-                </div>
               </div>
 
               <div className="bg-linear-to-br from-[#0f1419] to-[#141c28] border border-amber-500/20 rounded-sm p-6 flex flex-col">
@@ -212,11 +216,6 @@ export default function History({
                 </div>
                 <div className="text-4xl font-bold text-amber-400">
                   {avgOverallScore}
-                </div>
-                <div className="mt-3 pt-3 border-t border-slate-700/50">
-                  <span className="text-xs text-slate-400">
-                    across all sessions
-                  </span>
                 </div>
               </div>
 
@@ -232,11 +231,6 @@ export default function History({
                 <div className="text-2xl font-bold text-purple-400 line-clamp-2">
                   {mostCommonRole}
                 </div>
-                <div className="mt-3 pt-3 border-t border-slate-700/50">
-                  <span className="text-xs text-slate-400">
-                    across all sessions
-                  </span>
-                </div>
               </div>
             </div>
 
@@ -250,37 +244,27 @@ export default function History({
                     Last 7 sessions
                   </span>
                 </div>
-
-                {weeklyData.length > 0 ? (
-                  <div className="flex items-end justify-between gap-3 h-88 px-2">
-                    {weeklyData.map((val, i) => (
-                      <div
-                        key={i}
-                        className="flex flex-col items-center flex-1 h-full justify-between"
-                      >
-                        <span className="text-xs font-mono text-slate-500 transition-opacity">
-                          {val.toFixed(1)}
-                        </span>
-                        <div className="w-full h-full flex items-end justify-center">
-                          <div
-                            className={`w-full h-20 rounded-t-lg transition-all duration-300 hover:brightness-110 ${getBarColor((val / 10) * 100)}`}
-                            style={{
-                              height: `${(val / maxWeekly) * 100}%`,
-                              minHeight: "4px",
-                            }}
-                          />
-                        </div>
-                        <span className="text-xs font-mono font-bold text-slate-400 mt-2">
-                          S{allInterviews.length - weeklyData.length + i + 1}
-                        </span>
+                <div className="flex items-end justify-between gap-3 h-88 px-2">
+                  {weeklyData.map((val, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col items-center flex-1 h-full justify-between"
+                    >
+                      <span className="text-xs font-mono text-slate-500">
+                        {val.toFixed(1)}
+                      </span>
+                      <div className="w-full h-full flex items-end justify-center">
+                        <div
+                          className={`w-full rounded-t-lg transition-all duration-300 ${getBarColor((val / 10) * 100)}`}
+                          style={{
+                            height: `${(val / maxWeekly) * 100}%`,
+                            minHeight: "4px",
+                          }}
+                        />
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="h-64 flex items-center justify-center text-slate-500">
-                    No data yet
-                  </div>
-                )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="bg-[#0a0f18] border border-slate-700/50 rounded-sm p-6">
@@ -295,19 +279,19 @@ export default function History({
                           <div className="w-6 h-6 rounded-md bg-blue-500/20 flex items-center justify-center text-xs font-bold text-blue-400">
                             {item.icon}
                           </div>
-                          <span className="text-xs font-semibold text-slate-300 uppercase tracking-tight">
+                          <span className="text-xs font-semibold text-slate-300 uppercase">
                             {item.skill}
                           </span>
                         </div>
                         <span
                           className={`text-sm font-bold font-mono ${getScoreColor(item.score)}`}
                         >
-                          {item.score.toFixed(1)}
+                          {(item.score || 0).toFixed(1)}
                         </span>
                       </div>
                       <div className="h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/30">
                         <div
-                          className={`h-full rounded-full transition-all duration-500 ${getBarColor(item.score)}`}
+                          className={`h-full transition-all duration-500 ${getBarColor(item.score)}`}
                           style={{
                             width: `${Math.min(item.score * 10, 100)}%`,
                           }}
@@ -320,99 +304,31 @@ export default function History({
             </div>
 
             <div className="bg-[#0a0f18] border border-slate-700/50 rounded-sm overflow-hidden flex flex-col h-130">
-              <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-900/30 shrink-0">
+              <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-900/30">
                 <h2 className="text-lg font-semibold text-white">
                   Session History
                 </h2>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-medium text-slate-400">
-                    {allInterviews.length} total
-                  </span>
-                  <div className="relative group">
-                    <button
-                      onClick={() => setOpenSort(!openSort)}
-                      className="flex items-center cursor-pointer gap-2 px-3 py-1.5 rounded-md bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-medium transition-colors border border-slate-700/50"
-                    >
-                      <FaSort size={12} />
-                      {sortBy}
-                    </button>
-                    {openSort && (
-                      <div className="absolute right-0 mt-2 w-40 bg-[#0a0f18] border border-slate-700/50 rounded-lg shadow-xl  transition-all duration-200 z-20">
-                        <button
-                          onClick={() => {
-                            setOpenSort(false);
-                            setSortBy("Newest");
-                          }}
-                          className={`w-full text-left px-4 cursor-pointer py-2.5 text-xs font-medium transition-colors ${
-                            sortBy === "Newest"
-                              ? "bg-blue-500/20 text-blue-400"
-                              : "text-slate-300 hover:bg-slate-800/50"
-                          }`}
-                        >
-                          Newest First
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSortBy("Highest Score");
-                            setOpenSort(false);
-                          }}
-                          className={`w-full text-left px-4 cursor-pointer py-2.5 text-xs font-medium transition-colors border-t border-slate-700/50 ${
-                            sortBy === "Highest Score"
-                              ? "bg-blue-500/20 text-blue-400"
-                              : "text-slate-300 hover:bg-slate-800/50"
-                          }`}
-                        >
-                          Highest Score
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSortBy("Lowest Score");
-                            setOpenSort(false);
-                          }}
-                          className={`w-full text-left px-4 cursor-pointer py-2.5 text-xs font-medium transition-colors border-t border-slate-700/50 ${
-                            sortBy === "Lowest Score"
-                              ? "bg-blue-500/20 text-blue-400"
-                              : "text-slate-300 hover:bg-slate-800/50"
-                          }`}
-                        >
-                          Lowest Score
-                        </button>
-                        <button
-                          onClick={() => {
-                            setOpenSort(false);
-                            setSortBy("Role");
-                          }}
-                          className={`w-full text-left cursor-pointer px-4 py-2.5 text-xs font-medium transition-colors border-t border-slate-700/50 ${
-                            sortBy === "Role"
-                              ? "bg-blue-500/20 text-blue-400"
-                              : "text-slate-300 hover:bg-slate-800/50"
-                          }`}
-                        >
-                          Role (A-Z)
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <button
+                  onClick={() => setOpenSort(!openSort)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800 text-slate-300 text-xs border border-slate-700/50"
+                >
+                  <FaSort size={12} /> {sortBy}
+                </button>
               </div>
-
               <div className="overflow-y-auto flex-1">
-                <table className="w-full text-sm">
-                  <thead className="sticky top-0 bg-[#0a0f18] z-10">
-                    <tr className="border-b border-slate-700/50">
-                      <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <table className="w-full text-sm text-left">
+                  <thead className="sticky top-0 bg-[#0a0f18] z-10 border-b border-slate-700/50">
+                    <tr>
+                      <th className="px-6 py-3 text-xs uppercase text-slate-400">
                         Date
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      <th className="px-6 py-3 text-xs uppercase text-slate-400">
                         Role
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      <th className="px-6 py-3 text-xs uppercase text-slate-400">
                         Type
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                        Company
-                      </th>
-                      <th className="text-right px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      <th className="px-6 py-3 text-xs uppercase text-slate-400 text-right">
                         Score
                       </th>
                     </tr>
@@ -426,22 +342,19 @@ export default function History({
                         <td className="px-6 py-4 text-xs font-mono text-slate-400">
                           {formatProfessionalDate(h.created_at)}
                         </td>
-                        <td className="px-6 py-4 text-sm font-medium text-white group-hover:text-blue-400 transition-colors">
+                        <td className="px-6 py-4 font-medium text-white group-hover:text-blue-400">
                           {h.role}
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-tight inline-block ${typeStyle[h.interview_type.toLowerCase()] || typeStyle["behavioral"]}`}
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase ${typeStyle[h.interview_type?.toLowerCase()] || typeStyle["behavioral"]}`}
                           >
                             {h.interview_type}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-sm text-slate-400">
-                          {h.company || "—"}
-                        </td>
                         <td className="px-6 py-4 text-right">
                           <span
-                            className={`px-3 py-1.5 rounded-md text-sm font-bold font-mono inline-block min-w-fit ${scoreStyle(Number(h.overall_score))}`}
+                            className={`px-3 py-1.5 rounded-md text-sm font-bold font-mono ${scoreStyle(Number(h.overall_score))}`}
                           >
                             {Number(h.overall_score).toFixed(1)}/10
                           </span>
@@ -451,7 +364,6 @@ export default function History({
                   </tbody>
                 </table>
               </div>
-              <div className="py-3 overflow-hidden"></div>
             </div>
           </>
         ) : (
@@ -465,7 +377,7 @@ export default function History({
             </p>
             <button
               onClick={() => onNavigate("interview")}
-              className="px-6 py-3 rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-blue-600/20 active:scale-95"
+              className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold active:scale-95 transition-all"
             >
               Launch First Interview
             </button>
