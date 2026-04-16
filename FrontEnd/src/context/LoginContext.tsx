@@ -36,6 +36,7 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("");
     setActivePage("landing");
     setShowLogout(false);
+    window.location.reload();
   };
 
   const handleLogin = async () => {

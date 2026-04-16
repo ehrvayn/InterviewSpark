@@ -75,7 +75,7 @@ export default function PaymentModal() {
 
         <button
           onClick={() => setShowPayment(false)}
-          className="absolute top-6 right-6 p-2 rounded-full bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all z-20"
+          className="absolute top-6 cursor-pointer right-6 p-2 rounded-full bg-white/5 text-slate-500 hover:text-white hover:bg-white/10 transition-all z-20"
         >
           <MdClose size={20} />
         </button>

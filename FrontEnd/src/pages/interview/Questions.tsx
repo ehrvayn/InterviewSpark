@@ -1,10 +1,17 @@
-import { FaMicrophone, FaRobot, FaUserTie, FaChartLine } from "react-icons/fa";
+import {
+  FaMicrophone,
+  FaRobot,
+  FaUserTie,
+  FaChartLine,
+  FaLightbulb,
+} from "react-icons/fa";
 import { useInterview } from "../../context/InterviewContext";
 import { useState, useEffect } from "react";
 import AbortSessionModal from "../../components/modal/AbortSessionModal";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
+import Logo from "../../assets/img/InterviewSpark_Logo.png";
 
 const typeStyle: Record<string, string> = {
   technical: "bg-purple-500/10 text-purple-400 border-purple-500/30",
@@ -57,7 +64,7 @@ function Questions({
   }, [transcript, listening, setAnswer]);
 
   return (
-    <div className="w-full mt-12 lg:mt-0 max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-12 min-h-screen overflow-x-hidden">
+    <div className="w-full mt-12 lg:mt-0 max-w-5xl mx-auto px-1 sm:px-6 pt-6 pb-12 min-h-screen overflow-x-hidden">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 border-b border-[#1f2d42] pb-6">
         <div className="space-y-4">
           <div className="flex items-center gap-2">
@@ -114,15 +121,19 @@ function Questions({
                 <div className="absolute top-0 right-0 p-4 opacity-5">
                   <FaRobot size={80} />
                 </div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-8 rounded-sm bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
-                    <FaRobot size={14} />
+                <div className="flex items-center gap-1 mb-6">
+                  <div className="w-10 h-10 flex items-center justify-center text-blue-400">
+                    <img
+                      src={Logo}
+                      alt="InterviewSpark"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
                   </div>
                   <span className="text-[11px] font-black uppercase tracking-widest text-blue-400">
                     Question {questionNum}
                   </span>
                 </div>
-                <h2 className="text-xl sm:text-2xl text-white font-medium text-justify leading-relaxed max-w-full">
+                <h2 className="text-sm sm:text-xl lg:text-2xl text-white font-medium text-justify leading-relaxed max-w-full">
                   {question}
                 </h2>
               </div>
@@ -169,33 +180,44 @@ function Questions({
               )}
 
               <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-[#1f2d42] gap-4">
-                <button
-                  onClick={() => {
-                    if (listening) {
-                      SpeechRecognition.stopListening();
-                    } else {
-                      resetTranscript();
-                      SpeechRecognition.startListening({ continuous: true });
-                    }
-                  }}
-                  className={`flex items-center gap-3 px-6 cursor-pointer py-3 rounded-sm text-xs font-black uppercase tracking-widest transition-all w-full sm:w-auto border
+                <div className="flex flex-col w-full sm:w-auto gap-3">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-sm bg-blue-500/5 border border-blue-500/10">
+                    <FaLightbulb className="text-blue-500 text-xs" />
+                    <span className="text-[10px] font-bold text-blue-400 uppercase tracking-tight">
+                      Pro Tip: Use Voice Input to simulate a real interview
+                      environment
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (listening) {
+                        SpeechRecognition.stopListening();
+                      } else {
+                        resetTranscript();
+                        SpeechRecognition.startListening({ continuous: true });
+                      }
+                    }}
+                    className={`flex items-center justify-center gap-3 px-6 cursor-pointer py-3 rounded-sm text-xs font-black uppercase tracking-widest transition-all w-full sm:w-auto border
                     ${
                       listening
                         ? "bg-red-500/10 border-red-500/50 text-red-400 animate-pulse"
                         : "bg-[#141c28] border-[#1f2d42] text-[#8a9ab8] hover:border-blue-500/50 hover:text-white"
                     }`}
-                >
-                  <FaMicrophone
-                    size={14}
-                    className={listening ? "animate-bounce" : ""}
-                  />
-                  {listening ? "End Recording" : "Voice Input"}
-                </button>
+                  >
+                    <FaMicrophone
+                      size={14}
+                      className={listening ? "animate-bounce" : ""}
+                    />
+                    {listening ? "End Recording" : "Voice Input"}
+                  </button>
+                </div>
 
-                <div className="flex gap-4 w-full sm:w-auto">
+                <div className="flex gap-4 w-full sm:w-auto self-end">
                   <button
-                    onClick={() => setShowAbortModal(true)}
-                    className="flex-1 sm:flex-none px-8 cursor-pointer py-3 rounded-sm text-xs font-black uppercase tracking-widest text-[#536480] hover:text-white transition-colors"
+                    onClick={() => {
+                      setShowAbortModal(true);
+                    }}
+                    className="flex-1 sm:flex-none border px-8 cursor-pointer py-3 rounded-sm text-xs font-black uppercase tracking-widest text-[#536480] hover:text-white transition-colors"
                   >
                     Abort
                   </button>
@@ -204,6 +226,7 @@ function Questions({
                       const currentNum = questionNum;
                       await submitAnswer();
                       setProgressNum(currentNum);
+                      SpeechRecognition.stopListening();
                       if (currentNum === questionLimit) setIsFinished(true);
                     }}
                     disabled={answer.trim().length < 10 || isLoading}

@@ -200,7 +200,7 @@ export default function RegisterContainer() {
             Already have account?{" "}
             <button
               onClick={() => setShowRegister(false)}
-              className="text-white hover:text-blue-500 transition-colors"
+              className="text-white cursor-pointer hover:text-blue-500 transition-colors"
             >
               Sign In
             </button>

@@ -19,12 +19,8 @@ export default function App() {
     const params = new URLSearchParams(window.location.search);
     const paymentStatus = params.get("payment");
 
-    if (paymentStatus === "success") {
-      return <PaymentSuccess />;
-    }
-    if (paymentStatus === "failed") {
-      return <PaymentFailed />;
-    }
+    if (paymentStatus === "success") return <PaymentSuccess />;
+    if (paymentStatus === "failed") return <PaymentFailed />;
 
     switch (activePage) {
       case "landing":
@@ -41,16 +37,12 @@ export default function App() {
   const isLanding = activePage === "landing";
 
   return (
-    <div
-      className={`w-full min-h-screen bg-[#080c12] text-[#e8edf5] font-sans ${!isLanding ? "lg:grid lg:grid-cols-[290px_1fr]" : ""}`}
-    >
+    <div className="w-full min-h-screen bg-[#080c12] text-[#e8edf5] font-sans ">
       {!isLanding && (
         <Sidebar currentPage={activePage} onNavigate={setActivePage} />
       )}
       <main
-        className={
-          isLanding ? "w-full" : "min-h-screen flex flex-col px-1 lg:pt-0"
-        }
+        className={`flex-1 flex flex-col min-h-screen ${!isLanding ? "lg:ml-72" : "w-full"}`}
       >
         {renderPage()}
         {showLogout && <LogoutModal />}

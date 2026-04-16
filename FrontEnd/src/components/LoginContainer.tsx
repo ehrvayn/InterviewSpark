@@ -72,7 +72,7 @@ export default function LoginContainer() {
       <div className="relative z-10">
         <div className="mb-10">
           <h2 className="text-3xl font-black tracking-tighter uppercase text-white mb-2">
-            Welcome Back
+            Hello, Welcome!
           </h2>
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
             Identity verification required
@@ -173,10 +173,10 @@ export default function LoginContainer() {
 
         <div className="mt-10 text-center">
           <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
-            New account?{" "}
+            New here?{" "}
             <button
               onClick={() => setShowRegister(true)}
-              className="text-white hover:text-blue-500 transition-colors"
+              className="text-white cursor-pointer hover:text-blue-500 transition-colors"
             >
               Sign Up
             </button>

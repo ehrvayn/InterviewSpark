@@ -69,6 +69,18 @@ export default function History({
     },
   ];
 
+  const topRole = allInterviews.reduce(
+    (acc, { role }) => {
+      acc[role] = (acc[role] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const mostCommonRole = Object.entries(topRole).sort(
+    (a, b) => b[1] - a[1],
+  )[0][0];
+
   const bestScore =
     allInterviews.length > 0
       ? Math.max(...allInterviews.map((h: any) => Number(h.overall_score || 0)))
@@ -123,8 +135,8 @@ export default function History({
 
   return (
     <div className="pt-4 lg:mt-0 mt-15 max-w-full overflow-x-hidden">
-      <div className="px-0 md:px-6 lg:px-8 space-y-8 pb-12">
-        <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8 mb-12 border-b border-white/20 pb-10">
+      <div className="px-2 md:px-6 lg:px-8 sm:space-y-6 space-y-4 pb-12">
+        <div className="flex flex-col md:flex-row xl:items-end justify-between gap-8 mb-12 border-b border-white/20 pb-10">
           <div className="space-y-3">
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase">
               Your Progress
@@ -134,12 +146,15 @@ export default function History({
             </p>
           </div>
 
-          <div className="hover:ring-2 group hover:ring-inset hover:ring-blue-800 rounded-sm">
+          <div className="relative group">
+            <div className="absolute opacity-0 group-hover:opacity-40 transition duration-500 blur-md rounded-sm"></div>
             <button
               onClick={() => onNavigate("interview")}
-              className="flex items-center gap-8 cursor-pointer group hover:text-blue-800 bg-white/2 border border-white/50 p-6 rounded-sm active:scale-95"
+              className="relative flex items-center justify-center gap-8 w-full cursor-pointer bg-white/5 border border-white/20 hover:border-blue-500/50 hover:bg-blue-500/10 p-6 rounded-sm active:scale-[0.98] transition-all duration-300"
             >
-              Practice Now
+              <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white group-hover:text-blue-400 transition-colors">
+                Practice Now
+              </span>
             </button>
           </div>
         </div>
@@ -215,16 +230,18 @@ export default function History({
                   </div>
                 </div>
                 <div className="text-2xl font-bold text-purple-400 line-clamp-2">
-                  {allInterviews[0]?.role || "N/A"}
+                  {mostCommonRole}
                 </div>
                 <div className="mt-3 pt-3 border-t border-slate-700/50">
-                  <span className="text-xs text-slate-400">across all sessions</span>
+                  <span className="text-xs text-slate-400">
+                    across all sessions
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 items-center lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-[#0a0f18] border border-slate-700/50 rounded-sm p-6">
+            <div className="grid grid-cols-1 items-center lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="lg:col-span-2 flex flex-col lg:h-full sm:h-70 h-60 bg-[#0a0f18] border border-slate-700/50 rounded-sm p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-white">
                     Recent Performance
@@ -246,7 +263,7 @@ export default function History({
                         </span>
                         <div className="w-full h-full flex items-end justify-center">
                           <div
-                            className={`w-full rounded-t-md transition-all duration-300 hover:brightness-110 ${getBarColor((val / 10) * 100)}`}
+                            className={`w-full h-20 rounded-t-lg transition-all duration-300 hover:brightness-110 ${getBarColor((val / 10) * 100)}`}
                             style={{
                               height: `${(val / maxWeekly) * 100}%`,
                               minHeight: "4px",
@@ -434,6 +451,7 @@ export default function History({
                   </tbody>
                 </table>
               </div>
+              <div className="py-3 overflow-hidden"></div>
             </div>
           </>
         ) : (

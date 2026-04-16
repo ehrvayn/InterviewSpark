@@ -10,7 +10,7 @@ export default function LogoutModal() {
         <div className="text-center mb-6">
           <h2 className="text-xl font-black text-white mb-2">Logging out?</h2>
           <p className="text-sm text-[#8a9ab8]">
-            Are you sure you want to log out?
+            Are you sure you want to log out? Any ongoing session will be lost.
           </p>
         </div>
 

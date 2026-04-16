@@ -84,13 +84,16 @@ export default function Interview() {
             Configure Session
           </h1>
           <p className="text-slate-500 text-sm max-w-2xl font-medium leading-relaxed uppercase tracking-tight">
-          Tailor your experience. Our AI will adapt its persona and questions
-          based on your selections.
+            Tailor your experience. Our AI will adapt its persona and questions
+            based on your selections.
           </p>
         </div>
 
         <div className="flex items-center gap-8 bg-white/2 border border-white/50 p-6 rounded-sm">
-          <div className="text-right">
+          <SiBasicattentiontoken className="text-blue-600 text-3xl animate-pulse" />
+
+          <div className="w-px h-12 bg-white/10" />
+          <div className="text-center">
             <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">
               Available Credits
             </p>
@@ -98,8 +101,6 @@ export default function Interview() {
               {currentUser?.credit ?? 0}
             </p>
           </div>
-          <div className="w-px h-12 bg-white/10" />
-          <SiBasicattentiontoken className="text-blue-600 text-3xl animate-pulse" />
         </div>
       </div>
 

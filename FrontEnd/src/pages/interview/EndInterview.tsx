@@ -59,7 +59,7 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
   const scoreLabel = getScoreLabel(overallScore);
 
   return (
-    <div className="w-full max-w-6xl mx-auto lg:mt-0 md:mt-10 mt-13 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="w-full max-w-6xl mx-auto lg:mt-0 md:mt-10 mt-13 px-1 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <header className="mb-10 border-b border-[#1f2d42] pb-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-emerald-500/20 rounded-sm">
