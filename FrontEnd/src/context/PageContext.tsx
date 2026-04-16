@@ -19,24 +19,15 @@ export const PageProvider: React.FC<{ children: React.ReactNode }> = ({
 
     if (payment === "success") {
       setActivePage("payment-success");
-      window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
 
     if (payment === "failed") {
       setActivePage("payment-failed");
-      window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
 
     const token = localStorage.getItem("token");
-    const saved = localStorage.getItem("interviewState");
-
-    if (token && saved) {
-      setActivePage("interview");
-      return;
-    }
-
     if (token) {
       setActivePage("interview");
       return;
@@ -54,8 +45,6 @@ export const PageProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const usePage = () => {
   const context = useContext(pageContext);
-  if (!context) {
-    throw new Error("Page must be used inside PageProvider");
-  }
+  if (!context) throw new Error("Page must be used inside PageProvider");
   return context;
 };
