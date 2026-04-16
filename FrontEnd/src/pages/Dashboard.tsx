@@ -164,7 +164,7 @@ export default function Dashboard({
           </div>
           <button
             onClick={() => onNavigate("interview")}
-            className="flex items-center justify-center gap-8 bg-white/5 border border-white/20 hover:border-blue-500/50 hover:bg-blue-500/10 p-6 rounded-sm active:scale-[0.98] transition-all duration-300 group"
+            className="flex items-center justify-center cursor-pointer gap-8 bg-white/5 border border-white/20 hover:border-blue-500/50 hover:bg-blue-500/10 p-6 rounded-sm active:scale-[0.98] transition-all duration-300 group"
           >
             <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white group-hover:text-blue-400">
               Practice Now
