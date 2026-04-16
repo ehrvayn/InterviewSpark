@@ -28,7 +28,6 @@ export const createPayment = async (userId: number, packId: string) => {
     }
 
     const referenceId = `${userId}-${packId}-${Date.now()}`;
-    const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 
     const response = await axios.post(
       "https://api.paymongo.com/v1/checkout_sessions",
@@ -48,8 +47,8 @@ export const createPayment = async (userId: number, packId: string) => {
               },
             ],
             payment_method_types: ["card", "gcash"],
-            success_url: `${BACKEND_URL}/payment/success?ref=${referenceId}`,
-            cancel_url: `${BACKEND_URL}/payment/failed?ref=${referenceId}`,
+            success_url: `${BASE_URL}/payment/success?ref=${referenceId}`,
+            cancel_url: `${BASE_URL}/payment/failed?ref=${referenceId}`,
             reference_number: referenceId,
           },
         },
