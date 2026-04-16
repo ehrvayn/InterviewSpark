@@ -25,6 +25,3 @@ InterviewSpark is an AI-powered interview preparation platform designed to help 
 - **PostgreSQL** (Database)
 - **Prisma** (ORM)
 - **Google OAuth 2.0**
-
-## 📦 Installation & Setup
-
