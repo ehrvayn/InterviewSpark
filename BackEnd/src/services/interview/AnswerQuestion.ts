@@ -1,6 +1,6 @@
 import { query } from "../../database/Connection";
 import InterviewQuery from "../../models/InterviewQuery";
-import { scoreAnswer, generateNextQuestion } from "../ai/GrokService";
+import { scoreAnswer, generateNextQuestion } from "../ai/GroqService";
 
 export const answerQuestion = async (
   interviewId: number,

@@ -37,7 +37,7 @@ Requirements:
     const questionText = message.choices[0].message.content || "";
     return questionText;
   } catch (error) {
-    console.error("Grok error:", error);
+    console.error("Groq error:", error);
     throw error;
   }
 };
@@ -92,7 +92,7 @@ Respond in this exact JSON format only: {"clarity": X, "confidence": X, "relevan
     const scores = JSON.parse(jsonMatch ? jsonMatch[0] : responseText);
     return scores;
   } catch (error) {
-    console.error("Grok scoring error:", error);
+    console.error("Groq scoring error:", error);
     throw error;
   }
 };
@@ -136,7 +136,7 @@ Respond with just the follow-up question, nothing else.`,
     const questionText = message.choices[0].message.content || "";
     return questionText;
   } catch (error) {
-    console.error("Grok generation error:", error);
+    console.error("Groq generation error:", error);
     throw error;
   }
 };
@@ -196,7 +196,7 @@ Be brutal, be specific, be brief. No fluff, no repetition, no praise padding.`,
     const feedback = message.choices[0].message.content || "";
     return feedback;
   } catch (error) {
-    console.error("Grok feedback error:", error);
+    console.error("Groq feedback error:", error);
     throw error;
   }
 };

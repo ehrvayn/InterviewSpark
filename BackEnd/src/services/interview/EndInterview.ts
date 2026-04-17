@@ -1,6 +1,6 @@
 import { query } from "../../database/Connection";
 import InterviewQuery from "../../models/InterviewQuery";
-import { generateFinalFeedback } from "../ai/GrokService";
+import { generateFinalFeedback } from "../ai/GroqService";
 
 export const endInterview = async (interviewId: number) => {
   try {
