@@ -4,9 +4,10 @@ import type { AuthRequest } from "../middlewares/AuthMiddleware";
 import { answerQuestion } from "../services/interview/AnswerQuestion";
 import { endInterview } from "../services/interview/EndInterview";
 import { retrieveInterviews } from "../services/interview/RetrieveInterviews";
+import xss from "xss";
 
 export const startInterviewCon = async (req: AuthRequest, res: Response) => {
-  const { interviewType, role, difficulty, company } = req.body;
+  let { interviewType, role, difficulty, company } = req.body;
   const userId = req.userId;
 
   if (!interviewType || !role || !difficulty) {
@@ -25,6 +26,26 @@ export const startInterviewCon = async (req: AuthRequest, res: Response) => {
     return;
   }
 
+  interviewType = xss(interviewType.trim(), {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
+
+  role = xss(role.trim(), {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
+
+  difficulty = xss(difficulty.trim(), {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
+
+  company = xss(company.trim(), {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
+
   const result = await startInterview({
     userId,
     interviewType,
@@ -37,7 +58,7 @@ export const startInterviewCon = async (req: AuthRequest, res: Response) => {
 };
 
 export const answerQuestionCon = async (req: AuthRequest, res: Response) => {
-  const { interviewId, questionId, userAnswer, questionText, questionNumber } =
+  let { interviewId, questionId, userAnswer, questionText, questionNumber } =
     req.body;
   const userId = req.userId;
 
@@ -62,6 +83,16 @@ export const answerQuestionCon = async (req: AuthRequest, res: Response) => {
     });
     return;
   }
+
+  userAnswer = xss(userAnswer.trim(), {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
+
+  questionText = xss(questionText.trim(), {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
 
   const result = await answerQuestion(
     interviewId,
@@ -88,8 +119,10 @@ export const endInterviewCon = async (req: Request, res: Response) => {
   res.status(result.success ? 200 : 400).json(result);
 };
 
-
-export const retrieveInterviewsCon = async (req: AuthRequest, res: Response) => {
+export const retrieveInterviewsCon = async (
+  req: AuthRequest,
+  res: Response,
+) => {
   const userId = req.userId;
 
   if (!userId) {

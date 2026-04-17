@@ -4,8 +4,6 @@ import { handleWebhook } from "../services/payment/HandleWebhook";
 import { processTransaction } from "../services/payment/HandleTransaction";
 import { AuthRequest } from "../middlewares/AuthMiddleware";
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
-
 export const initiatePayment = async (
   req: AuthRequest,
   res: Response,

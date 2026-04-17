@@ -3,12 +3,13 @@ import RegisterUser from "../services/user/RegisterUser";
 import Login from "../services/user/Login";
 import { retrieveUser } from "../services/user/RetriveUser";
 import { AuthRequest } from "../middlewares/AuthMiddleware";
+import xss from "xss";
 
 export const registerUserCon = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  const { name, email, password } = req.body;
+  let { name, email, password } = req.body;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!email || !password || !name) {
@@ -18,6 +19,21 @@ export const registerUserCon = async (
     });
     return;
   }
+
+  email = xss(email.trim().toLowerCase(), {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
+
+  name = xss(name.trim(), {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
+
+  password = xss(password, {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
 
   if (!emailRegex.test(email)) {
     res.status(400).json({
@@ -35,7 +51,7 @@ export const registerUserCon = async (
     return;
   }
 
-  const result = await RegisterUser(req.body);
+  const result = await RegisterUser({ name, email, password });
 
   if (!result.success) {
     res.status(400).json(result);
@@ -48,7 +64,7 @@ export const loginController = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
 
   if (!email || !password) {
     res.status(400).json({
@@ -57,6 +73,16 @@ export const loginController = async (
     });
     return;
   }
+
+  email = xss(email.trim().toLowerCase(), {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
+
+  password = xss(password, {
+    whiteList: {},
+    stripIgnoreTag: true,
+  });
 
   const result = await Login(email, password);
 
