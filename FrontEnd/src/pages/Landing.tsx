@@ -6,9 +6,14 @@ import LoginContainer from "../components/LoginContainer";
 import { useRegister } from "../context/RegisterContext";
 import RegisterContainer from "../components/registerContainer";
 import Logo from "../assets/img/InterviewSpark_Logo.png";
+import { useEffect } from "react";
 
 export default function Landing() {
   const { showRegister } = useRegister();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="overflow-x-hidden bg-[#0a0f18] text-white font-sans selection:bg-blue-500/30">
@@ -22,7 +27,9 @@ export default function Landing() {
               alt="InterviewSpark"
               className="lg:w-30 md:w-25 sm:w-20 w-15  object-cover rounded-lg"
             />
-            <p className="text-blue-400 text-[15px] sm:text-xl font-black tracking-[0.2em]">InterviewSpark</p>
+            <p className="text-blue-400 text-[15px] sm:text-xl font-black tracking-[0.2em]">
+              InterviewSpark
+            </p>
           </div>
 
           <h1 className="text-3xl sm:text-5xl xl:text-8xl font-black leading-[0.85] tracking-tighter mb-8 uppercase">

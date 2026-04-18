@@ -68,6 +68,10 @@ export default function Interview() {
     }
   }, [interviewStart]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { setShowPayment } = usePayment();
   const { currentUser } = useCurrentUser();
 

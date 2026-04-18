@@ -12,6 +12,7 @@ export default function AbortSessionModal({
     setSelectedDiff,
     setSelectedType,
     setSelectedRole,
+    setInterviewStart,
     setCompany,
   } = useInterview();
 
@@ -40,14 +41,15 @@ export default function AbortSessionModal({
         <div className="flex flex-col gap-3">
           <button
             onClick={() => {
+              localStorage.removeItem("session");
+              setInterviewStart(false);
               setStage("setup");
               setSelectedDiff("junior");
               setSelectedType("behavioral");
               setSelectedRole("Software Engineer");
               setCompany("");
-              localStorage.removeItem("session");
-              SpeechRecognition.stopListening();
               setShowAbortModal(false);
+              SpeechRecognition.stopListening();
             }}
             className="w-full py-4 bg-rose-600 cursor-pointer hover:bg-rose-500 text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-900/20 group active:scale-[0.98]"
           >

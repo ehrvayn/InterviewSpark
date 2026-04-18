@@ -2,7 +2,7 @@ import type { Page } from "../types";
 import { useInterview } from "../context/InterviewContext";
 import { IoArrowUp } from "react-icons/io5";
 import { MdShowChart } from "react-icons/md";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaSort } from "react-icons/fa6";
 
 const typeStyle: Record<string, string> = {
@@ -152,6 +152,10 @@ export default function Dashboard({
   };
 
   const sortedInterviews = getSortedInterviews();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="pt-4 lg:mt-0 mt-15 max-w-full overflow-x-hidden">
