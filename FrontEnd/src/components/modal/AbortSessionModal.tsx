@@ -17,23 +17,24 @@ export default function AbortSessionModal({
   } = useInterview();
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-[#0a0f18]/80 backdrop-blur-md transition-all">
-      <div className="bg-[#0d121b] border border-white/5 rounded-sm p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full max-w-100 mx-4 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-rose-500/50 to-transparent" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-md transition-all">
+      <div className="bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-8 shadow-2xl w-full max-w-sm mx-4 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-red-500/50 to-transparent" />
 
         <div className="flex flex-col items-center text-center">
-          <div className="w-14 h-14 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 mb-6 animate-pulse">
-            <MdWarningAmber size={30} />
+          <div className="w-16 h-16 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400 mb-6 animate-pulse">
+            <MdWarningAmber size={32} />
           </div>
 
-          <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-3">
-            Terminate Session?
+          <h2 className="text-2xl font-bold text-white uppercase tracking-tight mb-4">
+            Abort Session?
           </h2>
 
-          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed mb-8">
-            Warning: Aborting the current session is permanent. <br />
-            <span className="text-rose-500/80 underline decoration-rose-500/20 underline-offset-4">
-              Allocated credits will not be refunded.
+          <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-widest leading-relaxed mb-10">
+            This action cannot be undone.
+            <br />
+            <span className="text-red-400 font-bold">
+              Credits will not be refunded.
             </span>
           </p>
         </div>
@@ -51,16 +52,16 @@ export default function AbortSessionModal({
               setShowAbortModal(false);
               SpeechRecognition.stopListening();
             }}
-            className="w-full py-4 bg-rose-600 cursor-pointer hover:bg-rose-500 text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-900/20 group active:scale-[0.98]"
+            className="w-full py-3.5 bg-linear-to-r from-red-600 to-red-500 cursor-pointer hover:from-red-500 hover:to-red-400 text-white text-[11px] font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 active:scale-95 rounded-lg"
           >
-            Confirm
+            Confirm & Abort
           </button>
 
           <button
             onClick={() => setShowAbortModal(false)}
-            className="w-full py-4 cursor-pointer bg-transparent border border-white/5 text-slate-500 hover:text-white hover:bg-white/5 text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-[0.98]"
+            className="w-full py-3.5 cursor-pointer bg-slate-800/40 border border-slate-700/50 text-slate-300 hover:text-white hover:bg-slate-800/60 hover:border-slate-600/50 text-[11px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg"
           >
-            Return to Session
+            Stay in Session
           </button>
         </div>
       </div>

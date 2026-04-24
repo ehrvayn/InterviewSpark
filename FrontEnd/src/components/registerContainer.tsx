@@ -1,4 +1,4 @@
-import { FaGithub, FaGoogle } from "react-icons/fa";
+import { FaGithub, FaGoogle } from "react-icons/fa6";
 import { MdEmail, MdLock, MdPerson } from "react-icons/md";
 import { useRegister } from "../context/RegisterContext";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -50,7 +50,7 @@ export default function RegisterContainer() {
     setPasswordError("");
 
     if (password.length < 8) {
-      setPasswordError("Access key must be 8+ characters");
+      setPasswordError("Password must be 8+ characters");
       return;
     }
     if (password !== matchPassword) {
@@ -58,7 +58,7 @@ export default function RegisterContainer() {
       return;
     }
     if (!email.includes("@")) {
-      setMatchError("Invalid email");
+      setMatchError("Invalid email address");
       return;
     }
 
@@ -66,27 +66,27 @@ export default function RegisterContainer() {
   };
 
   return (
-    <div className="w-full bg-[#0d1219] border border-white/5 rounded-sm p-8 shadow-2xl relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl -mr-16 -mt-16 rounded-full" />
+    <div className="w-full bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
+      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 blur-3xl -mr-20 -mt-20 rounded-full" />
 
       <div className="relative z-10">
         <div className="mb-10">
-          <h2 className="text-3xl font-black tracking-tighter uppercase text-white mb-2">
+          <h2 className="text-3xl font-bold tracking-tight uppercase text-white mb-2">
             Create Account
           </h2>
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-            Provide your credentials below
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+            Join us to start your interview prep
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-8">
           <button
             onClick={() => googleLogin()}
-            className="flex items-center justify-center gap-3 py-4 rounded-sm border border-white/5 bg-white/2 text-slate-400 hover:border-white/20 hover:text-white transition-all cursor-pointer text-[10px] font-black uppercase tracking-widest"
+            className="flex items-center justify-center gap-2 py-3 rounded-lg border border-slate-700/50 bg-slate-800/40 text-slate-300 hover:border-slate-600/50 hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer text-[10px] font-bold uppercase tracking-widest"
           >
             <FaGoogle size={14} /> Google
           </button>
-          <button className="flex items-center justify-center gap-3 py-4 rounded-sm border border-white/5 bg-white/2 text-slate-400 hover:border-white/20 hover:text-white transition-all cursor-pointer text-[10px] font-black uppercase tracking-widest">
+          <button className="flex items-center justify-center gap-2 py-3 rounded-lg border border-slate-700/50 bg-slate-800/40 text-slate-300 hover:border-slate-600/50 hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer text-[10px] font-bold uppercase tracking-widest">
             <FaGithub size={14} /> GitHub
           </button>
         </div>
@@ -100,34 +100,34 @@ export default function RegisterContainer() {
           }}
         >
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+            <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
               Full Name
             </label>
             <div className="relative">
-              <MdPerson className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+              <MdPerson className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="OPERATOR NAME"
-                className="w-full bg-white/2 border border-white/5 rounded-sm py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-800 outline-none focus:border-blue-500/50 transition-all"
+                placeholder="John Doe"
+                className="w-full bg-slate-800/40 border border-slate-700/50 rounded-lg py-3 pl-11 pr-4 text-sm font-medium text-white placeholder-slate-600 outline-none focus:border-blue-500/50 focus:bg-slate-800/60 transition-all"
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-              Primary Email
+            <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+              Email Address
             </label>
             <div className="relative">
-              <MdEmail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+              <MdEmail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@email.com"
-                className="w-full bg-white/2 border border-white/5 rounded-sm py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-800 outline-none focus:border-blue-500/50 transition-all"
+                className="w-full bg-slate-800/40 border border-slate-700/50 rounded-lg py-3 pl-11 pr-4 text-sm font-medium text-white placeholder-slate-600 outline-none focus:border-blue-500/50 focus:bg-slate-800/60 transition-all"
                 required
               />
             </div>
@@ -135,40 +135,40 @@ export default function RegisterContainer() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
                 Password
               </label>
               <div className="relative">
-                <MdLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+                <MdLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={`w-full bg-white/2 border rounded-sm py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-800 outline-none transition-all ${
+                  className={`w-full bg-slate-800/40 border rounded-lg py-3 pl-11 pr-4 text-sm font-medium text-white placeholder-slate-600 outline-none transition-all ${
                     passwordError
-                      ? "border-rose-500/50"
-                      : "border-white/5 focus:border-blue-500/50"
+                      ? "border-red-500/50 focus:border-red-500/50"
+                      : "border-slate-700/50 focus:border-blue-500/50 focus:bg-slate-800/60"
                   }`}
                   required
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                Verify
+              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+                Confirm Password
               </label>
               <div className="relative">
-                <MdLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+                <MdLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
                   type="password"
                   value={matchPassword}
                   onChange={(e) => setMatchPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={`w-full bg-white/2 border rounded-sm py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-800 outline-none transition-all ${
+                  className={`w-full bg-slate-800/40 border rounded-lg py-3 pl-11 pr-4 text-sm font-medium text-white placeholder-slate-600 outline-none transition-all ${
                     matchError
-                      ? "border-rose-500/50"
-                      : "border-white/5 focus:border-blue-500/50"
+                      ? "border-red-500/50 focus:border-red-500/50"
+                      : "border-slate-700/50 focus:border-blue-500/50 focus:bg-slate-800/60"
                   }`}
                   required
                 />
@@ -177,7 +177,7 @@ export default function RegisterContainer() {
           </div>
 
           {(passwordError || matchError || registerError) && (
-            <div className="p-3 bg-rose-500/5 border border-rose-500/10 text-rose-500 text-[10px] font-black uppercase tracking-widest text-center">
+            <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-semibold uppercase tracking-widest text-center rounded-lg">
               {passwordError || matchError || registerError}
             </div>
           )}
@@ -185,22 +185,22 @@ export default function RegisterContainer() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-5 rounded-sm font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-xl mt-4 ${
+            className={`w-full py-3.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all shadow-lg mt-4 ${
               loading
-                ? "bg-slate-800 text-slate-600 cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-500 cursor-pointer shadow-blue-600/10"
+                ? "bg-slate-700 text-slate-600 cursor-not-allowed"
+                : "bg-linear-to-r from-blue-600 to-blue-500 text-white hover:from-blue-500 hover:to-blue-400 cursor-pointer shadow-blue-600/20 active:scale-95"
             }`}
           >
-            {loading ? "Creating account..." : "Register"}
+            {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
-        <div className="mt-10 text-center">
-          <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
-            Already have account?{" "}
+        <div className="mt-8 text-center">
+          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
+            Already have an account?{" "}
             <button
               onClick={() => setShowRegister(false)}
-              className="text-white cursor-pointer hover:text-blue-500 transition-colors"
+              className="text-blue-400 cursor-pointer hover:text-blue-300 transition-colors font-bold"
             >
               Sign In
             </button>

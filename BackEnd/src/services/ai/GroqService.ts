@@ -17,19 +17,28 @@ export const generateFirstQuestion = async (
       messages: [
         {
           role: "system",
-          content: `You are a senior recruiter at ${company} with 15+ years of experience hiring ${role}s. You know exactly what ${company} looks for in candidates and you craft questions that reveal whether someone truly has what it takes to succeed in this role at ${company} specifically. Your questions are incisive, thought-provoking, and go beyond surface-level to separate exceptional candidates from average ones.`,
+          content: `You are a Lead Interviewer at ${company}. You strictly calibrate questions based on the type and difficulty level selected. You focus on the specific competencies required for a ${difficulty} candidate in a ${type} context.`,
         },
         {
           role: "user",
-          content: `Generate a single ${difficulty}-level ${type} interview question for a ${role} position at ${company}.
+          content: `Generate one ${difficulty}-level ${type} interview question for a ${role} at ${company}.
+
+Calibration Matrix:
+- BEHAVIORAL:
+    * Junior: Focus on coachability, handling mistakes, and teamwork.
+    * Intermediate/Senior: Focus on conflict resolution, leading projects, and influencing stakeholders without authority.
+- TECHNICAL:
+    * Junior: Focus on implementation details, basic syntax, and following best practices.
+    * Intermediate/Senior: Focus on system design, performance trade-offs, and maintainability of complex logic.
+- CASE STUDY:
+    * Junior: Focus on breaking down a small feature request into logical steps.
+    * Intermediate/Senior: Focus on architectural pivots, scaling bottlenecks, and business-impact alignment.
 
 Requirements:
-- Tailor the question to reflect ${company}'s culture, values, and what they specifically look for in a ${role}
-- The question must feel like it came from a real ${company} interviewer, not a generic textbook
-- It should require the candidate to demonstrate actual experience, not just theoretical knowledge
-- For behavioral questions: use situation-based framing that forces specific examples relevant to the ${role} scope
-- For technical questions: include realistic constraints or trade-offs that a ${role} at ${company} would actually face
-- Do NOT include any preamble, numbering, or explanation — just the question itself`,
+- Start with a 1-sentence "Hook" about a real-world scenario at ${company}.
+- Ask a direct question that forces the candidate to demonstrate their ${difficulty}-level expertise.
+- Must sound like a human conversation, not a textbook.
+- Total length: Under 45 words. No preamble—just the question.`,
         },
       ],
     });
@@ -111,24 +120,20 @@ export const generateNextQuestion = async (
       messages: [
         {
           role: "system",
-          content: `You are a sharp, experienced ${company} interviewer hiring for a ${role} position. You listen carefully to what the candidate says and ask intelligent follow-up questions that probe deeper. You know exactly what ${company} values in a ${role} and you steer the conversation to reveal whether this candidate truly has it. You pick up on vague claims, missing details, and interesting threads worth exploring.`,
+          content: `You are a Senior Interviewer at ${company}. You are an active listener who hates "pre-packaged" answers. Your goal is to find the gap between what the candidate said and what they actually did. You focus strictly on ${difficulty}-level expectations for a ${role}.`,
         },
         {
           role: "user",
-          content: `You are conducting a ${difficulty}-level interview for a ${role} position at ${company}. Based on the candidate's response below, generate your next interview question.
+          content: `Context: ${difficulty} ${role} interview at ${company}.
+          
+          Previous Question: ${previousQuestion}
+          Candidate's Response: ${userAnswer}
 
-Previous Question: ${previousQuestion}
-Candidate's Answer: ${userAnswer}
-
-Your follow-up should:
-- Dig deeper into something specific they mentioned (or notably avoided)
-- Challenge any vague or unsupported claims they made
-- Explore their decision-making process, trade-offs considered, or lessons learned
-- Be relevant to what a ${role} at ${company} would actually encounter
-- Feel like a natural continuation of the conversation, not a generic question
-- Be direct and specific — no fluff
-
-Respond with just the follow-up question, nothing else.`,
+          Task: Generate a high-pressure follow-up.
+          1. Spot the weakest part: If they were vague on technicals, drill into the "How." If they took too much credit, ask about the "Team Pivot."
+          2. Difficulty Check: For Juniors, ask about what they learned from the friction. For Seniors, ask about the long-term trade-off or a "What if" scenario.
+          3. Tone: Direct, inquisitive, and conversational. No "Thank you for that answer." 
+          4. Constraint: Under 35 words. Just the question.`,
         },
       ],
     });

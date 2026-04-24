@@ -32,20 +32,20 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
   return (
     <>
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-[#0a0f18]/90 border-b border-white/5 backdrop-blur-xl flex items-center justify-between px-2 sm:px-6">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-slate-900/90 border-b border-slate-700/50 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6">
         <button
           onClick={() => setIsOpen(true)}
-          className="p-2 rounded-md bg-white/5 border border-white/10 text-slate-400"
+          className="p-2 rounded-lg bg-slate-800/40 border border-slate-700/50 text-slate-400 hover:text-white transition-colors"
         >
           <MdMenu size={22} />
         </button>
         <div className="flex items-center gap-2.5">
-            <img
-              src={Logo}
-              alt="InterviewSpark"
-              className="w-10  object-cover rounded-lg"
-            />
-          <span className="font-black tracking-tighter text-sm text-white">
+          <img
+            src={Logo}
+            alt="InterviewSpark"
+            className="w-10 object-cover rounded-lg"
+          />
+          <span className="font-bold tracking-tight text-sm text-white">
             InterviewSpark
           </span>
         </div>
@@ -54,44 +54,44 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-sm transition-opacity"
+          className="lg:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-sm transition-opacity"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-screen w-72 bg-[#0d121b] border-r border-white/5 flex flex-col z-50 transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-screen w-72 bg-linear-to-b from-slate-900 to-slate-800 border-r border-slate-700/50 flex flex-col z-50 transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="flex-none px-8 py-8 flex items-center justify-between">
+        <div className="flex-none px-8 py-8 flex items-center justify-between border-b border-slate-700/50">
           <div
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => handleNavigate("landing")}
           >
-            <div className="w-10 h-10 flex items-center justify-center shadow-lg transition-all duration-300">
+            <div className="w-10 h-10 flex items-center justify-center shadow-lg">
               <img
                 src={Logo}
                 alt="InterviewSpark"
                 className="w-full h-full object-cover rounded-lg"
               />
             </div>
-            <span className="font-black tracking-tighter text-lg text-white">
+            <span className="font-bold tracking-tight text-lg text-white">
               InterviewSpark
             </span>
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            className="lg:hidden text-slate-500 hover:text-white"
+            className="lg:hidden text-slate-500 hover:text-white transition-colors"
           >
             <MdClose size={24} />
           </button>
         </div>
 
         <div className="flex-1 flex flex-col overflow-y-auto scrollbar-none">
-          <nav className="px-4 space-y-1 mt-4">
+          <nav className="px-4 space-y-1 mt-6">
             <div className="px-4 mb-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
                 Menu
               </span>
             </div>
@@ -101,20 +101,20 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
                 <button
                   key={item.id}
                   onClick={() => handleNavigate(item.id)}
-                  className={`w-full flex items-center cursor-pointer gap-3.5 px-4 py-3 rounded-sm text-[11px] font-black uppercase tracking-widest transition-all duration-200 group relative ${
+                  className={`w-full flex items-center cursor-pointer gap-3 px-4 py-3.5 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all duration-200 group relative ${
                     isActive
-                      ? "bg-blue-600/5 text-blue-500 border border-blue-500/10"
-                      : "text-slate-500 hover:bg-white/2 hover:text-slate-200 border border-transparent"
+                      ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
+                      : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border border-transparent"
                   }`}
                 >
                   <span
-                    className={`text-lg ${isActive ? "text-blue-500" : "text-slate-600 group-hover:text-slate-300"}`}
+                    className={`text-lg ${isActive ? "text-blue-400" : "text-slate-600 group-hover:text-slate-400"}`}
                   >
                     {item.icon}
                   </span>
                   {item.label}
                   {isActive && (
-                    <div className="ml-auto w-1 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                    <div className="ml-auto w-1.5 h-3 rounded-full bg-blue-400 shadow-lg shadow-blue-400/50" />
                   )}
                 </button>
               );
@@ -123,42 +123,42 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
           <div className="mt-auto">
             <div className="px-4 mb-6">
-              <div className="rounded-sm bg-white/2 border border-white/5 p-5 relative overflow-hidden group">
-                <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-blue-600/5 blur-3xl rounded-full" />
+              <div className="rounded-lg bg-linear-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 p-5 relative overflow-hidden group">
+                <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-blue-600/10 blur-3xl rounded-full" />
                 <div className="relative z-10 flex flex-col gap-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-                      <SiBasicattentiontoken className="text-blue-600" />{" "}
-                      Credits:
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                      <SiBasicattentiontoken className="text-blue-400" />
+                      Credits
                     </span>
-                    <span className="text-xl font-black text-white italic">
+                    <span className="text-2xl font-black text-white">
                       {currentUser?.credit || 0}
                     </span>
                   </div>
                   <button
                     onClick={() => setShowPayment(true)}
-                    className="w-full py-2.5 bg-blue-600 cursor-pointer hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    className="w-full py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
                   >
-                    Top Up <IoIosArrowForward />
+                    Top Up <IoIosArrowForward size={12} />
                   </button>
                 </div>
               </div>
             </div>
 
-            <div className="px-4 pb-8 space-y-2">
-              <div className="flex items-center gap-3 p-3 rounded-sm border border-white/5 bg-white/1">
-                <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-xs font-black text-white border border-white/5">
+            <div className="px-4 pb-8 space-y-2 border-t border-slate-700/50 pt-6">
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-800/60 transition-colors">
+                <div className="w-10 h-10 rounded-lg bg-linear-to-br from-blue-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white border border-slate-700/50">
                   {currentUser?.name?.[0]?.toUpperCase()}
                 </div>
                 <div className="flex flex-col truncate">
-                  <span className="text-[11px] font-black text-white uppercase tracking-tight truncate">
+                  <span className="text-[11px] font-bold text-white uppercase tracking-tight truncate">
                     {currentUser?.name}
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setShowLogout(true)}
-                className="w-full flex items-center gap-3 cursor-pointer px-4 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-rose-500/5 hover:text-rose-500 transition-all border border-transparent"
+                className="w-full flex items-center gap-3 cursor-pointer px-4 py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:bg-red-500/10 hover:text-red-400 transition-all border border-transparent"
               >
                 <MdOutlineLogout size={18} />
                 Sign Out
