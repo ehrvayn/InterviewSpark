@@ -17,7 +17,6 @@ InterviewSpark is an AI-powered interview preparation platform designed to help 
 - **TypeScript**
 - **Tailwind CSS** (Styling)
 - **Lucide React & React Icons** (Icons)
-- **Framer Motion** (Animations)
 
 ### Backend
 - **Node.js**
