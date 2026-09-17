@@ -12,7 +12,7 @@ export const generateFirstQuestion = async (
 ): Promise<string> => {
   try {
     const message = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 300,
       messages: [
         {
@@ -68,7 +68,7 @@ export const scoreAnswer = async (
 }> => {
   try {
     const message = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 200,
       messages: [
         {
@@ -115,7 +115,7 @@ export const generateNextQuestion = async (
 ): Promise<string> => {
   try {
     const message = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 300,
       messages: [
         {
@@ -160,7 +160,7 @@ export const generateFinalFeedback = async (
       .join("\n\n");
 
     const message = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 600,
       messages: [
         {
