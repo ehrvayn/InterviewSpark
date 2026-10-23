@@ -1,3 +1,4 @@
+"use client";
 import { useEffect } from "react";
 import { MdClose, MdCheckCircle, MdSecurity } from "react-icons/md";
 import { FaMicrophone, FaRocket, FaStar } from "react-icons/fa6";
@@ -226,3 +227,4 @@ export default function PaymentModal() {
     </div>
   );
 }
+

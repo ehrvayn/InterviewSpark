@@ -1,9 +1,10 @@
+"use client";
 import { FaGithub, FaGoogle } from "react-icons/fa6";
 import { MdEmail, MdLock } from "react-icons/md";
 import { useLogin } from "../context/LoginContext";
 import { useGoogleLogin } from "@react-oauth/google";
 import api from "../lib/api";
-import { usePage } from "../context/PageContext";
+import { useRouter } from "next/navigation";
 import { useRegister } from "../context/RegisterContext";
 import { useCurrentUser } from "../context/CurrentUserContext";
 import { useEffect, useState } from "react";
@@ -18,7 +19,7 @@ export default function LoginContainer() {
     loading,
     loginError,
   } = useLogin();
-  const { setActivePage } = usePage();
+  const router = useRouter();
   const { setShowRegister } = useRegister();
   const { loadUser } = useCurrentUser();
   const [oauthLoading, setOauthLoading] = useState(false);
@@ -33,7 +34,7 @@ export default function LoginContainer() {
         if (response.data.success) {
           localStorage.setItem("token", response.data.token);
           loadUser();
-          setActivePage("interview");
+          router.push("/interview");
         }
       } catch (error) {
         console.error("Google login failed:", error);
@@ -62,7 +63,7 @@ export default function LoginContainer() {
           if (response.data.success) {
             localStorage.setItem("token", response.data.token);
             loadUser();
-            setActivePage("interview");
+            router.push("/interview");
           }
         } catch (error) {
           console.error("GitHub login failed:", error);
@@ -211,3 +212,4 @@ export default function LoginContainer() {
     </div>
   );
 }
+

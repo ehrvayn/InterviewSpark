@@ -1,5 +1,7 @@
-import AppShell from "@/components/AppShell";
+"use client";
+
+import Landing from "@/views/Landing";
 
 export default function Page() {
-  return <AppShell />;
+  return <Landing />;
 }

@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import type { Role, InterviewType, DifficultyLevel } from "../../types";
 import { FaGear, FaBrain, FaFill } from "react-icons/fa6";

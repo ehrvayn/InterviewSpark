@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import type { Page, NavItem } from "../types";
 import { MdDashboard, MdOutlineLogout, MdClose, MdMenu } from "react-icons/md";
@@ -20,7 +21,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
-  const { currentUser } = useCurrentUser();
+  const { currentUser, loadUser } = useCurrentUser();
   const { setShowLogout } = useLogin();
   const [isOpen, setIsOpen] = useState(false);
   const { setShowPayment } = usePayment();
@@ -122,8 +123,19 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           </nav>
 
           <div className="mt-auto">
-            <div className="px-4 mb-6">
-              <div className="rounded-lg bg-linear-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 p-5 relative overflow-hidden group">
+            {!currentUser ? (
+              <div className="mx-4 mb-6 rounded-lg bg-linear-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 p-5 relative overflow-hidden group">
+                <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-blue-600/10 blur-3xl rounded-full" />
+                <div className="relative z-10 flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="w-full animate-pulse py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20" />
+                    <span className="w-full animate-pulse py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20" />
+                  </div>
+                  <div className="w-full py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all animate-pulse active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20" />
+                </div>
+              </div>
+            ) : (
+              <div className="mx-4 mb-6 rounded-lg bg-linear-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 p-5 relative overflow-hidden group">
                 <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-blue-600/10 blur-3xl rounded-full" />
                 <div className="relative z-10 flex flex-col gap-4">
                   <div className="flex items-center gap-3">
@@ -143,19 +155,27 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
                   </button>
                 </div>
               </div>
-            </div>
+            )}
 
             <div className="px-4 pb-8 space-y-2 border-t border-slate-700/50 pt-6">
-              <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-800/60 transition-colors">
-                <div className="w-10 h-10 rounded-lg bg-linear-to-br from-blue-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white border border-slate-700/50">
-                  {currentUser?.name?.[0]?.toUpperCase()}
+              {!currentUser ? (
+                <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-800/60 transition-colors">
+                  <div className="w-10 animate-pulse h-10 rounded-lg bg-linear-to-br from-blue-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white border border-slate-700/50" />
+                  <div className="w-full py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all animate-pulse active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20" />
                 </div>
-                <div className="flex flex-col truncate">
-                  <span className="text-[11px] font-bold text-white uppercase tracking-tight truncate">
-                    {currentUser?.name}
-                  </span>
+              ) : (
+                <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-800/60 transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-linear-to-br from-blue-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white border border-slate-700/50">
+                    {currentUser?.name?.[0]?.toUpperCase()}
+                  </div>
+                  <div className="flex flex-col truncate">
+                    <span className="text-[11px] font-bold text-white uppercase tracking-tight truncate">
+                      {currentUser?.name}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
+
               <button
                 onClick={() => setShowLogout(true)}
                 className="w-full flex items-center gap-3 cursor-pointer px-4 py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:bg-red-500/10 hover:text-red-400 transition-all border border-transparent"

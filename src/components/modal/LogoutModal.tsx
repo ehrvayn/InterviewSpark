@@ -1,3 +1,4 @@
+"use client";
 import { MdOutlineLogout } from "react-icons/md";
 import { useLogin } from "../../context/LoginContext";
 
@@ -36,3 +37,4 @@ export default function LogoutModal() {
     </div>
   );
 }
+

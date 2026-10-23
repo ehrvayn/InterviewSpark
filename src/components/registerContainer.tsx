@@ -1,9 +1,10 @@
+"use client";
 import { FaGithub, FaGoogle } from "react-icons/fa6";
 import { MdEmail, MdLock, MdPerson } from "react-icons/md";
 import { useRegister } from "../context/RegisterContext";
 import { useGoogleLogin } from "@react-oauth/google";
 import api from "../lib/api";
-import { usePage } from "../context/PageContext";
+import { useRouter } from "next/navigation";
 import { useCurrentUser } from "../context/CurrentUserContext";
 import { useState } from "react";
 
@@ -21,7 +22,7 @@ export default function RegisterContainer() {
     registerError,
   } = useRegister();
 
-  const { setActivePage } = usePage();
+  const router = useRouter();
   const { loadUser } = useCurrentUser();
   const [matchPassword, setMatchPassword] = useState("");
   const [matchError, setMatchError] = useState("");
@@ -36,7 +37,7 @@ export default function RegisterContainer() {
         if (response.data.success) {
           localStorage.setItem("token", response.data.token);
           loadUser();
-          setActivePage("interview");
+          router.push("/interview");
         }
       } catch (error) {
         console.error("Google login failed:", error);
@@ -210,3 +211,4 @@ export default function RegisterContainer() {
     </div>
   );
 }
+

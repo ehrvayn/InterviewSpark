@@ -1,3 +1,4 @@
+"use client";
 import { MdWarningAmber } from "react-icons/md";
 import { useInterview } from "../../context/InterviewContext";
 import SpeechRecognition from "react-speech-recognition";
@@ -14,6 +15,7 @@ export default function AbortSessionModal({
     setSelectedRole,
     setInterviewStart,
     setCompany,
+    setQuestion,
   } = useInterview();
 
   return (
@@ -41,8 +43,9 @@ export default function AbortSessionModal({
 
         <div className="flex flex-col gap-3">
           <button
-            onClick={() => {
+            onClick={async () => {
               localStorage.removeItem("session");
+              await setQuestion("");
               setInterviewStart(false);
               setStage("setup");
               setSelectedDiff("junior");
@@ -68,3 +71,4 @@ export default function AbortSessionModal({
     </div>
   );
 }
+

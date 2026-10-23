@@ -1,3 +1,4 @@
+"use client";
 import type { Page } from "../types";
 import { useInterview } from "../context/InterviewContext";
 import { useState, useEffect } from "react";
@@ -40,7 +41,7 @@ export default function Dashboard({
 }: {
   onNavigate: (page: Page) => void;
 }) {
-  const { allInterviews, isLoading } = useInterview();
+  const { allInterviews, isLoading, interviewsLoading } = useInterview();
   const [sortBy, setSortBy] = useState<
     "Newest" | "Highest Score" | "Lowest Score" | "Role"
   >("Newest");
@@ -118,7 +119,7 @@ export default function Dashboard({
 
   const sortedInterviews = getSortedInterviews();
 
-  if (isLoading) {
+  if (isLoading || interviewsLoading) {
     return (
       <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -383,3 +384,4 @@ export default function Dashboard({
     </div>
   );
 }
+

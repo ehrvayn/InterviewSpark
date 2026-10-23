@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { useInterview } from "../../context/InterviewContext";
 import { GiProgression } from "react-icons/gi";
@@ -198,3 +199,4 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
     </div>
   );
 }
+

@@ -1,3 +1,4 @@
+"use client";
 import { FaUserTie } from "react-icons/fa6";
 import { GiProgression } from "react-icons/gi";
 import { MdFeedback, MdSecurity } from "react-icons/md";
@@ -176,3 +177,4 @@ export default function Landing() {
     </div>
   );
 }
+

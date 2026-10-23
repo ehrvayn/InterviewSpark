@@ -39,6 +39,7 @@ interface InterviewContextType {
   allInterviews: Interview[];
   setAllInterviews: React.Dispatch<React.SetStateAction<Interview[]>>;
   isLoading: boolean;
+  interviewsLoading: boolean;
   interviewStart: boolean;
   setInterviewStart: React.Dispatch<React.SetStateAction<boolean>>;
   showAbortModal: boolean;
@@ -107,6 +108,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   const [questionLimit, setQuestionLimit] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [interviewsLoading, setInterviewsLoading] = useState(true);
   const [interviewStart, setInterviewStart] = useState(false);
   const [showAbortModal, setShowAbortModal] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
@@ -140,6 +142,8 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     const token = localStorage.getItem("token");
     if (token && currentUser) {
       retrieveInterviews();
+    } else if (!token) {
+      setInterviewsLoading(false);
     }
   }, [currentUser]);
 
@@ -293,6 +297,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const retrieveInterviews = async (): Promise<void> => {
+    setInterviewsLoading(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -308,6 +313,8 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setInterviewsLoading(false);
     }
   };
 
@@ -357,6 +364,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
         questionId,
         setQuestionId,
         isLoading,
+        interviewsLoading,
         startError,
         setStartError,
       }}

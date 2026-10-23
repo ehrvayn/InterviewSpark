@@ -1,3 +1,4 @@
+"use client";
 import {
   FaMicrophone,
   FaRobot,
@@ -234,7 +235,6 @@ function Questions({
                     <button
                       onClick={() => {
                         setShowAbortModal(true);
-                        localStorage.removeItem("session");
                       }}
                       className="flex-1 sm:flex-none border border-slate-700/50 px-8 cursor-pointer py-3 rounded-lg text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white hover:border-slate-600/50 transition-all bg-slate-800/20 hover:bg-slate-800/40"
                     >
@@ -416,3 +416,4 @@ function ScorePanel({
 }
 
 export default Questions;
+

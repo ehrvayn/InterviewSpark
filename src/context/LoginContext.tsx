@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { usePage } from "../context/PageContext";
+import { useRouter } from "next/navigation";
 import { useCurrentUser } from "../context/CurrentUserContext";
 import api from "../lib/api";
 
@@ -22,7 +22,7 @@ const LoginContext = createContext<LoginContextType | null>(null);
 export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { setActivePage } = usePage();
+  const router = useRouter();
   const { loadUser } = useCurrentUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +34,7 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("token");
     localStorage.removeItem("session");
     localStorage.removeItem("");
-    setActivePage("landing");
+    router.push("/");
     setShowLogout(false);
     window.location.reload();
   };
@@ -51,7 +51,7 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
         loadUser();
         setEmail("");
         setPassword("");
-        setActivePage("interview");
+        router.push("/interview");
       } else {
         setLoginError(data.message || "Login failed!");
       }

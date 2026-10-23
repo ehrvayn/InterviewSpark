@@ -1,9 +1,10 @@
+"use client";
 import { useEffect } from "react";
-import { usePage } from "../../context/PageContext";
+import { useRouter } from "next/navigation";
 import { useCurrentUser } from "../../context/CurrentUserContext";
 
 export default function PaymentSuccess() {
-  const { setActivePage } = usePage();
+  const router = useRouter();
   const { refreshUser } = useCurrentUser();
 
   useEffect(() => {
@@ -12,7 +13,7 @@ export default function PaymentSuccess() {
 
       setTimeout(() => {
         window.history.replaceState({}, document.title, "/");
-        setActivePage("interview");
+        router.push("/interview");
       }, 2000);
     };
 
@@ -41,3 +42,4 @@ export default function PaymentSuccess() {
     </div>
   );
 }
+
