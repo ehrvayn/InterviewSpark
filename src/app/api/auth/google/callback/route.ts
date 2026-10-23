@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { verifyGoogleToken, findOrCreateGoogleUser } from "@/server/services/user/GoogleAuth";
+import { AUTH_COOKIE, authCookieOptions } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +15,9 @@ export async function POST(req: NextRequest) {
       { expiresIn: "7d" },
     );
 
-    return NextResponse.json({ success: true, message: "Logged in with Google", token: jwtToken });
+    const response = NextResponse.json({ success: true, message: "Logged in with Google", token: jwtToken });
+    response.cookies.set(AUTH_COOKIE, jwtToken, authCookieOptions());
+    return response;
   } catch (error: any) {
     console.error("Google auth error:", error);
     return NextResponse.json({ success: false, message: error.message || "Google authentication failed" }, { status: 400 });

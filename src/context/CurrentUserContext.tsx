@@ -1,20 +1,14 @@
+"use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+import { usePathname } from "next/navigation";
 import api from "../lib/api";
 import { User } from "../types";
-
-interface JWTPayload {
-  userId: number;
-  email: string;
-  name: string;
-  credit: number;
-}
 
 interface CurrentUserContextType {
   currentUser: User | null;
   setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>;
   isLoading: boolean;
-  loadUser: () => void;
+  loadUser: () => Promise<void>;
   updateCredit: (newCredit: number) => void;
   refreshUser: () => Promise<void>;
 }
@@ -24,29 +18,23 @@ const CurrentUserContext = createContext<CurrentUserContextType | null>(null);
 export const CurrentUserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const pathname = usePathname();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(pathname !== "/");
 
   const loadUser = async () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        jwtDecode<JWTPayload>(token);
-        const response = await api.get("/user/retrieve");
-        if (response.data.user) {
-          setCurrentUser(response.data.user);
-        } else {
-          localStorage.removeItem("token");
-          setCurrentUser(null);
-        }
-      } catch (error) {
-        localStorage.removeItem("token");
+    try {
+      const response = await api.get("/user/retrieve");
+      if (response.data.user) {
+        setCurrentUser(response.data.user);
+      } else {
         setCurrentUser(null);
       }
-    } else {
+    } catch {
       setCurrentUser(null);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const updateCredit = (newCredit: number) => {
@@ -56,9 +44,7 @@ export const CurrentUserProvider: React.FC<{ children: React.ReactNode }> = ({
   const refreshUser = async () => {
     try {
       const response = await api.get("/user/retrieve");
-      console.log("Retrieve response:", response.data);
       if (response.data.user) {
-        console.log("Setting user to:", response.data.user);
         setCurrentUser(response.data.user);
       }
     } catch (error) {
@@ -67,8 +53,9 @@ export const CurrentUserProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
+    if (pathname === "/") return;
     loadUser();
-  }, []);
+  }, [pathname]);
 
   return (
     <CurrentUserContext.Provider

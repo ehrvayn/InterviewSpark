@@ -35,9 +35,9 @@ export default function RegisterContainer() {
           token: codeResponse.access_token,
         });
         if (response.data.success) {
-          localStorage.setItem("token", response.data.token);
-          loadUser();
-          router.push("/interview");
+          await loadUser();
+          router.replace("/interview");
+          router.refresh();
         }
       } catch (error) {
         console.error("Google login failed:", error);

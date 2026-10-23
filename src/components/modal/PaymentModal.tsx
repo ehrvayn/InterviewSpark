@@ -54,14 +54,17 @@ const packs = [
 ];
 
 export default function PaymentModal() {
-  const { setShowPayment, handleBuy } = usePayment();
+  const { showPayment, setShowPayment, handleBuy } = usePayment();
 
   useEffect(() => {
+    if (!showPayment) return;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, []);
+  }, [showPayment]);
+
+  if (!showPayment) return null;
 
   return (
     <div

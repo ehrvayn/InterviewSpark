@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useState } from "react";
 import api from "../lib/api";
 
@@ -34,3 +35,4 @@ export const usePayment = () => {
     throw new Error("usePayment must be used inside PaymentProvider");
   return context;
 };
+

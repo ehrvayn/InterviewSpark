@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
-  const { currentUser, loadUser } = useCurrentUser();
+  const { currentUser } = useCurrentUser();
   const { setShowLogout } = useLogin();
   const [isOpen, setIsOpen] = useState(false);
   const { setShowPayment } = usePayment();
@@ -61,7 +61,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-screen w-72 bg-linear-to-b from-slate-900 to-slate-800 border-r border-slate-700/50 flex flex-col z-50 transition-transform duration-300 ease-in-out ${
+        className={`fixed top-4 left-4 bottom-4 w-72 rounded-2xl bg-linear-to-b from-slate-900 to-slate-800 border border-slate-700/50 shadow-2xl shadow-black/40 flex flex-col z-50 transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >

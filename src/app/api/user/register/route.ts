@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 import xss from "xss";
 import RegisterUser from "@/server/services/user/RegisterUser";
+import { AUTH_COOKIE, authCookieOptions } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -23,5 +25,27 @@ export async function POST(req: NextRequest) {
   }
 
   const result = await RegisterUser({ name, email, password });
-  return NextResponse.json(result, { status: result.success ? 201 : 400 });
+
+  if (!result.success) {
+    return NextResponse.json(result, { status: 400 });
+  }
+
+  const user = result.data;
+  const token = jwt.sign(
+    {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      credit: user.credit,
+    },
+    process.env.JWT_SECRET as string,
+    { expiresIn: "7d" },
+  );
+
+  const response = NextResponse.json(
+    { ...result, token },
+    { status: 201 },
+  );
+  response.cookies.set(AUTH_COOKIE, token, authCookieOptions());
+  return response;
 }

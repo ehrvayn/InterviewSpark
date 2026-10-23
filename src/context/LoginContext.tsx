@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "../context/CurrentUserContext";
@@ -11,7 +12,7 @@ interface LoginContextType {
   handleLogin: () => Promise<void>;
   showLogout: boolean;
   setShowLogout: React.Dispatch<React.SetStateAction<boolean>>;
-  logout: () => void;
+  logout: () => Promise<void>;
   loginError: string;
   setLoginError: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
@@ -23,20 +24,24 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const router = useRouter();
-  const { loadUser } = useCurrentUser();
+  const { loadUser, setCurrentUser } = useCurrentUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showLogout, setShowLogout] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const logout = () => {
-    localStorage.removeItem("token");
+  const logout = async () => {
+    try {
+      await api.post("/user/logout");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
     localStorage.removeItem("session");
-    localStorage.removeItem("");
-    router.push("/");
+    setCurrentUser(null);
     setShowLogout(false);
-    window.location.reload();
+    router.replace("/");
+    router.refresh();
   };
 
   const handleLogin = async () => {
@@ -47,11 +52,11 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
       const data = response.data;
 
       if (data.success) {
-        localStorage.setItem("token", data.token);
-        loadUser();
+        await loadUser();
         setEmail("");
         setPassword("");
-        router.push("/interview");
+        router.replace("/interview");
+        router.refresh();
       } else {
         setLoginError(data.message || "Login failed!");
       }
@@ -89,3 +94,4 @@ export const useLogin = () => {
   if (!context) throw new Error("useLogin must be used inside LoginProvider");
   return context;
 };
+

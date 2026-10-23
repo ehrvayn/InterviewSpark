@@ -7,13 +7,13 @@ import {
   FaLightbulb,
   FaArrowRight,
 } from "react-icons/fa6";
-import { useInterview } from "../../context/InterviewContext";
+import { useInterview } from "@/context/InterviewContext";
 import { useState, useEffect } from "react";
-import AbortSessionModal from "../../components/modal/AbortSessionModal";
+import AbortSessionModal from "@/components/modal/AbortSessionModal";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
-import Logo from "../../assets/img/InterviewSpark_Logo.png";
+import Logo from "@/assets/img/InterviewSpark_Logo.png";
 
 const typeStyle: Record<string, string> = {
   technical: "bg-purple-500/20 text-purple-300 border-purple-500/40",
@@ -416,4 +416,5 @@ function ScorePanel({
 }
 
 export default Questions;
+
 

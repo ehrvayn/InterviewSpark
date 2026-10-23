@@ -3,7 +3,9 @@ import { MdOutlineLogout } from "react-icons/md";
 import { useLogin } from "../../context/LoginContext";
 
 export default function LogoutModal() {
-  const { logout, setShowLogout } = useLogin();
+  const { logout, showLogout, setShowLogout } = useLogin();
+
+  if (!showLogout) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-md">

@@ -1,5 +1,8 @@
+"use client";
 import React, { createContext, useContext, useState } from "react";
+import { useRouter } from "next/navigation";
 import api from "../lib/api";
+import { useCurrentUser } from "./CurrentUserContext";
 
 interface LoginContextType {
   name: string;
@@ -21,6 +24,8 @@ const RegisterContext = createContext<LoginContextType | null>(null);
 export const RegisterProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const router = useRouter();
+  const { loadUser } = useCurrentUser();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,11 +41,13 @@ const handleRegister = async () => {
       const data = response.data;
 
       if (data.success) {
-        localStorage.setItem("token", data.token);
+        await loadUser();
         setName("");
         setEmail("");
         setPassword("");
         setShowRegister(false);
+        router.replace("/interview");
+        router.refresh();
       } else {
         setRegisterError(data.message || "Registration failed!");
       }
@@ -80,3 +87,4 @@ export const useRegister = () => {
   if (!context) throw new Error("useLogin must be used inside RegisterProvider");
   return context;
 };
+

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useInterview } from "../../context/InterviewContext";
+import { useInterview } from "@/context/InterviewContext";
 import { GiProgression } from "react-icons/gi";
 import { MdOutlineLightbulb, MdCheckCircle } from "react-icons/md";
 import ReactMarkdown from "react-markdown";
@@ -199,4 +199,5 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
     </div>
   );
 }
+
 

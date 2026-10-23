@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import xss from "xss";
 import Login from "@/server/services/user/Login";
+import { AUTH_COOKIE, authCookieOptions } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -14,5 +15,9 @@ export async function POST(req: NextRequest) {
   password = xss(password, { whiteList: {}, stripIgnoreTag: true });
 
   const result = await Login(email, password);
-  return NextResponse.json(result, { status: result.success ? 200 : 200 });
+  const response = NextResponse.json(result, { status: 200 });
+  if (result.success && result.token) {
+    response.cookies.set(AUTH_COOKIE, result.token, authCookieOptions());
+  }
+  return response;
 }

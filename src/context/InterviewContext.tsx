@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useState, useEffect } from "react";
 import { Role, InterviewType, DifficultyLevel, Interview } from "../types";
 import api from "../lib/api";
@@ -139,24 +140,20 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token && currentUser) {
+    if (currentUser) {
       retrieveInterviews();
-    } else if (!token) {
-      setInterviewsLoading(false);
     }
   }, [currentUser]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!currentUser) return;
 
     const saved = localStorage.getItem("session");
     if (!saved) return;
 
     const data = JSON.parse(saved);
 
-    if (data.userId !== currentUser?.id) {
+    if (data.userId !== currentUser.id) {
       return;
     }
     setInterviewId(data.interviewId);
@@ -175,8 +172,6 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setIsLoading(true);
       setStartError(null);
-      const token = localStorage.getItem("token");
-      if (!token) return false;
 
       const response = await api.post(`/interview/start`, {
         interviewType: selectedType,
@@ -227,8 +222,6 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   const submitAnswer = async (): Promise<void> => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem("token");
-      if (!token) return;
 
       const response = await api.post(`/interview/answer`, {
         interviewId,
@@ -252,6 +245,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
 
         localStorage.removeItem("session");
         const updatedState = {
+          userId: currentUser?.id,
           interviewId,
           question: data.nextQuestion?.question_text || question,
           questionNum: data.nextQuestion?.question_number || questionNum,
@@ -275,15 +269,11 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   const endInterview = async (): Promise<void> => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem("token");
-      if (!token) return;
 
       const response = await api.post(`/interview/end`, { interviewId });
       const data = response.data;
 
       if (data.success) {
-        const key = `interviewState_${token}`;
-        localStorage.removeItem(key);
         setOverallScore(data.overallScore);
         setAverages(data.averages);
         setFeedback(data.feedback);
@@ -296,15 +286,9 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const retrieveInterviews = async (): Promise<void> => {
+  async function retrieveInterviews(): Promise<void> {
     setInterviewsLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.log("Unauthorized!");
-        return;
-      }
-
       const response = await api.get(`/interview/retrieve`);
       const data = response.data;
 
@@ -316,7 +300,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setInterviewsLoading(false);
     }
-  };
+  }
 
   return (
     <InterviewContext.Provider
@@ -381,3 +365,4 @@ export const useInterview = () => {
   }
   return context;
 };
+
