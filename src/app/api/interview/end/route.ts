@@ -10,3 +10,5 @@ export async function POST(req: NextRequest) {
   const result = await endInterview(interviewId);
   return NextResponse.json(result, { status: result.success ? 200 : 400 });
 }
+
+

@@ -20,3 +20,5 @@ export const query = (text: string, params: unknown[] = []) => {
 };
 
 export default pool;
+
+

@@ -79,3 +79,6 @@ export const endInterview = async (interviewId: number) => {
     return { success: false, message: "Something went wrong!" };
   }
 };
+
+
+

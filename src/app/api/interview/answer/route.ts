@@ -20,3 +20,5 @@ export async function POST(req: NextRequest) {
   const result = await answerQuestion(interviewId, questionId, userAnswer, questionText, questionNumber);
   return NextResponse.json(result, { status: result.success ? 200 : 400 });
 }
+
+

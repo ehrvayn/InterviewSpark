@@ -33,10 +33,10 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
   return (
     <>
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-slate-900/90 border-b border-slate-700/50 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-neutral-800/40 border-b border-neutral-700/50 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6">
         <button
           onClick={() => setIsOpen(true)}
-          className="p-2 rounded-lg bg-slate-800/40 border border-slate-700/50 text-slate-400 hover:text-white transition-colors"
+          className="p-2 rounded-lg bg-neutral-800/40 border border-neutral-700/50 text-neutral-400 hover:text-white transition-colors"
         >
           <MdMenu size={22} />
         </button>
@@ -61,11 +61,11 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
       )}
 
       <aside
-        className={`fixed top-4 left-4 bottom-4 w-72 rounded-2xl bg-linear-to-b from-slate-900 to-slate-800 border border-slate-700/50 shadow-2xl shadow-black/40 flex flex-col z-50 transition-transform duration-300 ease-in-out ${
+        className={`fixed top-4 left-4 bottom-4 w-72 rounded-4xl border bg-neutral-800/40 border-neutral-700/50 shadow-2xl shadow-black/40 flex flex-col z-50 transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="flex-none px-8 py-8 flex items-center justify-between border-b border-slate-700/50">
+        <div className="flex-none px-8 py-8 flex items-center justify-between border-b border-neutral-700/50">
           <div
             className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => handleNavigate("landing")}
@@ -83,7 +83,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            className="lg:hidden text-slate-500 hover:text-white transition-colors"
+            className="lg:hidden text-neutral-500 hover:text-white transition-colors"
           >
             <MdClose size={24} />
           </button>
@@ -92,7 +92,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
         <div className="flex-1 flex flex-col overflow-y-auto scrollbar-none">
           <nav className="px-4 space-y-1 mt-6">
             <div className="px-4 mb-4">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
                 Menu
               </span>
             </div>
@@ -104,18 +104,18 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
                   onClick={() => handleNavigate(item.id)}
                   className={`w-full flex items-center cursor-pointer gap-3 px-4 py-3.5 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all duration-200 group relative ${
                     isActive
-                      ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
-                      : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border border-transparent"
+                      ? "bg-neutral-600/20 text-neutral-400 border border-neutral-500/30"
+                      : "text-neutral-400 hover:bg-neutral-800/50 hover:text-neutral-200 border border-transparent"
                   }`}
                 >
                   <span
-                    className={`text-lg ${isActive ? "text-blue-400" : "text-slate-600 group-hover:text-slate-400"}`}
+                    className={`text-lg ${isActive ? "text-neutral-400" : "text-neutral-600 group-hover:text-neutral-400"}`}
                   >
                     {item.icon}
                   </span>
                   {item.label}
                   {isActive && (
-                    <div className="ml-auto w-1.5 h-3 rounded-full bg-blue-400 shadow-lg shadow-blue-400/50" />
+                    <div className="ml-auto w-1.5 h-3 rounded-full bg-neutral-400 shadow-lg shadow-neutral-400/50" />
                   )}
                 </button>
               );
@@ -124,23 +124,22 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
           <div className="mt-auto">
             {!currentUser ? (
-              <div className="mx-4 mb-6 rounded-lg bg-linear-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 p-5 relative overflow-hidden group">
-                <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-blue-600/10 blur-3xl rounded-full" />
+              <div className="mx-4 mb-6 rounded-lg border border-neutral-500/30 p-5 relative overflow-hidden group">
                 <div className="relative z-10 flex flex-col gap-4">
                   <div className="flex items-center gap-3">
-                    <span className="w-full animate-pulse py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20" />
-                    <span className="w-full animate-pulse py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20" />
+                    <span className="w-full animate-pulse py-2.5 cursor-pointer bg-white/30 text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-neutral-600/20" />
+                    <span className="w-full animate-pulse py-2.5 cursor-pointer bg-white/30 text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-neutral-600/20" />
                   </div>
-                  <div className="w-full py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all animate-pulse active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20" />
+                  <div className="w-full py-2.5 cursor-pointer bg-white/30 text-[10px] font-bold uppercase tracking-widest transition-all animate-pulse active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-neutral-600/20" />
                 </div>
               </div>
             ) : (
-              <div className="mx-4 mb-6 rounded-lg bg-linear-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 p-5 relative overflow-hidden group">
-                <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-blue-600/10 blur-3xl rounded-full" />
+              <div className="mx-4 mb-6 rounded-lg border border-neutral-500/30 p-5 relative overflow-hidden group">
+                <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-neutral-600/10 blur-3xl rounded-full" />
                 <div className="relative z-10 flex flex-col gap-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                      <SiBasicattentiontoken className="text-blue-400" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-400 flex items-center gap-2">
+                      <SiBasicattentiontoken className="text-neutral-400" />
                       Credits
                     </span>
                     <span className="text-2xl font-black text-white">
@@ -149,7 +148,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
                   </div>
                   <button
                     onClick={() => setShowPayment(true)}
-                    className="w-full py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
+                    className="w-full py-2.5 cursor-pointer hover: text-black bg-white hover:bg-white/80 text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-neutral-600/20"
                   >
                     Top Up <IoIosArrowForward size={12} />
                   </button>
@@ -157,15 +156,15 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
               </div>
             )}
 
-            <div className="px-4 pb-8 space-y-2 border-t border-slate-700/50 pt-6">
+            <div className="px-4 pb-8 space-y-2 border-t border-neutral-700/50 pt-6">
               {!currentUser ? (
-                <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-800/60 transition-colors">
-                  <div className="w-10 animate-pulse h-10 rounded-lg bg-linear-to-br from-blue-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white border border-slate-700/50" />
-                  <div className="w-full py-2.5 bg-linear-to-r from-blue-600 to-blue-500 cursor-pointer hover:from-blue-500 hover:to-blue-400 text-white text-[10px] font-bold uppercase tracking-widest transition-all animate-pulse active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20" />
+                <div className="flex items-center gap-3 p-3 rounded-lg border border-neutral-700/50 bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors">
+                  <div className="w-10 animate-pulse h-10 rounded-lg flex items-center justify-center text-xs font-bold bg-white/30 border border-neutral-700/50" />
+                  <div className="w-full py-2.5 cursor-pointer hover: bg-white/30 text-[10px] font-bold uppercase tracking-widest transition-all animate-pulse active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-neutral-600/20" />
                 </div>
               ) : (
-                <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-800/60 transition-colors">
-                  <div className="w-10 h-10 rounded-lg bg-linear-to-br from-blue-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white border border-slate-700/50">
+                <div className="flex items-center gap-3 p-3 rounded-lg border border-neutral-700/50 bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-black bg-white border border-neutral-700/50">
                     {currentUser?.name?.[0]?.toUpperCase()}
                   </div>
                   <div className="flex flex-col truncate">
@@ -178,7 +177,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
               <button
                 onClick={() => setShowLogout(true)}
-                className="w-full flex items-center gap-3 cursor-pointer px-4 py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:bg-red-500/10 hover:text-red-400 transition-all border border-transparent"
+                className="w-full flex items-center gap-3 cursor-pointer px-4 py-3 rounded-lg text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:bg-neutral-500/10 hover:text-neutral-400 transition-all border border-transparent"
               >
                 <MdOutlineLogout size={18} />
                 Sign Out

@@ -75,20 +75,20 @@ export default function LoginContainer() {
   }, []);
 
   return (
-    <div className="w-full bg-linear-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
-      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 blur-3xl -mr-20 -mt-20 rounded-full" />
+    <div className="w-full border border-neutral-700/50 rounded-xl p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
+      <div className="absolute top-0 right-0 w-40 h-40 bg-neutral-500/10 blur-3xl -mr-20 -mt-20 rounded-full" />
 
       {oauthLoading && (
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center rounded-xl">
           <div className="flex flex-col items-center gap-4">
             <div className="flex gap-2">
-              <div className="w-2.5 h-2.5 bg-blue-400 rounded-full animate-bounce"></div>
+              <div className="w-2.5 h-2.5 bg-neutral-400 rounded-full animate-bounce"></div>
               <div
-                className="w-2.5 h-2.5 bg-blue-400 rounded-full animate-bounce"
+                className="w-2.5 h-2.5 bg-neutral-400 rounded-full animate-bounce"
                 style={{ animationDelay: "0.1s" }}
               ></div>
               <div
-                className="w-2.5 h-2.5 bg-blue-400 rounded-full animate-bounce"
+                className="w-2.5 h-2.5 bg-neutral-400 rounded-full animate-bounce"
                 style={{ animationDelay: "0.2s" }}
               ></div>
             </div>
@@ -104,7 +104,7 @@ export default function LoginContainer() {
           <h2 className="text-3xl font-bold tracking-tight uppercase text-white mb-2">
             Welcome Back
           </h2>
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+          <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-widest">
             Sign in to your account
           </p>
         </div>
@@ -113,25 +113,25 @@ export default function LoginContainer() {
           <button
             onClick={() => googleLogin()}
             disabled={oauthLoading}
-            className="flex items-center justify-center gap-2 py-3 rounded-lg border border-slate-700/50 bg-slate-800/40 text-slate-300 hover:border-slate-600/50 hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 py-3 rounded-lg border border-neutral-700/50 bg-neutral-800/40 text-neutral-300 hover:border-neutral-600/50 hover:bg-neutral-800/60 hover:text-white transition-all cursor-pointer text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FaGoogle size={14} /> Google
           </button>
           <button
             onClick={githubLogin}
             disabled={oauthLoading}
-            className="flex items-center justify-center gap-2 py-3 rounded-lg border border-slate-700/50 bg-slate-800/40 text-slate-300 hover:border-slate-600/50 hover:bg-slate-800/60 hover:text-white transition-all cursor-pointer text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 py-3 rounded-lg border border-neutral-700/50 bg-neutral-800/40 text-neutral-300 hover:border-neutral-600/50 hover:bg-neutral-800/60 hover:text-white transition-all cursor-pointer text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FaGithub size={14} /> GitHub
           </button>
         </div>
 
         <div className="relative flex items-center gap-4 mb-8">
-          <div className="grow h-px bg-slate-700/30"></div>
-          <span className="text-[9px] text-slate-500 uppercase font-semibold tracking-widest whitespace-nowrap">
+          <div className="grow h-px bg-neutral-700/30"></div>
+          <span className="text-[9px] text-neutral-500 uppercase font-semibold tracking-widest whitespace-nowrap">
             Email & Password
           </span>
-          <div className="grow h-px bg-slate-700/30"></div>
+          <div className="grow h-px bg-neutral-700/30"></div>
         </div>
 
         <form
@@ -143,17 +143,17 @@ export default function LoginContainer() {
           }}
         >
           <div className="space-y-2">
-            <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+            <label className="text-[10px] font-semibold text-neutral-400 uppercase tracking-widest">
               Email Address
             </label>
             <div className="relative">
-              <MdEmail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+              <MdEmail className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@email.com"
-                className="w-full bg-slate-800/40 border border-slate-700/50 rounded-lg py-3 pl-11 pr-4 text-sm font-medium text-white placeholder-slate-600 outline-none focus:border-blue-500/50 focus:bg-slate-800/60 transition-all"
+                className="w-full bg-neutral-800/40 border border-neutral-700/50 rounded-lg py-3 pl-11 pr-4 text-sm font-medium text-white placeholder-neutral-600 outline-none focus:border-neutral-500/50 focus:bg-neutral-800/60 transition-all"
                 required
               />
             </div>
@@ -161,25 +161,25 @@ export default function LoginContainer() {
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+              <label className="text-[10px] font-semibold text-neutral-400 uppercase tracking-widest">
                 Password
               </label>
             </div>
             <div className="relative">
-              <MdLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+              <MdLock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-800/40 border border-slate-700/50 rounded-lg py-3 pl-11 pr-4 text-sm font-medium text-white placeholder-slate-600 outline-none focus:border-blue-500/50 focus:bg-slate-800/60 transition-all"
+                className="w-full bg-neutral-800/40 border border-neutral-700/50 rounded-lg py-3 pl-11 pr-4 text-sm font-medium text-white placeholder-neutral-600 outline-none focus:border-neutral-500/50 focus:bg-neutral-800/60 transition-all"
                 required
               />
             </div>
           </div>
 
           {loginError && (
-            <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-semibold uppercase tracking-widest text-center rounded-lg">
+            <div className="p-3 bg-neutral-500/10 border border-neutral-500/30 text-neutral-400 text-[10px] font-semibold uppercase tracking-widest text-center rounded-lg">
               {loginError}
             </div>
           )}
@@ -189,8 +189,8 @@ export default function LoginContainer() {
             disabled={loading}
             className={`w-full py-3.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all shadow-lg ${
               loading
-                ? "bg-slate-700 text-slate-600 cursor-not-allowed"
-                : "bg-linear-to-r from-blue-600 to-blue-500 text-white hover:from-blue-500 hover:to-blue-400 cursor-pointer shadow-blue-600/20 active:scale-95"
+                ? "bg-neutral-700 text-neutral-600 cursor-not-allowed"
+                : "text-white hover: cursor-pointer shadow-neutral-600/20 active:scale-95"
             }`}
           >
             {loading ? "Authenticating..." : "Sign In"}
@@ -198,11 +198,11 @@ export default function LoginContainer() {
         </form>
 
         <div className="mt-8 text-center">
-          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
+          <p className="text-[10px] font-semibold text-neutral-500 uppercase tracking-widest">
             Don't have an account?{" "}
             <button
               onClick={() => setShowRegister(true)}
-              className="text-blue-400 cursor-pointer hover:text-blue-300 transition-colors font-bold"
+              className="text-neutral-400 cursor-pointer hover:text-neutral-300 transition-colors font-bold"
             >
               Sign Up
             </button>
@@ -212,4 +212,7 @@ export default function LoginContainer() {
     </div>
   );
 }
+
+
+
 

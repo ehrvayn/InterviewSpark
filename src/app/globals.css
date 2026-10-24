@@ -4,6 +4,8 @@
 body {
   font-family: "Syne", sans-serif;
   -webkit-font-smoothing: antialiased;
+  background: #000000;
+  color: #ffffff;
 }
 .font-mono-custom {
   font-family: "DM Mono", monospace;
@@ -14,33 +16,27 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0b1220;
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    #1e3a8a,
-    #1e40af
-  );
+  background: #ffffff;
   border-radius: 999px;
-  border: 2px solid #0b1220;
+  border: 2px solid #000000;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    #2563eb,
-    #1d4ed8
-  );
+  background: #ffffff;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #1e40af #0b1220;
+  scrollbar-color: #ffffff #000000;
 }
 
 @keyframes waveform {
   from { transform: scaleY(0.15); }
   to { transform: scaleY(1); }
 }
+
+

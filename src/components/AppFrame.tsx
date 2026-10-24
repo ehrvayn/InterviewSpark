@@ -11,7 +11,7 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
   const isLanding = pathname === "/";
 
   return (
-    <div className="w-full min-h-screen bg-[#080c12] text-[#e8edf5] font-sans">
+    <div className="w-full min-h-screen bg-black text-white font-sans">
       {!isLanding && (
         <>
           <Sidebar
@@ -24,9 +24,11 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
           <PaymentModal />
         </>
       )}
-      <main className={`flex-1 flex flex-col min-h-screen ${!isLanding ? "lg:ml-80" : "w-full"}`}>
+      <main className={`flex-1 px-20flex flex-col min-h-screen mx-auto w-full`}>
         {children}
       </main>
     </div>
   );
 }
+
+

@@ -10,3 +10,5 @@ export async function GET(req: NextRequest) {
   const result = await retrieveUser(user.userId);
   return NextResponse.json(result, { status: result.success ? 200 : 400 });
 }
+
+

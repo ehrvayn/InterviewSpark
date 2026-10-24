@@ -38,3 +38,5 @@ export function authCookieOptions() {
     maxAge: 60 * 60 * 24 * 7,
   };
 }
+
+

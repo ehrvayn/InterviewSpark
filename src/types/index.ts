@@ -72,3 +72,5 @@ export interface Interview {
   overall_score: string;
   created_at: string;
 }
+
+

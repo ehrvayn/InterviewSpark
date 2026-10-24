@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { Role, InterviewType, DifficultyLevel } from "@/types";
 import { FaGear, FaBrain, FaFill } from "react-icons/fa6";
 import Questions from "./Questions";
@@ -8,7 +8,7 @@ import EndInterview from "./EndInterview";
 import { useCurrentUser } from "@/context/CurrentUserContext";
 import { usePayment } from "@/context/PaymentContext";
 import { IoIosArrowForward } from "react-icons/io";
-import { SiBasicattentiontoken } from "react-icons/si";
+import Loading from "@/components/Loading";
 
 type Stage = "setup" | "active" | "feedback";
 
@@ -30,16 +30,46 @@ const roles: Role[] = [
   "Sales",
 ];
 
-const SkeletonLoader = () => (
-  <div className="w-full space-y-12 animate-pulse p-8">
-    <div className="h-4 bg-slate-700/30 w-48 mb-8 rounded-lg" />
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-      {[...Array(15)].map((_, i) => (
-        <div key={i} className="h-12 bg-slate-700/30 rounded-lg" />
-      ))}
+const interviewTypes: { value: InterviewType; label: string; icon: React.ReactNode }[] = [
+  { value: "behavioral", label: "Behavioral", icon: <FaBrain size={16} /> },
+  { value: "technical", label: "Technical", icon: <FaGear size={16} /> },
+  { value: "case-study", label: "Case Study", icon: <FaFill size={16} /> },
+];
+
+const difficulties: DifficultyLevel[] = ["junior", "intermediate", "senior", "expert"];
+
+const Step = ({
+  index,
+  label,
+  optional,
+  children,
+}: {
+  index: string;
+  label: string;
+  optional?: boolean;
+  children: React.ReactNode;
+}) => (
+  <section className="p-4 md:p-6 space-y-4">
+    <div className="flex items-center gap-3">
+      <span className="text-neutral-500 font-mono text-xs font-semibold">
+        {index}
+      </span>
+      <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-300">
+        {label}
+        {optional && (
+          <span className="ml-2 text-neutral-500">(Optional)</span>
+        )}
+      </label>
     </div>
-  </div>
+    {children}
+  </section>
 );
+
+const selectableBase =
+  "border transition-all duration-200 cursor-pointer rounded-lg font-bold uppercase tracking-widest";
+const selectedClass = "bg-white text-black border-white shadow-lg shadow-white/10";
+const unselectedClass =
+  "bg-neutral-800/40 border-neutral-700/60 text-neutral-300 hover:border-neutral-500 hover:bg-neutral-800/70 hover:text-white";
 
 export default function Interview() {
   const {
@@ -56,254 +86,152 @@ export default function Interview() {
     startError,
     setStartError,
     setInterviewStart,
-    interviewStart,
   } = useInterview();
 
   const [stage, setStage] = useState<Stage>("setup");
-  const [isMounted, setIsMounted] = useState(false);
   const { currentUser } = useCurrentUser();
-
-  useEffect(() => {
-    setIsMounted(true);
-    if (interviewStart) {
-      setStage("active");
-    }
-  }, [interviewStart]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   const { setShowPayment } = usePayment();
 
   if (stage === "feedback") return <EndInterview setStage={setStage} />;
   if (stage === "active") return <Questions setStage={setStage} />;
+  if (!currentUser) return <Loading />;
 
-  const noCredits = (currentUser?.credit ?? 0) <= 0;
+  const noCredits = (currentUser.credit ?? 0) <= 0;
+
+  const handleStart = async () => {
+    setStartError(null);
+    setInterviewStart(true);
+    const success = await startInterview();
+    if (success) setStage("active");
+  };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-40 right-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
-      </div>
+    <div className="h-screen lg:pl-75 text-neutral-100">
+      <div className="h-full pt-20 lg:pt-4 pb-4 px-4 md:px-6 animate-in fade-in duration-500">
+        <div className="h-full bg-neutral-900/60 border border-neutral-700/50 rounded-4xl backdrop-blur-sm overflow-hidden flex flex-col">
+          <h1 className="shrink-0 p-4 md:p-6 text-2xl md:text-3xl font-mono font-bold uppercase tracking-tight text-white border-b border-neutral-700/30">
+            Session Configuration
+          </h1>
 
-      <div className="relative z-10 w-full min-h-screen lg:mt-0 mt-16 px-4 md:px-10 py-6 md:py-10 animate-in fade-in duration-500">
-        <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8 mb-12 border-b border-slate-700/50 pb-10">
-          <div className="space-y-3">
-            <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-              Configure Session
-            </h1>
-            <p className="text-slate-400 text-sm max-w-2xl font-medium leading-relaxed">
-              Tailor your experience. Our AI will adapt its persona and
-              questions based on your selections.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-8 bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl backdrop-blur-sm">
-            <SiBasicattentiontoken className="text-blue-400 text-3xl animate-pulse" />
-            <div className="w-px h-12 bg-slate-700/30" />
-            <div className="text-center">
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">
-                Available Credits
-              </p>
-              <p className="text-3xl font-bold text-white leading-none">
-                {currentUser?.credit ?? 0}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl backdrop-blur-sm overflow-hidden">
-          {!isMounted ? (
-            <SkeletonLoader />
-          ) : (
-            <div className="flex flex-col divide-y divide-slate-700/30">
-              <section className="p-8 md:p-12 space-y-8">
-                <div className="flex items-center gap-4">
-                  <span className="text-blue-400 font-mono text-xs font-semibold">
-                    01//
-                  </span>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                    Target Role
-                  </label>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                  {roles.map((r) => (
+          <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-neutral-700/30">
+            <Step index="01//" label="Target Role">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                {roles.map((r) => {
+                  const active = selectedRole === r;
+                  return (
                     <button
                       key={r}
                       onClick={() => setSelectedRole(r)}
-                      className={`px-4 py-3 rounded-lg cursor-pointer border text-[10px] font-bold uppercase tracking-widest transition-all duration-200 text-left relative overflow-hidden group ${
-                        selectedRole === r
-                          ? "border-blue-500/50 bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                          : "border-slate-700/50 bg-slate-800/20 text-slate-400 hover:border-slate-600/50 hover:text-white hover:bg-slate-800/40"
+                      className={`relative px-4 py-3 text-left text-[10px] ${selectableBase} ${
+                        active ? selectedClass : unselectedClass
                       }`}
                     >
-                      <span className="relative z-10">{r}</span>
-                      {selectedRole === r && (
-                        <div className="absolute top-2 right-2">
-                          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                        </div>
+                      {r}
+                      {active && (
+                        <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-black rounded-full" />
                       )}
                     </button>
-                  ))}
-                </div>
-              </section>
-
-              <div className="grid grid-cols-1 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/30">
-                <section className="p-8 md:p-12 space-y-8">
-                  <div className="flex items-center gap-4">
-                    <span className="text-blue-400 font-mono text-xs font-semibold">
-                      02//
-                    </span>
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                      Target Focus
-                    </label>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {(
-                      [
-                        "behavioral",
-                        "technical",
-                        "case-study",
-                      ] as InterviewType[]
-                    ).map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => setSelectedType(t)}
-                        className={`flex flex-col cursor-pointer items-center justify-center gap-5 py-10 rounded-lg border transition-all duration-300 group ${
-                          selectedType === t
-                            ? "border-blue-500/50 bg-blue-500/10 text-blue-400 shadow-lg shadow-blue-500/20"
-                            : "border-slate-700/50 bg-slate-800/20 text-slate-500 hover:border-slate-600/50 hover:bg-slate-800/40"
-                        }`}
-                      >
-                        <div
-                          className={`p-4 rounded-lg transition-all duration-300 ${
-                            selectedType === t
-                              ? "bg-blue-600 text-white scale-110 shadow-lg shadow-blue-600/30"
-                              : "bg-slate-700/30 group-hover:bg-slate-700/50"
-                          }`}
-                        >
-                          {t === "behavioral" ? (
-                            <FaBrain size={20} />
-                          ) : t === "technical" ? (
-                            <FaGear size={20} />
-                          ) : (
-                            <FaFill size={20} />
-                          )}
-                        </div>
-                        <span className="uppercase text-[10px] font-bold tracking-widest">
-                          {t === "case-study" ? "Case Study" : t}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </section>
-
-                <section className="p-8 md:p-12 space-y-8">
-                  <div className="flex items-center gap-4">
-                    <span className="text-blue-400 font-mono text-xs font-semibold">
-                      03//
-                    </span>
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                      Difficulty
-                    </label>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    {(
-                      [
-                        "junior",
-                        "intermediate",
-                        "senior",
-                        "expert",
-                      ] as DifficultyLevel[]
-                    ).map((d) => (
-                      <button
-                        key={d}
-                        onClick={() => setSelectedDiff(d)}
-                        className={`py-5 cursor-pointer sm:text-[11px] text-[8px] rounded-lg border font-bold uppercase tracking-wider transition-all relative ${
-                          selectedDiff === d
-                            ? "border-white bg-white text-black shadow-lg shadow-white/20"
-                            : "border-slate-700/50 bg-slate-800/20 text-slate-400 hover:text-slate-200 hover:border-slate-600/50 hover:bg-slate-800/40"
-                        }`}
-                      >
-                        {d}
-                      </button>
-                    ))}
-                  </div>
-                </section>
+                  );
+                })}
               </div>
+            </Step>
 
-              <section className="p-8 md:p-12 space-y-8">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <span className="text-blue-400 font-mono text-xs font-semibold">
-                      04//
-                    </span>
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                      Dream company
-                    </label>
-                  </div>
-                </div>
-                <input
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  type="text"
-                  placeholder="ex. google | meta | nvidia | etc."
-                  className="w-full px-6 py-4 bg-slate-800/20 border border-slate-700/50 rounded-lg text-sm font-semibold text-white placeholder-slate-600 outline-none focus:border-blue-500/50 focus:bg-slate-800/30 transition-all uppercase tracking-wide"
-                />
-              </section>
-
-              <div className="p-8 md:p-12 bg-slate-800/20">
-                {noCredits ? (
-                  <div className="p-8 rounded-lg bg-red-500/10 border border-red-500/30 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="space-y-2">
-                      <p className="text-red-400 text-xs font-bold uppercase tracking-widest">
-                        Insufficient Credits
-                      </p>
-                      <p className="text-red-400/60 text-[10px] uppercase font-semibold tracking-wider">
-                        Recharge your account balance to start an interview
-                        session
-                      </p>
-                    </div>
+            <Step index="02//" label="Target Focus">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {interviewTypes.map((t) => {
+                  const active = selectedType === t.value;
+                  return (
                     <button
-                      onClick={() => setShowPayment(true)}
-                      className="w-full md:w-auto px-12 py-3 bg-linear-to-r from-red-600 to-red-500 text-white text-[10px] font-bold uppercase tracking-widest hover:from-red-500 hover:to-red-400 transition-all cursor-pointer rounded-lg shadow-lg shadow-red-600/20 active:scale-95"
-                    >
-                      Top Up Credits
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {startError && (
-                      <div className="p-4 bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest text-center rounded-lg animate-shake">
-                        Error: {startError}
-                      </div>
-                    )}
-                    <button
-                      onClick={async () => {
-                        setStartError(null);
-                        setInterviewStart(true);
-                        const success = await startInterview();
-                        if (success) setStage("active");
-                      }}
-                      disabled={isLoading}
-                      className={`w-full py-6 rounded-lg sm:text-sm text-[10px] font-bold uppercase tracking-wider transition-all relative overflow-hidden shadow-xl ${
-                        isLoading
-                          ? "bg-slate-700 text-slate-600 cursor-wait"
-                          : "bg-linear-to-r from-blue-600 to-blue-500 text-white hover:from-blue-500 hover:to-blue-400 cursor-pointer hover:shadow-2xl hover:shadow-blue-600/30 active:scale-95"
+                      key={t.value}
+                      onClick={() => setSelectedType(t.value)}
+                      className={`flex flex-col items-center justify-center gap-3 py-5 text-[11px] ${selectableBase} ${
+                        active ? selectedClass : unselectedClass
                       }`}
                     >
-                      <span className="relative z-10 flex items-center justify-center gap-3">
-                        {isLoading ? "Initializing..." : "Start Interview"}
-                        {!isLoading && <IoIosArrowForward size={18} />}
+                      <span
+                        className={`p-3 rounded-lg ${
+                          active ? "bg-black text-white" : "bg-neutral-700/40"
+                        }`}
+                      >
+                        {t.icon}
                       </span>
+                      {t.label}
                     </button>
+                  );
+                })}
+              </div>
+            </Step>
+
+            <Step index="03//" label="Difficulty">
+              <div className="grid grid-cols-2 gap-4">
+                {difficulties.map((d) => {
+                  const active = selectedDiff === d;
+                  return (
+                    <button
+                      key={d}
+                      onClick={() => setSelectedDiff(d)}
+                      className={`py-3 text-[11px] ${selectableBase} ${
+                        active ? selectedClass : unselectedClass
+                      }`}
+                    >
+                      {d}
+                    </button>
+                  );
+                })}
+              </div>
+            </Step>
+
+            <Step index="04//" label="Dream Company" optional>
+              <input
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                type="text"
+                placeholder="ex. google | meta | nvidia | etc."
+                className="w-full px-5 py-3 bg-neutral-800/40 border border-neutral-700/60 rounded-lg text-sm font-semibold text-white placeholder-neutral-500 outline-none focus:border-neutral-400 focus:bg-neutral-800/70 transition-all uppercase tracking-wide"
+              />
+            </Step>
+          </div>
+
+          <div className="shrink-0 p-4 md:p-6 bg-neutral-800/20 border-t border-neutral-700/30">
+            {noCredits ? (
+              <div className="p-6 md:p-8 rounded-lg bg-neutral-800/40 border border-neutral-700/60 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <p className="text-white text-xs font-bold uppercase tracking-widest">
+                    Insufficient Credits
+                  </p>
+                  <p className="text-neutral-400 text-[10px] uppercase font-semibold tracking-wider">
+                    Recharge your account balance to start an interview session
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowPayment(true)}
+                  className="w-full md:w-auto px-10 py-3 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-lg cursor-pointer hover:bg-white/90 transition-all active:scale-95"
+                >
+                  Top Up Credits
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {startError && (
+                  <div className="p-4 bg-neutral-800/60 border border-neutral-600 text-neutral-200 text-[10px] font-bold uppercase tracking-widest text-center rounded-lg animate-shake">
+                    Error: {startError}
                   </div>
                 )}
+                <button
+                  onClick={handleStart}
+                  disabled={isLoading}
+                  className={`w-full py-4 rounded-lg flex items-center justify-center gap-3 text-sm font-bold uppercase tracking-wider transition-all shadow-xl ${
+                    isLoading
+                      ? "bg-neutral-700 text-neutral-400 cursor-wait"
+                      : "bg-white text-black hover:bg-white/90 cursor-pointer hover:shadow-2xl hover:shadow-white/10 active:scale-95"
+                  }`}
+                >
+                  {isLoading ? "Initializing..." : "Start Interview"}
+                  {!isLoading && <IoIosArrowForward size={18} />}
+                </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

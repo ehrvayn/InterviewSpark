@@ -49,3 +49,5 @@ export async function POST(req: NextRequest) {
   response.cookies.set(AUTH_COOKIE, token, authCookieOptions());
   return response;
 }
+
+

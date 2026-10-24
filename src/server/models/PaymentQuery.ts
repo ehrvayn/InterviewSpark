@@ -22,3 +22,6 @@ const PaymentQuery = {
 };
 
 export default PaymentQuery;
+
+
+
