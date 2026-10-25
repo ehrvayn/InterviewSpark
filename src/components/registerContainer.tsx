@@ -189,7 +189,7 @@ export default function RegisterContainer() {
             className={`w-full py-3.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all shadow-lg mt-4 ${
               loading
                 ? "bg-neutral-700 text-neutral-600 cursor-not-allowed"
-                : "text-white hover: cursor-pointer shadow-neutral-600/20 active:scale-95"
+                : "text-black hover:bg-white/80 bg-white cursor-pointer shadow-neutral-600/20 active:scale-95"
             }`}
           >
             {loading ? "Creating account..." : "Create Account"}
@@ -201,7 +201,7 @@ export default function RegisterContainer() {
             Already have an account?{" "}
             <button
               onClick={() => setShowRegister(false)}
-              className="text-neutral-400 cursor-pointer hover:text-neutral-300 transition-colors font-bold"
+              className="text-neutral-400 uppercase cursor-pointer hover:text-neutral-300 transition-colors font-bold"
             >
               Sign In
             </button>
@@ -211,6 +211,7 @@ export default function RegisterContainer() {
     </div>
   );
 }
+
 
 
 

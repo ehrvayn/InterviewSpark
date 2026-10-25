@@ -62,13 +62,13 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
 
   return (
     <div className="min-h-screen pl-80 text-neutral-100 overflow-hidden">
-      <div className="relative z-10 w-full max-w-7xl mx-auto lg:mt-0 md:mt-10 mt-16 px-4 lg:px-8 py-8 md:py-12 animate-in fade-in slide-in- duration-700">
+      <div className="relative z-10 w-full max-w-7xl mx-auto lg:mt-0 md:mt-10 mt-16 px-4 lg:px-8 py-6 md:py-8 animate-in fade-in slide-in- duration-700">
         <header className="mb-12 border-b border-neutral-700/50 pb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-neutral-500/20 rounded-lg">
               <MdCheckCircle className="text-neutral-500 text-2xl" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+            <h1 className="text-3xl md:text-2xl font-bold text-white tracking-tight">
               Interview Complete
             </h1>
           </div>
@@ -148,7 +148,7 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
         </div>
 
         {feedback && (
-          <div className="bg-neutral-800/40 border border-neutral-700/50 rounded-xl p-8 md:p-12 mb-8 backdrop-blur-sm relative">
+          <div className="bg-neutral-800/40 border border-neutral-700/50 rounded-xl p-4 md:p-6 mb-8 backdrop-blur-sm relative">
             <div className="flex items-center gap-3 mb-8">
               <MdOutlineLightbulb className="text-neutral-400 text-xl" />
               <h2 className="text-[11px] font-bold uppercase tracking-widest text-neutral-400">
@@ -194,6 +194,7 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
     </div>
   );
 }
+
 
 
 

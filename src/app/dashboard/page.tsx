@@ -160,7 +160,7 @@ export default function Dashboard() {
                             {stat.label}
                           </p>
                           <p
-                            className={`text-3xl md:text-4xl font-bold font-mono ${stat.accent ? "text-neutral-300" : "text-white"}`}
+                            className={`text-3xl md:text-2xl font-bold font-mono ${stat.accent ? "text-neutral-300" : "text-white"}`}
                           >
                             {stat.val}
                           </p>
@@ -193,7 +193,7 @@ export default function Dashboard() {
                             {stat.label}
                           </p>
                           <p
-                            className={`text-3xl md:text-4xl font-bold font-mono text-white`}
+                            className={`text-3xl md:text-2xl font-bold font-mono text-white`}
                           >
                             {stat.val}
                           </p>
@@ -333,3 +333,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

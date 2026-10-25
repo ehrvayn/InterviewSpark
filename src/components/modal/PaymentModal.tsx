@@ -85,9 +85,9 @@ export default function PaymentModal() {
           <MdClose size={20} />
         </button>
 
-        <div className="relative z-10 px-6 py-12 sm:px-12">
+        <div className="relative z-10 px-4 py-8 sm:px-12">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-4xl uppercase font-mono sm:text-5xl font-bold text-white tracking-tight mb-4">
+            <h2 className="text-2xl uppercase font-mono sm:text-5xl font-bold text-white tracking-tight mb-4">
               Get more <span className="text-white">Credits</span>
             </h2>
           </div>
@@ -129,7 +129,7 @@ export default function PaymentModal() {
                           {pack.label}
                         </p>
                         <h3
-                          className={`text-4xl font-black ${isFeatured ? "text-white" : "text-white"}`}
+                          className={`text-2xl font-black ${isFeatured ? "text-white" : "text-white"}`}
                         >
                           ₱{pack.price}
                         </h3>
@@ -212,3 +212,4 @@ export default function PaymentModal() {
     </div>
   );
 }
+

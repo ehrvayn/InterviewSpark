@@ -38,6 +38,7 @@ export default function LoginContainer() {
         }
       } catch (error) {
         console.error("Google login failed:", error);
+      } finally {
         setOauthLoading(false);
       }
     },
@@ -55,23 +56,25 @@ export default function LoginContainer() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
-    if (code) {
-      window.history.replaceState({}, "", "/");
-      const handleGithubCallback = async () => {
-        try {
-          const response = await api.post("/auth/github/callback", { code });
-          if (response.data.success) {
-            await loadUser();
-            router.replace("/interview");
-            router.refresh();
-          }
-        } catch (error) {
-          console.error("GitHub login failed:", error);
-          setOauthLoading(false);
+    if (!code) return;
+
+    window.history.replaceState({}, "", "/");
+    setOauthLoading(true);
+
+    (async () => {
+      try {
+        const response = await api.post("/auth/github/callback", { code });
+        if (response.data.success) {
+          await loadUser();
+          router.replace("/interview");
         }
-      };
-      handleGithubCallback();
-    }
+      } catch (error) {
+        console.error("GitHub login failed:", error);
+        setOauthLoading(false);
+      } finally {
+        setOauthLoading(false);
+      }
+    })();
   }, []);
 
   return (
@@ -136,7 +139,7 @@ export default function LoginContainer() {
 
         <form
           autoComplete="off"
-          className="space-y-6"
+          className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
             handleLogin();
@@ -190,7 +193,7 @@ export default function LoginContainer() {
             className={`w-full py-3.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all shadow-lg ${
               loading
                 ? "bg-neutral-700 text-neutral-600 cursor-not-allowed"
-                : "text-white hover: cursor-pointer shadow-neutral-600/20 active:scale-95"
+                : "text-black hover:bg-white/80 bg-white cursor-pointer shadow-neutral-600/20 active:scale-95"
             }`}
           >
             {loading ? "Authenticating..." : "Sign In"}
@@ -202,7 +205,7 @@ export default function LoginContainer() {
             Don't have an account?{" "}
             <button
               onClick={() => setShowRegister(true)}
-              className="text-neutral-400 cursor-pointer hover:text-neutral-300 transition-colors font-bold"
+              className="text-neutral-400 uppercase cursor-pointer hover:text-neutral-300 transition-colors font-bold"
             >
               Sign Up
             </button>
@@ -212,7 +215,3 @@ export default function LoginContainer() {
     </div>
   );
 }
-
-
-
-

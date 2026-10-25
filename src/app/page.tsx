@@ -6,7 +6,7 @@ import { FaRobot, FaMicrochip } from "react-icons/fa6";
 import LoginContainer from "@/components/LoginContainer";
 import { useRegister } from "@/context/RegisterContext";
 import RegisterContainer from "@/components/registerContainer";
-import Logo from "@/assets/img/InterviewSpark_Logo.png";
+import Logo from "@/assets/img/InterviewSparkLogo.png";
 import { useEffect } from "react";
 
 export default function Landing() {
@@ -17,141 +17,124 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="overflow-x-hidden  text-white font-sans selection:bg-neutral-500/30">
-      <section className="relative flex flex-col lg:grid lg:grid-cols-12 items-center min-h-screen px-4 md:px-10 xl:px-20 py-12 lg:py-0 overflow-hidden border-b border-neutral-700/50">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-neutral-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-40 right-20 w-80 h-80 bg-neutral-500/10 rounded-full blur-3xl"></div>
-        </div>
+    <>
+      <div className="overflow-x-hidden px-20 text-white font-sans selection:bg-neutral-500/30">
+        <section className="relative flex flex-col lg:grid lg:grid-cols-12 items-center min-h-screen px-4 md:px-4 py-8 lg:py-0 overflow-hidden border-b border-neutral-700/50">
+          <div className="relative z-10 w-full lg:col-span-7 xl:col-span-8 pr-0 lg:pr-12 py-6">
+            <h1 className="text-2xl sm:text-6xl xl:text-7xl font-black  tracking-tight mb-8 uppercase">
+              Master the{" "}
+              <span className="-neutral-400  text-white">Technical</span>
+              <br />
+              Interview <span className="outline-text">Stack.</span>
+            </h1>
 
-        <div className="relative z-10 w-full lg:col-span-7 xl:col-span-8 pr-0 lg:pr-12 py-10">
-          <div className="inline-flex items-center gap-3 px-4 py-2.5 mb-8 bg-neutral-800/40 border border-neutral-700/50 rounded-xl">
-            <img
-              src={Logo.src}
-              alt="InterviewSpark"
-              className="w-8 h-8 object-cover rounded-lg"
-            />
-            <p className="text-neutral-400 text-lg font-bold tracking-wider">
-              InterviewSpark
-            </p>
-          </div>
-
-          <h1 className="text-4xl sm:text-6xl xl:text-7xl font-black  tracking-tight mb-8 uppercase">
-            Master the{" "}
-            <span className="-neutral-400  text-white">
-              Technical
-            </span>
-            <br />
-            Interview <span className="outline-text">Stack.</span>
-          </h1>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mb-12">
-            <div className="space-y-3 p-4 rounded-lg bg-neutral-800/30 border border-neutral-700/30">
-              <div className="flex items-center gap-2 text-neutral-400">
-                <FaMicrochip size={16} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">
-                  Logic Synthesis
-                </span>
-              </div>
-              <p className="text-neutral-400 text-sm font-medium leading-relaxed">
-                Fine-tuned models trained on real-world hiring data to simulate
-                actual engineering and systems roles.
-              </p>
-            </div>
-            <div className="space-y-3 p-4 rounded-lg bg-neutral-800/30 border border-neutral-700/30">
-              <div className="flex items-center gap-2 text-neutral-400">
-                <MdSecurity size={16} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">
-                  Feedback Loop
-                </span>
-              </div>
-              <p className="text-neutral-400 text-sm font-medium leading-relaxed">
-                Objective assessment of your technical accuracy, behavioral
-                alignment, and communication clarity.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative z-10 w-full lg:col-span-5 xl:col-span-4 flex justify-center lg:justify-end">
-          <div className="w-full">
-            {showRegister ? <RegisterContainer /> : <LoginContainer />}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 md:px-10 xl:px-20 py-20 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 left-1/2 w-96 h-96 bg-neutral-500/5 rounded-full blur-3xl -translate-x-1/2"></div>
-        </div>
-
-        <div className="w-full relative z-10">
-          <div className="mb-16 lg:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div className="max-w-xl">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="h-1 w-8 " />
-                <span className="text-neutral-400 font-bold text-[10px] uppercase tracking-widest">
-                  Engine Architecture
-                </span>
-              </div>
-              <h2 className="text-4xl sm:text-6xl font-bold tracking-tight uppercase leading-tight">
-                Predictive <br /> Assessment
-              </h2>
-            </div>
-            <p className="text-neutral-400 text-sm max-w-xs font-medium leading-relaxed border-l-2 border-neutral-700/50 pl-6">
-              Skip the generic practice. Our platform benchmarks your responses
-              against industry-standard requirements.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {[
-              {
-                icon: <FaRobot size={20} />,
-                title: "Adaptive Logic",
-                desc: "AI that adjusts its follow-up questions based on the technical depth of your previous answer.",
-              },
-              {
-                icon: <MdFeedback size={20} />,
-                title: "Semantic Analysis",
-                desc: "Direct evaluation of your reasoning structure and how effectively you solve complex problems.",
-              },
-              {
-                icon: <FaUserTie size={20} />,
-                title: "Industry Alignment",
-                desc: "Scenario-based modules built for Developers, IT Auditors, and Systems Architects.",
-              },
-              {
-                icon: <GiProgression size={20} />,
-                title: "Delta Reporting",
-                desc: "Automated tracking of your response quality improvement over multiple mock sessions.",
-              },
-            ].map((f, idx) => (
-              <div
-                key={f.title}
-                className="bg-neutral-800/40 border border-neutral-700/50 rounded-xl p-6 hover:bg-neutral-800/60 hover:border-neutral-600/50 transition-all group relative overflow-hidden backdrop-blur-sm"
-              >
-                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <span className="text-4xl font-black">0{idx + 1}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 max-w-2xl mb-12">
+              <div className="space-y-3 p-4  bg-neutral-800/30 border border-neutral-700/30">
+                <div className="flex items-center gap-2 text-neutral-400">
+                  <FaMicrochip size={16} />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">
+                    Logic Synthesis
+                  </span>
                 </div>
-                <div className="w-10 h-10 rounded-lg bg-neutral-500/20 border border-neutral-500/30 flex items-center justify-center text-neutral-400 mb-4 group-hover:bg-neutral-500/30 group-hover:border-neutral-500/50 transition-all">
-                  {f.icon}
-                </div>
-                <h3 className="font-bold text-[11px] uppercase tracking-wider mb-3 text-white">
-                  {f.title}
-                </h3>
-                <p className="text-[10px] text-neutral-400 leading-relaxed font-medium">
-                  {f.desc}
+                <p className="text-neutral-400 text-sm font-medium leading-relaxed">
+                  Fine-tuned models trained on real-world hiring data to
+                  simulate actual engineering and systems roles.
                 </p>
               </div>
-            ))}
+              <div className="space-y-3 p-4  bg-neutral-800/30 border border-neutral-700/30">
+                <div className="flex items-center gap-2 text-neutral-400">
+                  <MdSecurity size={16} />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">
+                    Feedback Loop
+                  </span>
+                </div>
+                <p className="text-neutral-400 text-sm font-medium leading-relaxed">
+                  Objective assessment of your technical accuracy, behavioral
+                  alignment, and communication clarity.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
 
+          <div className="relative z-10 w-full lg:col-span-5 xl:col-span-4 flex justify-center lg:justify-end">
+            <div className="w-full">
+              {showRegister ? <RegisterContainer /> : <LoginContainer />}
+            </div>
+          </div>
+        </section>
 
+        <section className="px-4 md:px-6 py-20 lg:py-32 relative overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-0 left-1/2 w-96 h-96 bg-neutral-500/5 rounded-full blur-3xl -translate-x-1/2"></div>
+          </div>
 
-      <footer className="px-4 md:px-10 xl:px-20 py-12 border-t border-neutral-700/50 bg-neutral-900/50">
+          <div className="w-full relative z-10">
+            <div className="mb-16 lg:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div className="max-w-xl">
+                <div className="flex items-center gap-4 mb-4"></div>
+                <h2 className="text-2xl sm:text-6xl font-bold tracking-tight uppercase leading-tight">
+                  Predictive <br /> Assessment
+                </h2>
+              </div>
+              <p className="text-neutral-400 text-sm max-w-xs font-medium leading-relaxed border-l-2 border-neutral-700/50 pl-6">
+                Skip the generic practice. Our platform benchmarks your
+                responses against industry-standard requirements.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+              {[
+                {
+                  icon: <FaRobot size={20} />,
+                  title: "Adaptive Logic",
+                  desc: "AI that adjusts its follow-up questions based on the technical depth of your previous answer.",
+                },
+                {
+                  icon: <MdFeedback size={20} />,
+                  title: "Semantic Analysis",
+                  desc: "Direct evaluation of your reasoning structure and how effectively you solve complex problems.",
+                },
+                {
+                  icon: <FaUserTie size={20} />,
+                  title: "Industry Alignment",
+                  desc: "Scenario-based modules built for Developers, IT Auditors, and Systems Architects.",
+                },
+                {
+                  icon: <GiProgression size={20} />,
+                  title: "Delta Reporting",
+                  desc: "Automated tracking of your response quality improvement over multiple mock sessions.",
+                },
+              ].map((f, idx) => (
+                <div
+                  key={f.title}
+                  className="bg-neutral-800/40 border border-neutral-700/50 p-6 hover:bg-neutral-800/60 hover:border-neutral-600/50 transition-all group relative overflow-hidden backdrop-blur-sm"
+                >
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <span className="text-2xl font-black">0{idx + 1}</span>
+                  </div>
+                  <div className="w-10 h-10 rounded-lg bg-neutral-500/20 border border-neutral-500/30 flex items-center justify-center text-neutral-400 mb-4 group-hover:bg-neutral-500/30 group-hover:border-neutral-500/50 transition-all">
+                    {f.icon}
+                  </div>
+                  <h3 className="font-bold text-[11px] uppercase tracking-wider mb-3 text-white">
+                    {f.title}
+                  </h3>
+                  <p className="text-[10px] text-neutral-400 leading-relaxed font-medium">
+                    {f.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <style>{`
+        .outline-text {
+          color: transparent;
+          -webkit-text-stroke: 1.5px rgba(96, 165, 250, 0.3);
+        }
+      `}</style>
+      </div>
+      <footer className="px-10 py-8 border-t border-neutral-700/50 bg-neutral-900/50">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex md:items-start items-center flex-col gap-2">
             <div className="text-[12px] font-bold text-white uppercase tracking-wider">
@@ -167,18 +150,6 @@ export default function Landing() {
           </div>
         </div>
       </footer>
-
-      <style>{`
-        .outline-text {
-          color: transparent;
-          -webkit-text-stroke: 1.5px rgba(96, 165, 250, 0.3);
-        }
-      `}</style>
-    </div>
+    </>
   );
 }
-
-
-
-
-

@@ -3,7 +3,7 @@ import { MdOutlineLogout } from "react-icons/md";
 import { useLogin } from "../../context/LoginContext";
 
 export default function LogoutModal() {
-  const { logout, showLogout, setShowLogout } = useLogin();
+  const { logout, showLogout, setShowLogout, loggingOut } = useLogin();
 
   if (!showLogout) return null;
 
@@ -29,16 +29,17 @@ export default function LogoutModal() {
           </button>
           <button
             onClick={logout}
-            className="flex-1 py-3 rounded-lg flex items-center justify-center gap-2 hover: text-white font-bold transition-all active:scale-95 shadow-lg shadow-neutral-600/20 text-sm cursor-pointer"
+            className="flex-1 py-3 text-black bg-white hover:bg-white/80 rounded-lg flex items-center justify-center gap-2 hover: font-bold transition-all active:scale-95 shadow-lg shadow-neutral-600/20 text-sm cursor-pointer"
           >
             <MdOutlineLogout size={18} />
-            Sign Out
+            {loggingOut ? "Signing out..." : "Sign Out"}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
 
 
 

@@ -9,6 +9,8 @@ interface LoginContextType {
   setEmail: React.Dispatch<React.SetStateAction<string>>;
   password: string;
   setPassword: React.Dispatch<React.SetStateAction<string>>;
+  loggingOut: boolean;
+  setLoggingOut: React.Dispatch<React.SetStateAction<boolean>>;
   handleLogin: () => Promise<void>;
   showLogout: boolean;
   setShowLogout: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,6 +18,7 @@ interface LoginContextType {
   loginError: string;
   setLoginError: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const LoginContext = createContext<LoginContextType | null>(null);
@@ -27,6 +30,7 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
   const { loadUser, setCurrentUser } = useCurrentUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,12 +38,14 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = async () => {
     try {
       await api.post("/user/logout");
+      setLoggingOut(true);
     } catch (error) {
       console.error("Logout failed:", error);
     }
-    localStorage.removeItem("session");
+    await localStorage.removeItem("session");
     setCurrentUser(null);
     setShowLogout(false);
+    setLoggingOut(false);
     router.replace("/");
     router.refresh();
   };
@@ -56,6 +62,7 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
         setEmail("");
         setPassword("");
         router.replace("/interview");
+        setLoading(false);
         router.refresh();
       } else {
         setLoginError(data.message || "Login failed!");
@@ -71,6 +78,8 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <LoginContext.Provider
       value={{
+        loggingOut,
+        setLoggingOut,
         logout,
         email,
         setEmail,
@@ -82,6 +91,7 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
         loginError,
         setLoginError,
         loading,
+        setLoading,
       }}
     >
       {children}
@@ -94,7 +104,3 @@ export const useLogin = () => {
   if (!context) throw new Error("useLogin must be used inside LoginProvider");
   return context;
 };
-
-
-
-

@@ -14,7 +14,7 @@ interface InterviewContextType {
   answer: string;
   setAnswer: React.Dispatch<React.SetStateAction<string>>;
   startInterview: () => Promise<boolean>;
-  submitAnswer: () => Promise<void>;
+  submitAnswer: () => Promise<boolean>;
   endInterview: () => Promise<void>;
   retrieveInterviews: () => Promise<void>;
   company: string;
@@ -47,6 +47,8 @@ interface InterviewContextType {
   setShowAbortModal: React.Dispatch<React.SetStateAction<boolean>>;
   startError: string | null;
   setStartError: React.Dispatch<React.SetStateAction<string | null>>;
+  answerError: string | null;
+  setAnswerError: React.Dispatch<React.SetStateAction<string | null>>;
   score: {
     clarity: number;
     confidence: number;
@@ -114,6 +116,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   const [showAbortModal, setShowAbortModal] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
   const [allInterviews, setAllInterviews] = useState<Interview[]>([]);
+  const [answerError, setAnswerError] = useState<string | null>(null);
   const [averages, setAverages] = useState<{
     clarity: number;
     confidence: number;
@@ -219,7 +222,8 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const submitAnswer = async (): Promise<void> => {
+  const submitAnswer = async (): Promise<boolean> => {
+    setAnswerError(null);
     try {
       setIsLoading(true);
 
@@ -233,34 +237,41 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const data = response.data;
 
-      if (data.success) {
-        setScore(data.score);
-        setCurrentQuestion(data.currentQuestion);
-
-        if (data.nextQuestion) {
-          setQuestion(data.nextQuestion.question_text);
-          setQuestionNum(data.nextQuestion.question_number);
-          setQuestionId(data.nextQuestion.id);
-        }
-
-        localStorage.removeItem("session");
-        const updatedState = {
-          userId: currentUser?.id,
-          interviewId,
-          question: data.nextQuestion?.question_text || question,
-          questionNum: data.nextQuestion?.question_number || questionNum,
-          questionId: data.nextQuestion?.id || questionId,
-          selectedRole,
-          selectedType,
-          selectedDiff,
-          company,
-        };
-        localStorage.setItem("session", JSON.stringify(updatedState));
-
-        setAnswer("");
+      if (!data.success || !data.score) {
+        setAnswerError(
+          data.message || "Could not submit your answer. Try again.",
+        );
+        return false;
       }
+
+      setScore(data.score);
+      setCurrentQuestion(data.currentQuestion);
+
+      if (data.nextQuestion) {
+        setQuestion(data.nextQuestion.question_text);
+        setQuestionNum(data.nextQuestion.question_number);
+        setQuestionId(data.nextQuestion.id);
+      }
+
+      const updatedState = {
+        userId: currentUser?.id,
+        interviewId,
+        question: data.nextQuestion?.question_text || question,
+        questionNum: data.nextQuestion?.question_number || questionNum,
+        questionId: data.nextQuestion?.id || questionId,
+        selectedRole,
+        selectedType,
+        selectedDiff,
+        company,
+      };
+      localStorage.setItem("session", JSON.stringify(updatedState));
+
+      setAnswer("");
+      return true;
     } catch (error) {
       console.log(error);
+      setAnswerError("Network error. Check your connection and submit again.");
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -320,6 +331,10 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
         setQuestionLimit,
         feedback,
         setFeedback,
+        answerError,
+        startError,
+        setStartError,
+        setAnswerError,
         overallScore,
         setOverallScore,
         averages,
@@ -349,8 +364,6 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
         setQuestionId,
         isLoading,
         interviewsLoading,
-        startError,
-        setStartError,
       }}
     >
       {children}
@@ -365,7 +378,3 @@ export const useInterview = () => {
   }
   return context;
 };
-
-
-
-

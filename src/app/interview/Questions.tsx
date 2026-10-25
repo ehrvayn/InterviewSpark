@@ -13,7 +13,7 @@ import AbortSessionModal from "@/components/modal/AbortSessionModal";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
-import Logo from "@/assets/img/InterviewSpark_Logo.png";
+import Logo from "@/assets/img/InterviewSparkLogo.png";
 
 const typeStyle: Record<string, string> = {
   technical: "bg-neutral-500/20 text-neutral-300 border-neutral-500/40",
@@ -48,6 +48,7 @@ function Questions({
     answer,
     setAnswer,
     submitAnswer,
+    answerError,
     score,
     setScore,
     questionLimit,
@@ -76,7 +77,7 @@ function Questions({
 
   return (
     <div className="min-h-screen text-neutral-100 pl-80 overflow-hidden">
-      <div className="relative z-10 w-full mt-12 lg:mt-0 max-w-6xl mx-auto px-4 md:px-8 pt-6 pb-12">
+      <div className="relative z-10 w-full mt-12 lg:mt-0 max-w-5xl mx-auto px-4 md:px-8 pt-6 pb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-neutral-700/50 pb-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2 flex-wrap">
@@ -93,7 +94,7 @@ function Questions({
               </span>
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-white tracking-tight">
+              <h1 className="text-2xl font-bold text-white tracking-tight">
                 Active Interview
               </h1>
             </div>
@@ -121,7 +122,7 @@ function Questions({
 
         <div className="grid grid-cols-1 gap-8">
           {!score ? (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {!question ? (
                 <div className="bg-neutral-800/40 border border-neutral-700/50 rounded-xl p-8 backdrop-blur-sm">
                   <Skeleton />
@@ -143,7 +144,7 @@ function Questions({
                       Question {questionNum}
                     </span>
                   </div>
-                  <h2 className="text-xl lg:text-2xl text-white font-medium text-justify leading-relaxed">
+                  <h2 className="text-base text-white font-medium text-justify leading-relaxed">
                     {question}
                   </h2>
                 </div>
@@ -186,6 +187,12 @@ function Questions({
                         }}
                       />
                     ))}
+                  </div>
+                )}
+
+                {answerError && (
+                  <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-semibold uppercase tracking-widest text-center rounded-lg">
+                    {answerError}
                   </div>
                 )}
 
@@ -234,7 +241,9 @@ function Questions({
                     <button
                       onClick={async () => {
                         const currentNum = questionNum;
-                        await submitAnswer();
+                        const ok = await submitAnswer();
+                        if (!ok) return;
+
                         setProgressNum(currentNum);
                         SpeechRecognition.stopListening();
                         if (currentNum === questionLimit) setIsFinished(true);
@@ -285,7 +294,7 @@ function ScorePanel({
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in- duration-500">
+    <div className="space-y-4 animate-in fade-in slide-in- duration-500">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-neutral-800/40 border border-neutral-700/50 rounded-xl p-8 backdrop-blur-sm flex flex-col justify-between">
           <div>

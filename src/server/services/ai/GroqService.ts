@@ -4,7 +4,64 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-const model = "openai/gpt-oss-120b";
+const MODEL = "openai/gpt-oss-120b";
+const DEFAULT_COMPANY = "a leading tech company";
+
+const FALLBACK_FIRST_QUESTION =
+  "Tell me about a time you faced a challenge and how you handled it.";
+const FALLBACK_NEXT_QUESTION =
+  "What would you do differently if you had to make that decision again?";
+
+export class AIGenerationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AIGenerationError";
+  }
+}
+
+const cleanText = (text: string) =>
+  text
+    .replace(/\*\*/g, "")
+    .replace(/^["'\s]+|["'\s]+$/g, "")
+    .trim();
+
+const withinWordLimit = (text: string, maxWords: number) =>
+  text.length > 0 && text.split(/\s+/).length <= maxWords;
+
+const getContent = (
+  choice:
+    | { message?: { content?: string | null }; finish_reason?: string | null }
+    | undefined,
+) => (choice?.message?.content ?? "").trim();
+
+const generateQuestion = async (params: {
+  system: string;
+  user: string;
+  maxWords: number;
+  fallback: string;
+}): Promise<string> => {
+  const completion = await groq.chat.completions.create({
+    model: MODEL,
+    max_tokens: 1500,
+    reasoning_effort: "low",
+    messages: [
+      { role: "system", content: params.system },
+      { role: "user", content: params.user },
+    ],
+  });
+
+  const text = cleanText(getContent(completion.choices[0]));
+
+  if (!withinWordLimit(text, params.maxWords)) {
+    console.warn("Question rejected, using fallback:", {
+      finish_reason: completion.choices[0]?.finish_reason,
+      length: text.length,
+    });
+    return params.fallback;
+  }
+
+  return text;
+};
 
 export const generateFirstQuestion = async (
   type: string,
@@ -12,100 +69,29 @@ export const generateFirstQuestion = async (
   difficulty: string,
   company: string,
 ): Promise<string> => {
+  const companyName = company?.trim() || DEFAULT_COMPANY;
+
   try {
-    const message = await groq.chat.completions.create({
-      model: model,
-      max_tokens: 500,
-      messages: [
-        {
-          role: "system",
-          content: `You are a Lead Interviewer at ${company}. You strictly calibrate questions based on the type and difficulty level selected. You focus on the specific competencies required for a ${difficulty} candidate in a ${type} context.`,
-        },
-        {
-          role: "user",
-          content: `Generate one ${difficulty}-level ${type} interview question for a ${role} at ${company}.
+    return await generateQuestion({
+      system: `You are a Lead Interviewer at ${companyName}. You write one ${difficulty}-level ${type} interview question for a ${role}. Output only the question text. No reasoning, no preamble, no quotes, no markdown.`,
+      user: `Write one ${difficulty}-level ${type} interview question for a ${role} at ${companyName}.
 
-Calibration Matrix:
-- BEHAVIORAL:
-    * Junior: Focus on coachability, handling mistakes, and teamwork.
-    * Intermediate/Senior: Focus on conflict resolution, leading projects, and influencing stakeholders without authority.
-- TECHNICAL:
-    * Junior: Focus on implementation details, basic syntax, and following best practices.
-    * Intermediate/Senior: Focus on system design, performance trade-offs, and maintainability of complex logic.
-- CASE STUDY:
-    * Junior: Focus on breaking down a small feature request into logical steps.
-    * Intermediate/Senior: Focus on architectural pivots, scaling bottlenecks, and business-impact alignment.
+Calibration:
+- BEHAVIORAL: Junior focuses on coachability, handling mistakes, and teamwork. Intermediate/Senior focuses on conflict resolution, leading projects, and influencing stakeholders without authority.
+- TECHNICAL: Junior focuses on implementation details, basic syntax, and best practices. Intermediate/Senior focuses on system design, performance trade-offs, and maintainability.
+- CASE STUDY: Junior focuses on breaking a small feature request into logical steps. Intermediate/Senior focuses on architectural pivots, scaling bottlenecks, and business-impact alignment.
 
-Requirements:
-- Start with a 1-sentence "Hook" about a real-world scenario at ${company}.
-- Ask a direct question that forces the candidate to demonstrate their ${difficulty}-level expertise.
-- Must sound like a human conversation, not a textbook.
-- Total length: Under 45 words. No preamble—just the question.`,
-        },
-      ],
+Format:
+- One opening sentence: a realistic scenario involving ${companyName}.
+- One direct question that requires ${difficulty}-level expertise.
+- Conversational tone, not a textbook.
+- Under 40 words total. Output only the question text.`,
+      maxWords: 60,
+      fallback: FALLBACK_FIRST_QUESTION,
     });
-
-    const msg: any = message.choices[0].message;
-    const questionText = (msg.content || msg.reasoning || "").trim();
-    return questionText || "Tell me about a time you faced a challenge and how you handled it.";
   } catch (error) {
-    console.error("Groq error:", error);
-    throw error;
-  }
-};
-
-export const scoreAnswer = async (
-  question: string,
-  answer: string,
-  role: string,
-  company: string,
-): Promise<{
-  clarity: number;
-  confidence: number;
-  relevance: number;
-  score: number;
-  technical_depth: number;
-  communication: number;
-  conciseness: number;
-  question_text: string;
-}> => {
-  try {
-    const message = await groq.chat.completions.create({
-      model: model,
-      max_tokens: 200,
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert interview evaluator at ${company} assessing candidates for a ${role} position. You score answers with precision and objectivity based on what ${company} values in a ${role}. You reward specificity, structured thinking, and demonstrated experience. You penalize vagueness, lack of ownership, and irrelevant rambling. You always respond in valid JSON only — no extra text, no markdown, no explanation.`,
-        },
-        {
-          role: "user",
-          content: `Evaluate this interview answer from a candidate applying for a ${role} role at ${company} and score each metric from 1 to 10:
-
-Question: ${question}
-Answer: ${answer}
-
-Scoring criteria:
-- clarity: How clearly and concisely the candidate communicated their thoughts (1=incoherent, 10=exceptionally clear and structured)
-- confidence: How assured and decisive the candidate sounds — penalize heavy hedging, "I think maybe", "I don't know" (1=extremely uncertain, 10=highly confident and decisive)
-- relevance: How directly and completely the answer addresses the question asked (1=completely off-topic, 10=perfectly on-point with strong supporting detail)
-- communication: How effectively the candidate explains their thinking and engages with the question (1=poor communication, 10=excellent communication and articulation)
-- conciseness: How efficiently the candidate delivers their answer without unnecessary elaboration (1=overly verbose, 10=concise and focused)
-- technical_depth: How well the candidate demonstrates technical knowledge and understanding (1=superficial, 10=deep technical expertise)
-- score: Overall impression as a ${company} interviewer — would you move this ${role} candidate forward? (1=strong no, 10=strong yes)
-
-Respond in this exact JSON format only: {"clarity": X, "confidence": X, "relevance": X, "communication": X,"conciseness": X,"technical_depth": X, "score": X}`,
-        },
-      ],
-    });
-
-    const responseText = message.choices[0].message.content || "";
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    const scores = JSON.parse(jsonMatch ? jsonMatch[0] : responseText);
-    return scores;
-  } catch (error) {
-    console.error("Groq scoring error:", error);
-    throw error;
+    console.error("Groq question generation error:", error);
+    return FALLBACK_FIRST_QUESTION;
   }
 };
 
@@ -116,99 +102,181 @@ export const generateNextQuestion = async (
   company: string,
   difficulty: string,
 ): Promise<string> => {
+  const companyName = company?.trim() || DEFAULT_COMPANY;
+
   try {
-    const message = await groq.chat.completions.create({
-      model: model,
-      max_tokens: 500,
-      messages: [
-        {
-          role: "system",
-          content: `You are a Senior Interviewer at ${company}. You are an active listener who hates "pre-packaged" answers. Your goal is to find the gap between what the candidate said and what they actually did. You focus strictly on ${difficulty}-level expectations for a ${role}.`,
-        },
-        {
-          role: "user",
-          content: `Context: ${difficulty} ${role} interview at ${company}.
-          
-          Previous Question: ${previousQuestion}
-          Candidate's Response: ${userAnswer}
+    return await generateQuestion({
+      system: `You are a Senior Interviewer at ${companyName}. You are an active listener who dislikes pre-packaged answers. You find the gap between what the candidate said and what they actually did. You focus on ${difficulty}-level expectations for a ${role}. Output only the question text.`,
+      user: `Previous question: ${previousQuestion}
+Candidate's answer: ${userAnswer}
 
-          Task: Generate a high-pressure follow-up.
-          1. Spot the weakest part: If they were vague on technicals, drill into the "How." If they took too much credit, ask about the "Team Pivot."
-          2. Difficulty Check: For Juniors, ask about what they learned from the friction. For Seniors, ask about the long-term trade-off or a "What if" scenario.
-          3. Tone: Direct, inquisitive, and conversational. No "Thank you for that answer." 
-          4. Constraint: Under 35 words. Just the question.`,
-        },
-      ],
+Write one high-pressure follow-up question.
+- Target the weakest part of the answer. If it was vague on technical details, ask "how". If the candidate took too much credit, ask about the team's role.
+- For juniors, ask what they learned from the friction. For seniors, ask about a long-term trade-off or a "what if" scenario.
+- Direct and conversational. No praise, no "thank you".
+- Under 30 words. Output only the question.`,
+      maxWords: 50,
+      fallback: FALLBACK_NEXT_QUESTION,
     });
-
-    const msg: any = message.choices[0].message;
-    const questionText = (msg.content || msg.reasoning || "").trim();
-    return questionText || "Tell me about a time you faced a challenge and how you handled it.";
   } catch (error) {
-    console.error("Groq generation error:", error);
-    throw error;
+    console.error("Groq follow-up generation error:", error);
+    return FALLBACK_NEXT_QUESTION;
   }
+};
+
+export type ScoreResult = {
+  clarity: number;
+  confidence: number;
+  relevance: number;
+  communication: number;
+  conciseness: number;
+  technical_depth: number;
+  score: number;
+};
+
+const SCORE_KEYS: (keyof ScoreResult)[] = [
+  "clarity",
+  "confidence",
+  "relevance",
+  "communication",
+  "conciseness",
+  "technical_depth",
+  "score",
+];
+
+export const scoreAnswer = async (
+  question: string,
+  answer: string,
+  role: string,
+  company: string,
+): Promise<ScoreResult> => {
+  const companyName = company?.trim() || DEFAULT_COMPANY;
+
+  const completion = await groq.chat.completions.create({
+    model: MODEL,
+    max_tokens: 2000,
+    reasoning_effort: "low",
+    response_format: { type: "json_object" },
+    messages: [
+      {
+        role: "system",
+        content: `You are an expert interview evaluator at ${companyName} assessing candidates for a ${role} position. You reward specificity, structured thinking, and demonstrated experience. You penalize vagueness, lack of ownership, and irrelevant rambling. Respond with a JSON object only.`,
+      },
+      {
+        role: "user",
+        content: `Score this answer from a ${role} candidate at ${companyName}. Each metric is an integer or decimal from 1 to 10.
+
+Question: ${question}
+Answer: ${answer}
+
+Metrics:
+- clarity: how clearly and concisely the candidate communicated (1=incoherent, 10=exceptionally clear)
+- confidence: how assured and decisive they sound. Penalize hedging like "I think maybe" or "I don't know" (1=very uncertain, 10=highly confident)
+- relevance: how directly the answer addresses the question (1=off-topic, 10=on-point with strong support)
+- communication: how effectively they explain their thinking (1=poor, 10=excellent)
+- conciseness: how efficiently they answer without unnecessary detail (1=verbose, 10=focused)
+- technical_depth: depth of technical understanding shown (1=superficial, 10=expert)
+- score: overall impression as a ${companyName} interviewer. Would you move this candidate forward? (1=strong no, 10=strong yes)
+
+Return exactly this JSON shape: {"clarity": X, "confidence": X, "relevance": X, "communication": X, "conciseness": X, "technical_depth": X, "score": X}`,
+      },
+    ],
+  });
+
+  const choice = completion.choices[0];
+  const raw = getContent(choice);
+
+  if (!raw) {
+    throw new AIGenerationError(
+      `Scoring returned no content (finish_reason: ${choice?.finish_reason ?? "unknown"}).`,
+    );
+  }
+
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match)
+      throw new AIGenerationError("Scoring returned non-JSON content.");
+    try {
+      parsed = JSON.parse(match[0]);
+    } catch {
+      throw new AIGenerationError("Scoring returned malformed JSON.");
+    }
+  }
+
+  const scores = {} as ScoreResult;
+  for (const key of SCORE_KEYS) {
+    const value = Number(parsed[key]);
+    if (!Number.isFinite(value)) {
+      throw new AIGenerationError(`Scoring is missing a valid "${key}" value.`);
+    }
+    scores[key] = Math.min(10, Math.max(0, Math.round(value * 10) / 10));
+  }
+
+  return scores;
 };
 
 export const generateFinalFeedback = async (
-  allQuestions: any[],
+  allQuestions: { question_text: string; user_answer: string; score: number }[],
   role: string,
   company: string,
 ): Promise<string> => {
-  try {
-    const qaHistory = allQuestions
-      .map(
-        (q, i) =>
-          `Q${i + 1}: ${q.question_text}\nAnswer: ${q.user_answer}\nScore: ${q.score}/10`,
-      )
-      .join("\n\n");
+  const companyName = company?.trim() || DEFAULT_COMPANY;
 
-    const message = await groq.chat.completions.create({
-      model: model,
-      max_tokens: 600,
-      messages: [
-        {
-          role: "system",
-          content: `You are a world-class interview coach who specializes in preparing candidates for ${role} roles at companies like ${company}. You give brutally honest, highly actionable feedback grounded in what ${company} actually looks for. You don't sugarcoat weaknesses but you genuinely celebrate strengths. Your feedback is specific to what the candidate actually said — you never give generic advice. You write like a mentor who wants the candidate to land the offer.`,
-        },
-        {
-          role: "user",
-          content: `Review this candidate's full interview performance for a ${role} position at ${company} and provide feedback:
+  const qaHistory = allQuestions
+    .map(
+      (q, i) =>
+        `Q${i + 1}: ${q.question_text}\nAnswer: ${q.user_answer}\nScore: ${q.score}/10`,
+    )
+    .join("\n\n");
+
+  const completion = await groq.chat.completions.create({
+    model: MODEL,
+    max_tokens: 2500,
+    reasoning_effort: "low",
+    messages: [
+      {
+        role: "system",
+        content: `You are a world-class interview coach who prepares candidates for ${role} roles at companies like ${companyName}. You give honest, specific, actionable feedback grounded in what the candidate actually said. You never give generic advice. You write like a mentor who wants the candidate to land the offer.`,
+      },
+      {
+        role: "user",
+        content: `Review this candidate's full interview for a ${role} position at ${companyName}:
 
 ${qaHistory}
 
-Write your feedback in this exact structure — each point is ONE sentence only, no exceptions:
+Use exactly this structure. Each bullet is one sentence.
 
 **Strengths:**
-1. [One sentence: what they did well and why it matters at ${company}]
-2. [One sentence: what they did well and why it matters at ${company}]
-3. [One sentence: what they did well and why it matters at ${company}]
+1. [what they did well and why it matters at ${companyName}]
+2. [same]
+3. [same]
 
 **Areas to Improve:**
-1. [One sentence: what they did wrong or missed and why it matters for a ${role} at ${company}]
-2. [One sentence: what they did wrong or missed and why it matters for a ${role} at ${company}]
-3. [One sentence: what they did wrong or missed and why it matters for a ${role} at ${company}]
+1. [what they missed and why it matters for a ${role} at ${companyName}]
+2. [same]
+3. [same]
 
 **Actionable Tips:**
-1. [One sentence: exactly what to do differently next time]
-2. [One sentence: exactly what to do differently next time]
-3. [One sentence: exactly what to do differently next time]
+1. [exactly what to do differently next time]
+2. [same]
+3. [same]
 
 **Final Thought:**
-[One casual, friendly closing sentence like you're a friend who just watched them practice — be genuine, encouraging, and real. No corporate speak.]
+[one casual, encouraging sentence, like a friend who watched them practice]
 
-Be brutal, be specific, be brief. No fluff, no repetition, no praise padding.`,
-        },
-      ],
-    });
+Be specific and brief. No fluff, no repetition, no praise padding.`,
+      },
+    ],
+  });
 
-    const feedback = message.choices[0].message.content || "";
-    return feedback;
-  } catch (error) {
-    console.error("Groq feedback error:", error);
-    throw error;
+  const feedback = getContent(completion.choices[0]);
+
+  if (!feedback) {
+    throw new AIGenerationError("Feedback generation returned no content.");
   }
+
+  return feedback;
 };
-
-
-

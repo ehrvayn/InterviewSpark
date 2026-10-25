@@ -8,7 +8,7 @@ import { useLogin } from "../context/LoginContext";
 import { SiBasicattentiontoken } from "react-icons/si";
 import { usePayment } from "../context/PaymentContext";
 import { IoIosArrowForward } from "react-icons/io";
-import Logo from "../assets/img/InterviewSpark_Logo.png";
+import Logo from "../assets/img/InterviewSparkLogo.png";
 
 interface SidebarProps {
   currentPage: Page;
@@ -61,11 +61,11 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
       )}
 
       <aside
-        className={`fixed top-4 left-4 bottom-4 w-72 rounded-4xl border bg-neutral-800/40 border-neutral-700/50 shadow-2xl shadow-black/40 flex flex-col z-50 transition-transform duration-300 ease-in-out ${
+        className={`fixed top-4 left-4 bottom-4 w-62 rounded-4xl border bg-neutral-800/40 border-neutral-700/50 shadow-2xl shadow-black/40 flex flex-col z-50 transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="flex-none px-8 py-8 flex items-center justify-between border-b border-neutral-700/50">
+        <div className="flex-none px-8 py-5 flex items-center justify-between border-b border-neutral-700/50">
           <div
             className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => handleNavigate("landing")}
@@ -104,18 +104,18 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
                   onClick={() => handleNavigate(item.id)}
                   className={`w-full flex items-center cursor-pointer gap-3 px-4 py-3.5 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all duration-200 group relative ${
                     isActive
-                      ? "bg-neutral-600/20 text-neutral-400 border border-neutral-500/30"
-                      : "text-neutral-400 hover:bg-neutral-800/50 hover:text-neutral-200 border border-transparent"
+                      ? "bg-white text-black border border-neutral-500/30"
+                      : "text-neutral-400  hover:bg-neutral-800/50 hover:text-neutral-200 border border-transparent"
                   }`}
                 >
                   <span
-                    className={`text-lg ${isActive ? "text-neutral-400" : "text-neutral-600 group-hover:text-neutral-400"}`}
+                    className={`text-lg ${isActive ? "text-black" : "text-neutral-600 group-hover:text-neutral-400"}`}
                   >
                     {item.icon}
                   </span>
                   {item.label}
                   {isActive && (
-                    <div className="ml-auto w-1.5 h-3 rounded-full bg-neutral-400 shadow-lg shadow-neutral-400/50" />
+                    <div className="ml-auto w-1.5 h-3 rounded-full bg-black shadow-lg shadow-neutral-400/50" />
                   )}
                 </button>
               );
@@ -163,7 +163,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
                   <div className="w-full py-2.5 cursor-pointer hover: bg-white/30 text-[10px] font-bold uppercase tracking-widest transition-all animate-pulse active:scale-95 rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-neutral-600/20" />
                 </div>
               ) : (
-                <div className="flex items-center gap-3 p-3 rounded-lg border border-neutral-700/50 bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors">
+                <div className="flex items-center gap-2 p-3 rounded-lg border border-neutral-700/50 bg-neutral-800/40 hover:bg-neutral-800/60 transition-colors">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-black bg-white border border-neutral-700/50">
                     {currentUser?.name?.[0]?.toUpperCase()}
                   </div>

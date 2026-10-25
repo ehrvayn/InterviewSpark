@@ -15,7 +15,7 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
       {!isLanding && (
         <>
           <Sidebar
-            currentPage={pathname as any}
+            currentPage={pathname.replace("/", "") as any}
             onNavigate={(p: string) =>
               router.push(p === "landing" ? "/" : `/${p}`)
             }
@@ -30,5 +30,6 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
 
 
