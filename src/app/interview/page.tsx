@@ -124,7 +124,7 @@ export default function Interview() {
   } = useInterview();
 
   const [stage, setStage] = useState<Stage>("setup");
-  
+
   useEffect(() => {
     if (interviewStart && stage === "setup") setStage("active");
   }, [interviewStart, stage]);
@@ -275,6 +275,21 @@ export default function Interview() {
         </div>
 
         <div className="flex flex-col gap-6">
+          <div
+            key={selectedType}
+            className="w-full lg:w-80 xl:w-96 shrink-0 bg-neutral-900/60 border border-neutral-700/50 rounded-4xl backdrop-blur-sm overflow-hidden flex flex-col"
+          >
+            <div className="flex items-center gap-2">
+              <h2 className="flex items-center gap-2 shrink-0 p-4 md:p-6 text-2xl md:text-3xl font-mono font-bold uppercase tracking-tight text-white border-b border-neutral-700/30">
+                <FaLightbulb size={20} className="text-neutral-400 shrink-0" />
+                Target Focus tip
+              </h2>
+            </div>
+
+            <p className="p-5 text-xs text-neutral-300 leading-relaxed bg-neutral-800/40 border border-neutral-700/50 flex flex-col gap-2.5">
+              {focusTips[selectedType as InterviewType] ?? focusTips.behavioral}
+            </p>
+          </div>
           <div className="w-full lg:w-80 xl:w-96 shrink-0  bg-neutral-900/60 border border-neutral-700/50 rounded-4xl backdrop-blur-sm overflow-hidden flex flex-col">
             <h2 className="shrink-0 p-4 md:p-6 text-2xl md:text-3xl font-mono font-bold uppercase tracking-tight text-white border-b border-neutral-700/30">
               How It Works
@@ -309,22 +324,6 @@ export default function Interview() {
                 3 Steps
               </span>
             </div>
-          </div>
-
-          <div
-            key={selectedType}
-            className="w-full lg:w-80 xl:w-96 shrink-0 bg-neutral-900/60 border border-neutral-700/50 rounded-4xl backdrop-blur-sm overflow-hidden flex flex-col"
-          >
-            <div className="flex items-center gap-2">
-              <h2 className="flex items-center gap-2 shrink-0 p-4 md:p-6 text-2xl md:text-3xl font-mono font-bold uppercase tracking-tight text-white border-b border-neutral-700/30">
-                <FaLightbulb size={20} className="text-neutral-400 shrink-0" />
-                Target Focus tip
-              </h2>
-            </div>
-
-            <p className="p-5 text-xs text-neutral-300 leading-relaxed bg-neutral-800/40 border border-neutral-700/50 flex flex-col gap-2.5">
-              {focusTips[selectedType as InterviewType] ?? focusTips.behavioral}
-            </p>
           </div>
         </div>
       </div>

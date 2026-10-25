@@ -62,7 +62,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
       <aside
         className={`fixed top-4 left-4 bottom-4 w-62 rounded-4xl border bg-neutral-800/40 border-neutral-700/50 shadow-2xl shadow-black/40 flex flex-col z-50 transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          isOpen ? "translate-x-0 lg:bg-neutral-800/40 bg-neutral-900" : "bg-neutral-800/40 -translate-x-100 lg:translate-x-0"
         }`}
       >
         <div className="flex-none px-8 py-5 flex items-center justify-between border-b border-neutral-700/50">

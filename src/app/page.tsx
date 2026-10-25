@@ -18,8 +18,8 @@ export default function Landing() {
 
   return (
     <>
-      <div className="overflow-x-hidden px-20 text-white font-sans selection:bg-neutral-500/30">
-        <section className="relative flex flex-col lg:grid lg:grid-cols-12 items-center min-h-screen px-4 md:px-4 py-8 lg:py-0 overflow-hidden border-b border-neutral-700/50">
+      <div className="overflow-x-hidden sm:px-20 text-white font-sans selection:bg-neutral-500/30">
+        <section className="relative flex flex-col-reverse sm:flex-col lg:grid lg:grid-cols-12 items-center min-h-screen px-4 md:px-4 py-8 lg:py-0 overflow-hidden border-b border-neutral-700/50">
           <div className="relative z-10 w-full lg:col-span-7 xl:col-span-8 pr-0 lg:pr-12 py-6">
             <h1 className="text-2xl sm:text-6xl xl:text-7xl font-black  tracking-tight mb-8 uppercase">
               Master the{" "}
