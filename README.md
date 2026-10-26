@@ -6,7 +6,7 @@ InterviewSpark runs a timed mock interview for the role you're targeting. You an
 
 **Live:** https://interviewsparks.netlify.app
 
-![InterviewSpark setup screen](./docs/setup.png)
+![InterviewSpark setup screen](https://res.cloudinary.com/dlvcjwfjm/image/upload/v1792996955/InterviewSparkSample.png)
 
 ## What you get
 
