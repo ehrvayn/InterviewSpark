@@ -11,8 +11,6 @@ export default function PaymentSuccess() {
     let cancelled = false;
 
     const handleSuccess = async () => {
-      // PayMongo's webhook can take a few seconds to land. Refresh a few
-      // times before redirecting so the new credit is reflected.
       for (let attempt = 0; attempt < 5; attempt++) {
         await refreshUser();
         if (cancelled) return;
@@ -20,8 +18,7 @@ export default function PaymentSuccess() {
       }
 
       if (cancelled) return;
-      window.history.replaceState({}, document.title, "/");
-      router.push("/interview");
+      router.replace("/interview");
     };
 
     handleSuccess();
