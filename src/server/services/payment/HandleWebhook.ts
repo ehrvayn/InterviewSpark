@@ -7,16 +7,38 @@ const verifySignature = (
   secret: string,
 ): boolean => {
   try {
-    const parts = signatureHeader.split(",");
-    const timestamp = parts[0].split("=")[1];
-    const signature = parts[1].split("=")[1];
+    // Header format: t=<timestamp>,te=<test sig>,li=<live sig>
+    const parts = signatureHeader
+      .split(",")
+      .reduce<Record<string, string>>((acc, part) => {
+        const separator = part.indexOf("=");
+        if (separator === -1) return acc;
+        const key = part.slice(0, separator).trim();
+        const value = part.slice(separator + 1).trim();
+        if (key) acc[key] = value;
+        return acc;
+      }, {});
 
-    const computedSig = crypto
+    const timestamp = parts.t;
+    if (!timestamp) return false;
+
+    const computed = crypto
       .createHmac("sha256", secret)
       .update(`${timestamp}.${rawBody}`)
       .digest("hex");
 
-    return computedSig === signature;
+    const computedBuffer = Buffer.from(computed, "utf8");
+    const candidates = [parts.li, parts.te].filter(
+      (value): value is string => Boolean(value),
+    );
+
+    return candidates.some((candidate) => {
+      const candidateBuffer = Buffer.from(candidate, "utf8");
+      return (
+        candidateBuffer.length === computedBuffer.length &&
+        crypto.timingSafeEqual(candidateBuffer, computedBuffer)
+      );
+    });
   } catch {
     return false;
   }
@@ -66,7 +88,3 @@ export const handleWebhook = async (
     return { success: false, message: "Webhook handling failed" };
   }
 };
-
-
-
-
