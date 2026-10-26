@@ -12,7 +12,11 @@ const packs: Record<string, { credits: number; amount: number; name: string }> =
     pro: { credits: 35, amount: 99900, name: "Pro Pack - 35 Credits" },
   };
 
-export const createPayment = async (userId: number, packId: string) => {
+export const createPayment = async (
+  userId: number,
+  packId: string,
+  origin?: string,
+) => {
   try {
     const pack = packs[packId];
     if (!pack) return { success: false, message: "Invalid pack" };
@@ -22,7 +26,9 @@ export const createPayment = async (userId: number, packId: string) => {
       return { success: false, message: "Payment configuration error" };
     }
 
-    if (!BASE_URL) {
+    const baseUrl = origin || BASE_URL;
+
+    if (!baseUrl) {
       console.error("FRONTEND_URL not set in .env");
       return { success: false, message: "Payment configuration error" };
     }
@@ -47,8 +53,8 @@ export const createPayment = async (userId: number, packId: string) => {
               },
             ],
             payment_method_types: ["card", "gcash"],
-            success_url: `${BASE_URL}/payment/success?ref=${referenceId}`,
-            cancel_url: `${BASE_URL}/api/payment/failed?ref=${referenceId}`,
+            success_url: `${baseUrl}/payment/success?ref=${referenceId}`,
+            cancel_url: `${baseUrl}/api/payment/failed?ref=${referenceId}`,
             reference_number: referenceId,
           },
         },

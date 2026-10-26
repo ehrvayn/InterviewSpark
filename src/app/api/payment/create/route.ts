@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { packId } = await req.json();
-    const result = await createPayment(user.userId, packId);
+    const result = await createPayment(user.userId, packId, req.nextUrl.origin);
     return NextResponse.json(result, { status: result.success ? 200 : 400 });
   } catch (error) {
     return NextResponse.json({ success: false, message: "Something went wrong" }, { status: 500 });

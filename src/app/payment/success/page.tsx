@@ -8,16 +8,27 @@ export default function PaymentSuccess() {
   const { refreshUser } = useCurrentUser();
 
   useEffect(() => {
-    const handleSuccess = async () => {
-      await refreshUser();
+    let cancelled = false;
 
-      setTimeout(() => {
-        window.history.replaceState({}, document.title, "/");
-        router.push("/interview");
-      }, 2000);
+    const handleSuccess = async () => {
+      // PayMongo's webhook can take a few seconds to land. Refresh a few
+      // times before redirecting so the new credit is reflected.
+      for (let attempt = 0; attempt < 5; attempt++) {
+        await refreshUser();
+        if (cancelled) return;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      if (cancelled) return;
+      window.history.replaceState({}, document.title, "/");
+      router.push("/interview");
     };
 
     handleSuccess();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
