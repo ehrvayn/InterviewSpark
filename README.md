@@ -7,7 +7,7 @@ Practice real interviews before the real ones.
 
 InterviewSpark runs a timed mock interview for the role you're targeting. You answer one question at a time by typing or speaking, then get each answer scored and a final report with specific feedback.
 
-**Live:** https://interview-spark.vercel.app
+**Live:** [View Website](https://interview-spark.vercel.app)
 
 ![InterviewSpark setup screen](https://res.cloudinary.com/dlvcjwfjm/image/upload/v1792996955/InterviewSparkSample.png)
 
