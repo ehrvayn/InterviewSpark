@@ -26,7 +26,7 @@ export const createPayment = async (
       return { success: false, message: "Payment configuration error" };
     }
 
-    const baseUrl = origin || BASE_URL;
+    const baseUrl = BASE_URL || origin ;
 
     if (!baseUrl) {
       console.error("FRONTEND_URL not set in .env");
