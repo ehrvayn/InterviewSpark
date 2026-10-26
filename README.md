@@ -1,4 +1,7 @@
-# InterviewSpark
+<h1>
+  <img src="https://res.cloudinary.com/dlvcjwfjm/image/upload/v1792996895/InterviewSparkLogo.png" alt="InterviewSpark logo" height="48" align="absmiddle">
+  InterviewSpark
+</h1>
 
 Practice real interviews before the real ones.
 
