@@ -20,7 +20,7 @@ export default function AbortSessionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/90 backdrop-blur-md transition-all">
-      <div className="border border-neutral-700/50 rounded-xl p-8 shadow-2xl w-full max-w-sm mx-4 relative overflow-hidden">
+      <div className="border bg-black border-neutral-700/50 rounded-xl p-8 shadow-2xl w-full max-w-sm mx-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 " />
 
         <div className="flex flex-col items-center text-center">

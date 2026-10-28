@@ -76,7 +76,7 @@ function Questions({
   }, [transcript, listening, setAnswer]);
 
   return (
-    <div className="min-h-screen text-neutral-100 pl-80 overflow-hidden">
+    <div className="min-h-screen text-neutral-100 lg:pl-80 overflow-hidden">
       <div className="relative z-10 w-full mt-12 lg:mt-0 max-w-5xl mx-auto px-4 md:px-8 pt-6 pb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-neutral-700/50 pb-8">
           <div className="space-y-4">

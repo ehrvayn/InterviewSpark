@@ -1,7 +1,6 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MdClose, MdCheckCircle, MdSecurity } from "react-icons/md";
-import { FaMicrophone, FaRocket, FaStar } from "react-icons/fa6";
 import { usePayment } from "../../context/PaymentContext";
 import { IoArrowForward } from "react-icons/io5";
 
@@ -10,7 +9,7 @@ const packs = [
     id: "starter",
     label: "Starter",
     credits: 5,
-    price: 149,
+    price: 49,
     tag: null,
     description: "Perfect for trying it out",
     perks: [
@@ -24,7 +23,7 @@ const packs = [
     id: "popular",
     label: "Popular",
     credits: 15,
-    price: 449,
+    price: 99,
     tag: "Best Value",
     description: "Most chosen by job seekers",
     perks: [
@@ -38,7 +37,7 @@ const packs = [
     id: "pro",
     label: "Pro",
     credits: 35,
-    price: 999,
+    price: 169,
     tag: "Power User",
     description: "For serious interview prep",
     perks: [
@@ -51,7 +50,8 @@ const packs = [
 ];
 
 export default function PaymentModal() {
-  const { showPayment, setShowPayment, handleBuy } = usePayment();
+  const { showPayment, setShowPayment, handleBuy, isBuying, setIsbuying } =
+    usePayment();
 
   useEffect(() => {
     if (!showPayment) return;
@@ -69,14 +69,29 @@ export default function PaymentModal() {
       onClick={() => setShowPayment(false)}
     >
       <div
-        className="relative w-full max-w-5xl max-h-[90vh] border border-neutral-700/50 rounded-2xl shadow-2xl overflow-y-auto"
+        className="relative w-full max-w-5xl max-h-[90vh] border bg-black border-neutral-700/50 rounded-2xl shadow-2xl overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="absolute top-0 left-0 w-full h-1 " />
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-neutral-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-40 right-20 w-80 h-80 bg-neutral-500/10 rounded-full blur-3xl"></div>
-        </div>
+        {isBuying && (
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center rounded-xl">
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex gap-2">
+                <div className="w-2.5 h-2.5 bg-neutral-400 rounded-full animate-bounce"></div>
+                <div
+                  className="w-2.5 h-2.5 bg-neutral-400 rounded-full animate-bounce"
+                  style={{ animationDelay: "0.1s" }}
+                ></div>
+                <div
+                  className="w-2.5 h-2.5 bg-neutral-400 rounded-full animate-bounce"
+                  style={{ animationDelay: "0.2s" }}
+                ></div>
+              </div>
+              <p className="text-sm font-semibold text-white uppercase tracking-wide">
+                Redirecting please wait...
+              </p>
+            </div>
+          </div>
+        )}
 
         <button
           onClick={() => setShowPayment(false)}
@@ -98,10 +113,10 @@ export default function PaymentModal() {
               return (
                 <div
                   key={pack.id}
-                  className={`group relative flex flex-col rounded-xl border backdrop-blur-sm transition-all duration-300 ${
+                  className={`group relative flex bg-neutral-800/70 flex-col rounded-xl border backdrop-blur-sm transition-all duration-300 ${
                     isFeatured
-                      ? "border-neutral-500/50 shadow-2xl shadow-neutral-600/20 lg:scale-105 z-10"
-                      : "bg-neutral-800/40 border-neutral-700/50 hover:border-neutral-600/50 hover:bg-neutral-800/60"
+                      ? "border-neutral-500/50  shadow-2xl shadow-neutral-600/20 lg:scale-105 z-10"
+                      : " border-neutral-700/50 hover:border-neutral-600/50 hover:bg-neutral-800/60"
                   }`}
                 >
                   {pack.tag && (
@@ -172,7 +187,10 @@ export default function PaymentModal() {
                     </ul>
 
                     <button
-                      onClick={() => handleBuy(pack.id)}
+                      onClick={() => {
+                        handleBuy(pack.id);
+                        setIsbuying(true);
+                      }}
                       className={`mt-auto w-full text-black bg-white hover:bg-white/80 py-4 rounded-lg flex justify-center items-center gap-2 text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer ${
                         isFeatured
                           ? "shadow-xl shadow-white/20"
@@ -212,4 +230,3 @@ export default function PaymentModal() {
     </div>
   );
 }
-

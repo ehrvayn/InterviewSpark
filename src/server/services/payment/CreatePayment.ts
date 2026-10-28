@@ -5,11 +5,11 @@ import PaymentQuery from "../../models/PaymentQuery";
 const PAYMONGO_SECRET = process.env.PAYMONGO_SECRET_KEY;
 const BASE_URL = process.env.FRONTEND_URL;
 
-const packs: Record<string, { credits: number; amount: number; name: string }> =
+const packs: Record<string, { credits: number; price: number; name: string }> =
   {
-    starter: { credits: 5, amount: 14900, name: "Starter Pack - 5 Credits" },
-    popular: { credits: 15, amount: 44900, name: "Popular Pack - 15 Credits" },
-    pro: { credits: 35, amount: 99900, name: "Pro Pack - 35 Credits" },
+    starter: { credits: 5, price: 4900, name: "Starter Pack - 5 Credits" },
+    popular: { credits: 15, price: 9900, name: "Popular Pack - 15 Credits" },
+    pro: { credits: 35, price: 16900, name: "Pro Pack - 35 Credits" },
   };
 
 export const createPayment = async (
@@ -47,7 +47,7 @@ export const createPayment = async (
             line_items: [
               {
                 currency: "PHP",
-                amount: pack.amount,
+                amount: pack.price,
                 name: pack.name,
                 quantity: 1,
               },
@@ -72,7 +72,7 @@ export const createPayment = async (
     const { query: sql, values } = PaymentQuery.createTransaction(
       userId,
       packId,
-      pack.amount,
+      pack.price,
       pack.credits,
       referenceId,
     );
