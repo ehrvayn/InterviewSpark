@@ -61,7 +61,7 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
   const scoreLabel = getScoreLabel(overallScore);
 
   return (
-    <div className="min-h-screen pl-80 text-neutral-100 overflow-hidden">
+    <div className="min-h-screen lg:pl-80 text-neutral-100 overflow-hidden">
       <div className="relative z-10 w-full max-w-7xl mx-auto lg:mt-0 md:mt-10 mt-16 px-4 lg:px-8 py-6 md:py-8 animate-in fade-in slide-in- duration-700">
         <header className="mb-12 border-b border-neutral-700/50 pb-8">
           <div className="flex items-center gap-3 mb-4">
