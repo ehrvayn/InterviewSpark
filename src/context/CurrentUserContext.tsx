@@ -1,5 +1,12 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { usePathname } from "next/navigation";
 import api from "../lib/api";
 import { User } from "../types";
@@ -21,8 +28,11 @@ export const CurrentUserProvider: React.FC<{ children: React.ReactNode }> = ({
   const pathname = usePathname();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(pathname !== "/");
+  const hasLoadedUser = useRef(false);
 
-  const loadUser = async () => {
+  const loadUser = useCallback(async () => {
+    hasLoadedUser.current = true;
+
     try {
       const response = await api.get("/user/retrieve");
       if (response.data.user) {
@@ -35,7 +45,7 @@ export const CurrentUserProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const updateCredit = (newCredit: number) => {
     setCurrentUser((prev) => (prev ? { ...prev, credit: newCredit } : prev));
@@ -53,9 +63,9 @@ export const CurrentUserProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    if (pathname === "/") return;
+    if (pathname === "/" || hasLoadedUser.current) return;
     loadUser();
-  }, [pathname]);
+  }, [pathname, loadUser]);
 
   return (
     <CurrentUserContext.Provider

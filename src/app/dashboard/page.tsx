@@ -11,7 +11,7 @@ const typeStyle: Record<string, string> = {
   "case-study": "bg-neutral-500/20 text-neutral-300 border-neutral-500/40",
 };
 
-const getScoreVariant = (s: number) => ({
+const getScoreVariant = (_s: number | string) => ({
   bg: "bg-neutral-500/15",
   text: "text-neutral-300",
   border: "border-neutral-500/30",
@@ -215,12 +215,24 @@ export default function Dashboard() {
               </div>
 
               <div className="flex max-h-[60dvh] min-h-0 flex-col gap-3 overflow-y-auto pr-1 xl:max-h-[calc(100dvh-16rem)]">
-                {sortedInterviews.map((h: any, i) => {
+                {sortedInterviews.map((h, i) => {
                   const scoreVariant = getScoreVariant(h.overall_score);
                   return (
                     <div
-                      key={i}
-                      className={`group flex min-w-0 flex-col gap-3 rounded-lg border p-4 backdrop-blur-sm transition-all hover:shadow-lg sm:flex-row sm:items-center sm:justify-between sm:p-5 ${scoreVariant.border} ${scoreVariant.bg}`}
+                      key={h.id ?? i}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() =>
+                        router.push(`/interview/result/${h.id}`)
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          router.push(`/interview/result/${h.id}`);
+                        }
+                      }}
+                      aria-label={`View result for ${h.role || "interview"}`}
+                      className={`group flex min-w-0 cursor-pointer flex-col gap-3 rounded-lg border p-4 backdrop-blur-sm transition-all hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:flex-row sm:items-center sm:justify-between sm:p-5 ${scoreVariant.border} ${scoreVariant.bg}`}
                     >
                       <div className="flex min-w-0 flex-1 items-center gap-4">
                         <div

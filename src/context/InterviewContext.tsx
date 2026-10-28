@@ -1,7 +1,9 @@
 "use client";
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useCallback, useState, useEffect } from "react";
 import { Role, InterviewType, DifficultyLevel, Interview } from "../types";
 import api from "../lib/api";
+import { getQuestionLimit } from "../lib/interview";
+import { setActiveInterviewId } from "../lib/activeInterview";
 import { useCurrentUser } from "./CurrentUserContext";
 
 interface InterviewContextType {
@@ -13,9 +15,9 @@ interface InterviewContextType {
   setSelectedDiff: React.Dispatch<React.SetStateAction<DifficultyLevel>>;
   answer: string;
   setAnswer: React.Dispatch<React.SetStateAction<string>>;
-  startInterview: () => Promise<boolean>;
+  startInterview: () => Promise<number | null>;
   submitAnswer: () => Promise<boolean>;
-  endInterview: () => Promise<void>;
+  endInterview: (interviewId: number) => Promise<boolean>;
   retrieveInterviews: () => Promise<void>;
   company: string;
   setCompany: React.Dispatch<React.SetStateAction<string>>;
@@ -41,8 +43,6 @@ interface InterviewContextType {
   setAllInterviews: React.Dispatch<React.SetStateAction<Interview[]>>;
   isLoading: boolean;
   interviewsLoading: boolean;
-  interviewStart: boolean;
-  setInterviewStart: React.Dispatch<React.SetStateAction<boolean>>;
   showAbortModal: boolean;
   setShowAbortModal: React.Dispatch<React.SetStateAction<boolean>>;
   startError: string | null;
@@ -91,6 +91,11 @@ interface InterviewContextType {
 
 const InterviewContext = createContext<InterviewContextType | null>(null);
 
+const fetchInterviews = async () => {
+  const response = await api.get(`/interview/retrieve`);
+  return response.data;
+};
+
 export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -112,7 +117,6 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [interviewsLoading, setInterviewsLoading] = useState(true);
-  const [interviewStart, setInterviewStart] = useState(false);
   const [showAbortModal, setShowAbortModal] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
   const [allInterviews, setAllInterviews] = useState<Interview[]>([]);
@@ -135,43 +139,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     score: number;
   } | null>(null);
 
-  const getQuestionLimit = (difficulty: DifficultyLevel): number => {
-    if (difficulty === "junior") return 4;
-    else if (difficulty === "intermediate") return 6;
-    else if (difficulty === "senior") return 8;
-    else return 10;
-  };
-
-  useEffect(() => {
-    if (currentUser) {
-      retrieveInterviews();
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (!currentUser) return;
-
-    const saved = localStorage.getItem("session");
-    if (!saved) return;
-
-    const data = JSON.parse(saved);
-
-    if (data.userId !== currentUser.id) {
-      return;
-    }
-    setInterviewId(data.interviewId);
-    setQuestion(data.question);
-    setQuestionNum(data.questionNum);
-    setQuestionId(data.questionId);
-    setSelectedRole(data.selectedRole);
-    setSelectedType(data.selectedType);
-    setSelectedDiff(data.selectedDiff);
-    setCompany(data.company);
-    setQuestionLimit(getQuestionLimit(data.selectedDiff));
-    setInterviewStart(true);
-  }, [currentUser]);
-
-  const startInterview = async (): Promise<boolean> => {
+  const startInterview = async (): Promise<number | null> => {
     try {
       setIsLoading(true);
       setStartError(null);
@@ -185,21 +153,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const data = response.data;
 
-      if (data.success) {
-        const interviewState = {
-          userId: currentUser?.id,
-          interviewId: data.interviewId,
-          question: data.question.question_text,
-          questionNum: data.question.question_number,
-          questionId: data.question.id,
-          selectedRole,
-          selectedType,
-          selectedDiff,
-          company,
-        };
-
-        localStorage.setItem("session", JSON.stringify(interviewState));
-
+      if (data.success && data.interviewId && data.question) {
         const limit = getQuestionLimit(selectedDiff);
         setQuestionLimit(limit);
 
@@ -208,15 +162,16 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
         setQuestionNum(data.question.question_number);
         setQuestionId(data.question.id);
         updateCredit(data.remainingCredits);
-        return true;
+        setActiveInterviewId(data.interviewId);
+        return data.interviewId;
       } else {
-        setStartError(data.message);
-        return false;
+        setStartError(data.message || "Could not start the interview.");
+        return null;
       }
     } catch (error) {
       console.log(error);
       setStartError("Something went wrong!");
-      return false;
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -253,19 +208,6 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
         setQuestionId(data.nextQuestion.id);
       }
 
-      const updatedState = {
-        userId: currentUser?.id,
-        interviewId,
-        question: data.nextQuestion?.question_text || question,
-        questionNum: data.nextQuestion?.question_number || questionNum,
-        questionId: data.nextQuestion?.id || questionId,
-        selectedRole,
-        selectedType,
-        selectedDiff,
-        company,
-      };
-      localStorage.setItem("session", JSON.stringify(updatedState));
-
       setAnswer("");
       return true;
     } catch (error) {
@@ -277,7 +219,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const endInterview = async (): Promise<void> => {
+  const endInterview = async (interviewId: number): Promise<boolean> => {
     try {
       setIsLoading(true);
 
@@ -288,20 +230,21 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
         setOverallScore(data.overallScore);
         setAverages(data.averages);
         setFeedback(data.feedback);
-        localStorage.removeItem("session");
+        return true;
       }
+
+      return false;
     } catch (error) {
       console.log(error);
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  async function retrieveInterviews(): Promise<void> {
-    setInterviewsLoading(true);
+  const retrieveInterviews = useCallback(async (): Promise<void> => {
     try {
-      const response = await api.get(`/interview/retrieve`);
-      const data = response.data;
+      const data = await fetchInterviews();
 
       if (data.success) {
         setAllInterviews(data.interviewData);
@@ -311,7 +254,36 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setInterviewsLoading(false);
     }
-  }
+  }, []);
+
+  const userId = currentUser?.id;
+
+  useEffect(() => {
+    if (!userId) return;
+
+    let cancelled = false;
+
+    fetchInterviews()
+      .then((data) => {
+        if (!cancelled && data.success) {
+          setAllInterviews(data.interviewData);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          console.log(error);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setInterviewsLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   return (
     <InterviewContext.Provider
@@ -323,8 +295,6 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
         retrieveInterviews,
         progress,
         setProgress,
-        interviewStart,
-        setInterviewStart,
         currentQuestion,
         setCurrentQuestion,
         questionLimit,

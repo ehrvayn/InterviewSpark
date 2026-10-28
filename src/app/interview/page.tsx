@@ -1,16 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import { Suspense, useEffect, useSyncExternalStore } from "react";
 import type { Role, InterviewType, DifficultyLevel } from "@/types";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FaGear, FaBrain, FaFill, FaLightbulb } from "react-icons/fa6";
-import Questions from "./Questions";
 import { useInterview } from "@/context/InterviewContext";
-import EndInterview from "./EndInterview";
 import { useCurrentUser } from "@/context/CurrentUserContext";
 import { usePayment } from "@/context/PaymentContext";
 import { IoIosArrowForward } from "react-icons/io";
 import Loading from "@/components/Loading";
-
-type Stage = "setup" | "active" | "feedback";
+import { getActiveInterviewId } from "@/lib/activeInterview";
 
 const roles: Role[] = [
   "Software Engineer",
@@ -105,7 +103,17 @@ const selectedClass =
 const unselectedClass =
   "bg-neutral-800/40 border-neutral-700/60 text-neutral-300 hover:border-neutral-500 hover:bg-neutral-800/70 hover:text-white";
 
-export default function Interview() {
+const subscribeToActiveInterview = () => () => {};
+
+function InterviewSetup() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const message = searchParams.get("message");
+  const activeInterviewId = useSyncExternalStore(
+    subscribeToActiveInterview,
+    getActiveInterviewId,
+    () => null,
+  );
   const {
     startInterview,
     selectedDiff,
@@ -119,30 +127,25 @@ export default function Interview() {
     isLoading,
     startError,
     setStartError,
-    setInterviewStart,
-    interviewStart,
   } = useInterview();
-
-  const [stage, setStage] = useState<Stage>("setup");
-
-  useEffect(() => {
-    if (interviewStart && stage === "setup") setStage("active");
-  }, [interviewStart, stage]);
 
   const { currentUser } = useCurrentUser();
   const { setShowPayment } = usePayment();
 
-  if (stage === "feedback") return <EndInterview setStage={setStage} />;
-  if (stage === "active") return <Questions setStage={setStage} />;
-  if (!currentUser) return <Loading />;
+  useEffect(() => {
+    if (activeInterviewId) {
+      router.replace(`/interview/${activeInterviewId}`);
+    }
+  }, [activeInterviewId, router]);
+
+  if (!currentUser || activeInterviewId) return <Loading />;
 
   const noCredits = (currentUser.credit ?? 0) <= 0;
 
   const handleStart = async () => {
     setStartError(null);
-    setInterviewStart(true);
-    const success = await startInterview();
-    if (success) setStage("active");
+    const interviewId = await startInterview();
+    if (interviewId) router.push(`/interview/${interviewId}`);
   };
 
   return (
@@ -152,6 +155,12 @@ export default function Interview() {
           <h1 className="shrink-0 p-4 md:p-6 text-2xl md:text-3xl font-mono font-bold uppercase tracking-tight text-white border-b border-neutral-700/30">
             Session Configuration
           </h1>
+
+          {message && (
+            <div className="shrink-0 m-4 md:m-6 mb-0 p-4 rounded-lg bg-neutral-800/60 border border-neutral-600 text-neutral-200 text-[10px] font-bold uppercase tracking-widest text-center">
+              {message}
+            </div>
+          )}
 
           <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-neutral-700/30">
             <Step index="01//" label="Target Role">
@@ -328,5 +337,13 @@ export default function Interview() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function InterviewPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <InterviewSetup />
+    </Suspense>
   );
 }

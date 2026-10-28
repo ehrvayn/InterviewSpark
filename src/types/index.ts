@@ -65,6 +65,7 @@ export interface SessionResult {
 }
 
 export interface Interview {
+  id: number;
   interview_type: string;
   role: string;
   difficulty: string;

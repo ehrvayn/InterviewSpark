@@ -9,7 +9,9 @@ import {
 } from "react-icons/fa6";
 import { useInterview } from "@/context/InterviewContext";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AbortSessionModal from "@/components/modal/AbortSessionModal";
+import { clearActiveInterviewId } from "@/lib/activeInterview";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
@@ -35,10 +37,13 @@ const Skeleton = () => (
 );
 
 function Questions({
-  setStage,
+  interviewId,
+  answeredCount,
 }: {
-  setStage: (stage: "setup" | "active" | "feedback") => void;
+  interviewId: number;
+  answeredCount: number;
 }) {
+  const router = useRouter();
   const {
     selectedType,
     selectedRole,
@@ -53,6 +58,7 @@ function Questions({
     setScore,
     questionLimit,
     endInterview,
+    retrieveInterviews,
     currentQuestion,
     isLoading,
     showAbortModal,
@@ -60,9 +66,7 @@ function Questions({
   } = useInterview();
 
   const [isFinished, setIsFinished] = useState(false);
-  const [progressNum, setProgressNum] = useState(
-    questionNum && questionNum - 1,
-  );
+  const [progressNum, setProgressNum] = useState(answeredCount);
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
   useEffect(() => {
@@ -266,17 +270,38 @@ function Questions({
               isLoading={isLoading}
               onNext={() => setScore(null)}
               onFinish={async () => {
-                await endInterview();
-                setStage("feedback");
+                const finished = await endInterview(interviewId);
+                if (!finished) return;
+                await retrieveInterviews();
+                clearActiveInterviewId();
+                router.push(`/interview/result/${interviewId}`);
               }}
             />
           )}
-          {showAbortModal && <AbortSessionModal setStage={setStage} />}
+          {showAbortModal && <AbortSessionModal />}
         </div>
       </div>
     </div>
   );
 }
+
+type ScorePanelProps = {
+  score: {
+    clarity: number;
+    confidence: number;
+    relevance: number;
+    communication: number;
+    conciseness: number;
+    technical_depth: number;
+    score: number;
+  };
+  currentQuestion: string;
+  questionNum: number;
+  isFinished: boolean;
+  isLoading: boolean;
+  onNext: () => void;
+  onFinish: () => void;
+};
 
 function ScorePanel({
   score,
@@ -286,7 +311,7 @@ function ScorePanel({
   isLoading,
   onNext,
   onFinish,
-}: any) {
+}: ScorePanelProps) {
   const getScoreColor = (s: number) => {
     if (s >= 8) return "text-neutral-300";
     if (s >= 6) return "text-neutral-300";

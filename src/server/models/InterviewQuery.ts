@@ -83,6 +83,62 @@ const InterviewQuery = {
     values: [interviewId],
   }),
 
+  getInterviewState: (interviewId: number, userId: number) => ({
+    query: `
+    SELECT
+      i.id, i.user_id, i.role, i.company, i.interview_type, i.difficulty, i.overall_score,
+      q.id AS question_id, q.question_text, q.question_number,
+      (
+        SELECT COUNT(*)::int
+        FROM questions
+        WHERE interview_id = i.id AND user_answer IS NOT NULL
+      ) AS answered_count
+    FROM interviews i
+    LEFT JOIN LATERAL (
+      SELECT id, question_text, question_number
+      FROM questions
+      WHERE interview_id = i.id AND user_answer IS NULL
+      ORDER BY question_number
+      LIMIT 1
+    ) q ON TRUE
+    WHERE i.id = $1 AND i.user_id = $2
+  `,
+    values: [interviewId, userId],
+  }),
+
+  latestAnsweredQuestion: (interviewId: number) => ({
+    query: `
+    SELECT id, question_text, user_answer, question_number
+    FROM questions
+    WHERE interview_id = $1 AND user_answer IS NOT NULL
+    ORDER BY question_number DESC
+    LIMIT 1
+  `,
+    values: [interviewId],
+  }),
+
+  getInterviewResult: (interviewId: number) => ({
+    query: `
+    SELECT
+      i.id, i.role, i.company, i.interview_type, i.difficulty, i.overall_score,
+      q.question_number, q.question_text, q.user_answer,
+      q.score, q.clarity, q.confidence, q.relevance,
+      q.communication, q.conciseness, q.technical_depth,
+      f.clarity AS avg_clarity, f.confidence AS avg_confidence,
+      f.relevance AS avg_relevance, f.communication AS avg_communication,
+      f.conciseness AS avg_conciseness, f.technical_depth AS avg_technical_depth,
+      f.feedback
+    FROM interviews i
+    LEFT JOIN questions q
+      ON q.interview_id = i.id AND q.user_answer IS NOT NULL
+    LEFT JOIN interview_feedback f
+      ON f.interview_id = i.id
+    WHERE i.id = $1
+    ORDER BY q.question_number
+  `,
+    values: [interviewId],
+  }),
+
   retrieveInterviews: (userId: number) => ({
     query: `
     SELECT 
@@ -90,7 +146,7 @@ const InterviewQuery = {
       f.clarity, f.confidence, f.relevance, f.communication, f.conciseness, f.technical_depth, f.feedback
     FROM interviews i
     LEFT JOIN interview_feedback f ON i.id = f.interview_id
-    WHERE i.user_id = $1
+    WHERE i.user_id = $1 AND i.overall_score IS NOT NULL
     ORDER BY i.created_at DESC
   `,
     values: [userId],
@@ -119,7 +175,3 @@ const InterviewQuery = {
 };
 
 export default InterviewQuery;
-
-
-
-

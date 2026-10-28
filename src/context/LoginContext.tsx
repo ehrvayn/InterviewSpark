@@ -42,7 +42,6 @@ export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error) {
       console.error("Logout failed:", error);
     }
-    await localStorage.removeItem("session");
     setCurrentUser(null);
     setShowLogout(false);
     setLoggingOut(false);

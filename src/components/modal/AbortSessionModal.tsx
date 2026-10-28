@@ -1,19 +1,17 @@
 "use client";
 import { MdWarningAmber } from "react-icons/md";
+import { useRouter } from "next/navigation";
 import { useInterview } from "../../context/InterviewContext";
+import { clearActiveInterviewId } from "../../lib/activeInterview";
 import SpeechRecognition from "react-speech-recognition";
 
-export default function AbortSessionModal({
-  setStage,
-}: {
-  setStage: (stage: "setup" | "active" | "feedback") => void;
-}) {
+export default function AbortSessionModal() {
+  const router = useRouter();
   const {
     setShowAbortModal,
     setSelectedDiff,
     setSelectedType,
     setSelectedRole,
-    setInterviewStart,
     setCompany,
     setQuestion,
   } = useInterview();
@@ -43,17 +41,16 @@ export default function AbortSessionModal({
 
         <div className="flex flex-col gap-3">
           <button
-            onClick={async () => {
-              localStorage.removeItem("session");
-              await setQuestion("");
-              setInterviewStart(false);
-              setStage("setup");
+            onClick={() => {
+              setQuestion("");
               setSelectedDiff("junior");
               setSelectedType("behavioral");
               setSelectedRole("Software Engineer");
               setCompany("");
               setShowAbortModal(false);
+              clearActiveInterviewId();
               SpeechRecognition.stopListening();
+              router.push("/interview");
             }}
             className="w-full py-3.5 cursor-pointer hover: text-black bg-white hover:bg-white/80 text-[11px] font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-neutral-600/20 active:scale-95 rounded-lg"
           >
@@ -71,8 +68,3 @@ export default function AbortSessionModal({
     </div>
   );
 }
-
-
-
-
-

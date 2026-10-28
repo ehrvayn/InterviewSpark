@@ -1,33 +1,77 @@
 "use client";
-import React from "react";
+import React, { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useInterview } from "@/context/InterviewContext";
+import { clearActiveInterviewId } from "@/lib/activeInterview";
+import { buildResultFileName, exportResultPdf } from "@/lib/exportResultPdf";
 import { GiProgression } from "react-icons/gi";
 import { MdOutlineLightbulb, MdCheckCircle } from "react-icons/md";
 import ReactMarkdown from "react-markdown";
 import { FaArrowRight } from "react-icons/fa6";
 
 interface EndInterviewProps {
-  setStage: React.Dispatch<
-    React.SetStateAction<"setup" | "active" | "feedback">
-  >;
+  overallScore: number;
+  averages: {
+    clarity: number;
+    confidence: number;
+    relevance: number;
+    communication: number;
+    conciseness: number;
+    technical_depth: number;
+  };
+  feedback: string;
+  role: string;
+  company: string;
+  interviewType: string;
+  difficulty: string;
+  questions?: {
+    question_number: number;
+    question_text: string;
+    user_answer: string;
+    score: number;
+  }[];
+  onStartNew?: () => void;
 }
 
-export default function EndInterview({ setStage }: EndInterviewProps) {
+export default function EndInterview({
+  overallScore,
+  averages,
+  feedback,
+  role,
+  company,
+  interviewType,
+  difficulty,
+  onStartNew,
+}: EndInterviewProps) {
+  const router = useRouter();
+  const resultRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
   const {
-    overallScore,
-    averages,
-    feedback,
     setScore,
     setSelectedDiff,
     setSelectedRole,
     setSelectedType,
     setCompany,
-    selectedRole,
-    company,
-    selectedType,
-    selectedDiff,
-    setInterviewStart,
   } = useInterview();
+
+  const handleExport = async () => {
+    if (!resultRef.current || isExporting) return;
+
+    setIsExporting(true);
+    setExportError(null);
+
+    try {
+      await exportResultPdf(resultRef.current, {
+        fileName: buildResultFileName(role),
+      });
+    } catch (error) {
+      console.error(error);
+      setExportError("Could not export the result. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const getScoreColor = (score: number) => {
     if (score >= 8) return "text-neutral-300";
@@ -62,7 +106,10 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
 
   return (
     <div className="min-h-screen lg:pl-80 text-neutral-100 overflow-hidden">
-      <div className="relative z-10 w-full max-w-7xl mx-auto lg:mt-0 md:mt-10 mt-16 px-4 lg:px-8 py-6 md:py-8 animate-in fade-in slide-in- duration-700">
+      <div
+        ref={resultRef}
+        className="relative z-10 w-full max-w-7xl mx-auto lg:mt-0 md:mt-10 mt-16 px-4 lg:px-8 py-6 md:py-8 animate-in fade-in slide-in- duration-700"
+      >
         <header className="mb-12 border-b border-neutral-700/50 pb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-neutral-500/20 rounded-lg">
@@ -73,11 +120,11 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
             </h1>
           </div>
           <div className="flex flex-wrap gap-2 items-center text-neutral-400 text-xs font-semibold uppercase tracking-widest">
-            <span>{selectedRole}</span>
+            <span>{role}</span>
             <span className="text-neutral-700">•</span>
-            <span>{selectedType}</span>
+            <span>{interviewType}</span>
             <span className="text-neutral-700">•</span>
-            <span>{selectedDiff}</span>
+            <span>{difficulty}</span>
             {company && (
               <>
                 <span className="text-neutral-700">•</span>
@@ -167,16 +214,20 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div data-pdf-hide className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={() => {
-              setStage("setup");
+              clearActiveInterviewId();
+              if (onStartNew) {
+                onStartNew();
+                return;
+              }
               setScore(null);
               setSelectedDiff("junior");
               setSelectedRole("Software Engineer");
               setSelectedType("behavioral");
               setCompany("");
-              setInterviewStart(false);
+              router.push("/interview");
             }}
             className="flex-1 py-4 rounded-lg cursor-pointer text-black bg-white hover:bg-white/80 text-[11px] font-bold uppercase tracking-widest hover: transition-all shadow-lg shadow-neutral-600/20 active:scale-95 flex items-center justify-center gap-2"
           >
@@ -184,19 +235,19 @@ export default function EndInterview({ setStage }: EndInterviewProps) {
             <FaArrowRight size={14} />
           </button>
           <button
-            onClick={() => window.print()}
-            className="px-10 py-4 rounded-lg cursor-pointer bg-neutral-800/40 border border-neutral-700/50 text-neutral-300 text-[11px] font-bold uppercase tracking-widest hover:text-white hover:border-neutral-600/50 hover:bg-neutral-800/60 transition-all"
+            onClick={handleExport}
+            disabled={isExporting}
+            className="px-10 py-4 rounded-lg cursor-pointer bg-neutral-800/40 border border-neutral-700/50 text-neutral-300 text-[11px] font-bold uppercase tracking-widest hover:text-white hover:border-neutral-600/50 hover:bg-neutral-800/60 transition-all disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Export Result
+            {isExporting ? "Exporting..." : "Export as PDF"}
           </button>
         </div>
+        {exportError && (
+          <p data-pdf-hide className="mt-3 text-xs text-neutral-400">
+            {exportError}
+          </p>
+        )}
       </div>
     </div>
   );
 }
-
-
-
-
-
-
